@@ -3,7 +3,6 @@
     "database": "./wysh.db",
     "webclient": "../client/public",
     "auth": {
-        "secret": "some super hidden secret",
-        "issuer": "wysh.ca"
+        "secret": "some super hidden secret"
     }
 }

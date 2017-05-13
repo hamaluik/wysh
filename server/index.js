@@ -4,8 +4,7 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const log = require('./log');
 
-// TODO: production vs development config
-const config = require('./config.default');
+const config = require('./config');
 
 var app = express();
 var db = new sequelize('projectdr', '' ,'', {
@@ -37,7 +36,8 @@ app.use(function(err, req, res, next) {
 });
 
 var models = require('./models').load(db);
-require('./controllers').load(config, router, db, models);
+var auth = require('./auth').load(config, db, models);
+require('./controllers').load(config, router, db, models, auth);
 
 db.sync().then(function() {
     app.listen(config.port, function() {
