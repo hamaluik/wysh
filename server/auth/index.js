@@ -2,16 +2,8 @@ const jwt = require('jsonwebtoken');
 const log = require('../log');
 const Promise = require("bluebird");
 
-var UnauthorizedError = function(message) {
-    Error.call(this, message);
-    this.name = 'UnauthorizedError';
-    this.message = message;
-}
-require('util').inherits(UnauthorizedError, Error);
-
-module.exports.load = function(config, db, models) {
+module.exports.load = function(config, errors, db, models) {
     return {
-        UnauthorizedError: UnauthorizedError,
         check: function(req, res, next) {
             if(req.headers && req.headers.authorization) {
                 var parts = req.headers.authorization.split(' ');
@@ -50,15 +42,15 @@ module.exports.load = function(config, db, models) {
                         });
                     }
                     catch(error) {
-                        return next(new UnauthorizedError("You aren't authorized to do that!"));
+                        return next(new errors.Unauthorized("You aren't authorized to do that!"));
                     }
                 }
                 else {
-                    return next(new UnauthorizedError('Authorization must be a JWT Bearer!'));
+                    return next(new errors.Unauthorized('Authorization must be a JWT Bearer!'));
                 }
             }
             else {
-                return next(new UnauthorizedError('Authorization is required to access this!'));
+                return next(new errors.Unauthorized('Authorization is required to access this!'));
             }
         }
     };

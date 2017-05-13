@@ -8,5 +8,14 @@ module.exports = {
             nickName: { type: Sequelize.STRING, allowNull: false, unique: false },
             imageURL: { type: Sequelize.STRING, allowNull: true, unique: false, defaultValue: null }
         });
+    },
+    sanitize: function(user) {
+        return {
+            id: user.id,
+            nick: user.nickName,
+            name: user.fullName,
+            email: user.email,
+            imageURL: user.imageURL
+        };
     }
 }

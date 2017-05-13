@@ -22,12 +22,18 @@ app.use('/api/v1', router);
 app.use(express.static(config.webclient));
 
 app.use(function(err, req, res, next) {
-    if(err && err.name === 'UnauthorizedError') {
-        log.warn('Authentication error', {
+    if(err && err.name === 'Unauthorized') {
+        log.warn('authentication error', {
             ip: req.ip,
             message: err.message
         });
         res.status(401).json({message: err.message});
+    }
+    else if(err && err.name === 'UserNotFound') {
+        log.warn('user not found', {
+            message: err.message
+        });
+        res.status(404).json({message: err.message});
     }
     else {
         log.error('Unhandled error:', err);
@@ -35,9 +41,10 @@ app.use(function(err, req, res, next) {
     }
 });
 
+var errors = require('./errors');
 var models = require('./models').load(db);
-var auth = require('./auth').load(config, db, models);
-require('./controllers').load(config, router, db, models, auth);
+var auth = require('./auth').load(config, errors, db, models);
+require('./controllers').load(config, errors, router, db, models, auth);
 
 db.sync().then(function() {
     app.listen(config.port, function() {

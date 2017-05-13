@@ -15,6 +15,11 @@ module.exports.load = function(db) {
         Group: Group,
         Item: Item,
         Purchase: Purchase,
-        User: User
+        User: User,
+        sanitize: {
+            group: require('./group').sanitize,
+            user: require('./user').sanitize,
+            item: require('./item').sanitize
+        }
     };
 }

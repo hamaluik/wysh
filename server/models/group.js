@@ -5,5 +5,10 @@ module.exports = {
         return db.define('Group', {
             name: { type: Sequelize.STRING, unique: true, allowNull: false }
         });
+    },
+    sanitize: function(group) {
+        return {
+            name: group.name
+        };
     }
 }
