@@ -1,0 +1,6 @@
+{
+    "haxe.displayConfigurations": [
+        ["client/completion.hxml"],
+        ["client/build.hxml"]
+    ]
+}

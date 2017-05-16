@@ -1,0 +1,15 @@
+-cp src
+-main Main
+
+-D react_global
+
+-lib react
+-lib promhx
+
+-D AUTH0_CLIENT_ID=zLh4kYC43212ipPZS4XM59XHcONzroWn
+-D AUTH0_DOMAIN=fuzzywuzzie.auth0.com
+
+-dce full
+-debug
+
+-js public/app.js
