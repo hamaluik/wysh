@@ -1,6 +1,7 @@
 package stores;
 
 import auth0.Lock;
+import auth0.NormalizedProfile;
 import macros.Defines;
 
 using StringTools;
@@ -37,41 +38,11 @@ class Authenticate {
 	public static var authenticated:Bool = false;
 	public static var unauthorized:Bool = false;
 
-	/*public static var authenticated(default, set):Bool = false;
-	private static function set_authenticated(a:Bool):Bool {
-		var didChange:Bool = authenticated != a;
-		authenticated = a;
-		if(didChange)
-			changed.trigger();
-		if(unauthorized && authenticated)
-			unauthorized = false;
-		return authenticated;
-	}
-
-	public static var unauthorized(default, set):Bool = false;
-	private static function set_unauthorized(a:Bool):Bool {
-		var didChange:Bool = unauthorized != a;
-		unauthorized = a;
-		if(didChange) changed.trigger();
-		return unauthorized;
-	}*/
-
 	public static var token(default, null):String = null;
-	public static var profile(default, null):Dynamic = null;
-
-	public static function getName():String {
-		if(profile.given_name != null)
-			return profile.given_name;
-		return profile.nickname;
-	}
 
 	private static function onAuthenticated(authResult:Dynamic):Void {
 		js.Browser.getLocalStorage().setItem('idToken', authResult.idToken);
 		js.Browser.getLocalStorage().setItem('accessToken', authResult.accessToken);
-
-		lock.getUserInfo(authResult.accessToken, function(error, userProfile) {
-			Main.console.log(userProfile);
-		});
 
 		check();
 	}
@@ -110,10 +81,7 @@ class Authenticate {
 		changed.trigger();
 
 		var accessToken:String = js.Browser.getLocalStorage().getItem('accessToken');
-		Main.console.log('accessToken', accessToken);
-		/*lock.getUserInfo(accessToken, function(error, userProfile) {
-			Main.console.log('user profile');
-			Main.console.log(userProfile);
+		lock.getUserInfo(accessToken, function(error, userProfile) {
 			if(error != null) {
 				token = null;
 				authenticated = false;
@@ -121,22 +89,15 @@ class Authenticate {
 				changed.trigger();
 				return;
 			}
-			js.Browser.getLocalStorage().setItem("profile", haxe.Json.stringify(userProfile));
 			token = idToken;
-			profile = userProfile;
+			UserProfile.updateProfile(cast(userProfile));
 			authenticated = true;
 			changed.trigger();
-		});*/
+		});
 	}
 
 	public static function logout() {
 		js.Browser.getLocalStorage().removeItem("idToken");
-		js.Browser.getLocalStorage().removeItem("profile");
 		check();
-	}
-
-	public static function getProfile():Dynamic {
-		if(!authenticated) return null;
-		return js.Browser.getLocalStorage().getItem('profile');
 	}
 }

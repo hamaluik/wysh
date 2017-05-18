@@ -63,23 +63,7 @@ class App extends ReactComponentOfState<AppState> {
         var nav:Array<ReactElement> = new Array<ReactElement>();
 
         if(state.authenticated) {
-            nav.push(
-                React.createElement("nav", {},
-                    React.createElement("div", { className: "nav-wrapper row"},
-                        React.createElement("div", { className: "col s12" },
-                            React.createElement("a", { href: "#", className: "brand-logo" }, "wysh"),
-                            React.createElement("ul", { className: "right" },
-                                React.createElement("li", {},
-                                    React.createElement("a", { href: "#", onClick: logout },
-                                        React.createElement("i", { className: "material-icons left" }, "exit_to_app"),
-                                        "Log Out"
-                                    )
-                                )
-                            )
-                        )
-                    )
-                )
-            );
+            nav.push(React.createElement(NavBar));
         }
 
         return nav;
@@ -96,9 +80,5 @@ class App extends ReactComponentOfState<AppState> {
         }
 
         return contents;
-    }
-
-    private function logout():Void {
-        Authenticate.logout();
     }
 }

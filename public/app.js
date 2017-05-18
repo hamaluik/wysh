@@ -577,27 +577,26 @@ js_html_compat_Uint8Array._subarray = function(start,end) {
 	a.byteOffset = start;
 	return a;
 };
-var stores_UserProfile = function() { };
-stores_UserProfile.__name__ = true;
-stores_UserProfile.get_profile = function() {
-	if(stores_UserProfile._profile == null) {
-		return JSON.parse(js_Browser.getLocalStorage().getItem("profile"));
-	}
-	return stores_UserProfile._profile;
+var macros_Defines = function() { };
+macros_Defines.__name__ = true;
+var stores_Authenticate = function() {
 };
-stores_UserProfile.updateProfile = function(prof) {
-	stores_UserProfile._profile = prof;
-	js_Browser.getLocalStorage().setItem("profile",JSON.stringify(stores_UserProfile.get_profile()));
-	stores_UserProfile.changed.trigger();
-};
-var stores_Authenticate = function() { };
 stores_Authenticate.__name__ = true;
 stores_Authenticate.get_lockContainerID = function() {
 	return "auth0lockcontainer";
 };
+stores_Authenticate.getName = function() {
+	if(stores_Authenticate.profile.given_name != null) {
+		return stores_Authenticate.profile.given_name;
+	}
+	return stores_Authenticate.profile.nickname;
+};
 stores_Authenticate.onAuthenticated = function(authResult) {
 	js_Browser.getLocalStorage().setItem("idToken",authResult.idToken);
 	js_Browser.getLocalStorage().setItem("accessToken",authResult.accessToken);
+	stores_Authenticate.lock.getUserInfo(authResult.accessToken,function(error,userProfile) {
+		Main.console.log(userProfile);
+	});
 	stores_Authenticate.check();
 };
 stores_Authenticate.onUnauthorized = function(message) {
@@ -626,23 +625,21 @@ stores_Authenticate.check = function() {
 	stores_Authenticate.authenticated = true;
 	stores_Authenticate.changed.trigger();
 	var accessToken = js_Browser.getLocalStorage().getItem("accessToken");
-	stores_Authenticate.lock.getUserInfo(accessToken,function(error,userProfile) {
-		if(error != null) {
-			stores_Authenticate.token = null;
-			stores_Authenticate.authenticated = false;
-			Main.console.error("Unable to get user profile: " + error.message);
-			stores_Authenticate.changed.trigger();
-			return;
-		}
-		stores_Authenticate.token = idToken;
-		stores_UserProfile.updateProfile(userProfile);
-		stores_Authenticate.authenticated = true;
-		stores_Authenticate.changed.trigger();
-	});
+	Main.console.log("accessToken",accessToken);
 };
 stores_Authenticate.logout = function() {
 	js_Browser.getLocalStorage().removeItem("idToken");
+	js_Browser.getLocalStorage().removeItem("profile");
 	stores_Authenticate.check();
+};
+stores_Authenticate.getProfile = function() {
+	if(!stores_Authenticate.authenticated) {
+		return null;
+	}
+	return js_Browser.getLocalStorage().getItem("profile");
+};
+stores_Authenticate.prototype = {
+	__class__: stores_Authenticate
 };
 var views_App = function(props) {
 	React.Component.call(this,props);
@@ -683,7 +680,14 @@ views_App.prototype = $extend(React.Component.prototype,{
 	,renderNav: function() {
 		var nav = [];
 		if(this.state.authenticated) {
-			nav.push(React.createElement(views_NavBar));
+			var tmp = React.createElement("a",{ href : "#", className : "brand-logo"},"wysh");
+			var tmp1 = React.createElement("i",{ className : "material-icons left"},"exit_to_app");
+			var tmp2 = React.createElement("a",{ href : "#", onClick : $bind(this,this.logout)},tmp1,"Log Out");
+			var tmp3 = React.createElement("li",{ },tmp2);
+			var tmp4 = React.createElement("ul",{ className : "right"},tmp3);
+			var tmp5 = React.createElement("div",{ className : "col s12"},tmp,tmp4);
+			var tmp6 = React.createElement("div",{ className : "nav-wrapper row"},tmp5);
+			nav.push(React.createElement("nav",{ },tmp6));
 		}
 		return nav;
 	}
@@ -695,6 +699,9 @@ views_App.prototype = $extend(React.Component.prototype,{
 			contents.push(React.createElement("p",{ },"Logged in!"));
 		}
 		return contents;
+	}
+	,logout: function() {
+		stores_Authenticate.logout();
 	}
 	,__class__: views_App
 });
@@ -714,78 +721,6 @@ views_Auth0Lock.prototype = $extend(React.Component.prototype,{
 		return React.createElement("div",{ id : stores_Authenticate.get_lockContainerID(), className : "card-panel z-depth-4 login-card"});
 	}
 	,__class__: views_Auth0Lock
-});
-var views_NavBar = function(props) {
-	React.Component.call(this,props);
-	this.state = { avatarURL : null};
-};
-views_NavBar.__name__ = true;
-views_NavBar.__super__ = React.Component;
-views_NavBar.prototype = $extend(React.Component.prototype,{
-	update: function() {
-		this.setState({ avatarURL : stores_UserProfile.get_profile() != null ? stores_UserProfile.get_profile().picture : null});
-	}
-	,componentWillMount: function() {
-		stores_UserProfile.changed.listen($bind(this,this.update));
-	}
-	,upgradeComponent: function() {
-		var e = ReactDOM.findDOMNode(this);
-		this.upgrade(e);
-	}
-	,upgrade: function(e) {
-		if(e == null) {
-			return;
-		}
-		try {
-			componentHandler.upgradeElement(e);
-		} catch( e1 ) {
-		}
-		var _g = 0;
-		var _g1 = e.children;
-		while(_g < _g1.length) {
-			var c = _g1[_g];
-			++_g;
-			this.upgrade(c);
-		}
-	}
-	,componentDidMount: function() {
-		this.upgradeComponent();
-		$(".button-collapse").sideNav({ draggable : true});
-	}
-	,componentDidUpdate: function(prevProps,prevState) {
-		this.upgradeComponent();
-	}
-	,componentWillUnmount: function() {
-		stores_UserProfile.changed.unlisten($bind(this,this.update));
-		$(".button-collapse").sideNav("hide");
-	}
-	,render: function() {
-		var tmp = React.createElement("a",{ href : "#", className : "brand-logo"},"wysh");
-		var tmp1 = React.createElement("i",{ className : "material-icons"},"menu");
-		var tmp2 = React.createElement("a",{ 'data-activates' : "main-side-nav", className : "button-collapse"},tmp1);
-		var tmp3 = React.createElement("i",{ className : "material-icons left"},"exit_to_app");
-		var tmp4 = React.createElement("a",{ href : "#", onClick : $bind(this,this.logout)},tmp3,"Log Out");
-		var tmp5 = React.createElement("li",{ },tmp4);
-		var tmp6 = React.createElement("ul",{ className : "right hide-on-med-and-down"},tmp5);
-		var tmp7 = React.createElement("i",{ className : "material-icons left"},"exit_to_app");
-		var tmp8 = React.createElement("a",{ href : "#", onClick : $bind(this,this.logout)},tmp7,"Log Out");
-		var tmp9 = React.createElement("li",{ },tmp8);
-		var tmp10 = React.createElement("ul",{ className : "side-nav", id : "main-side-nav"},tmp9);
-		var tmp11 = React.createElement("div",{ className : "nav-wrapper container"},tmp,tmp2,tmp6,tmp10);
-		return React.createElement("nav",{ className : "z-depth-3"},tmp11);
-	}
-	,renderAvatar: function() {
-		if(this.state.avatarURL != null) {
-			var tmp = React.createElement("img",{ className : "circle navbar-avatar", src : this.state.avatarURL});
-			var tmp1 = React.createElement("a",{ },tmp);
-			return [React.createElement("li",{ },tmp1)];
-		}
-		return [];
-	}
-	,logout: function() {
-		stores_Authenticate.logout();
-	}
-	,__class__: views_NavBar
 });
 var $_, $fid = 0;
 function $bind(o,m) { if( m == null ) return null; if( m.__id__ == null ) m.__id__ = $fid++; var f; if( o.hx__closures__ == null ) o.hx__closures__ = {}; else f = o.hx__closures__[m.__id__]; if( f == null ) { f = function(){ return f.method.apply(f.scope, arguments); }; f.scope = o; f.method = m; o.hx__closures__[m.__id__] = f; } return f; }
@@ -807,16 +742,18 @@ if(ArrayBuffer.prototype.slice == null) {
 	ArrayBuffer.prototype.slice = js_html_compat_ArrayBuffer.sliceImpl;
 }
 var Uint8Array = $global.Uint8Array || js_html_compat_Uint8Array._new;
+var $$tre = (typeof Symbol === "function" && Symbol.for && Symbol.for("react.element")) || 0xeac7;
+Main.serverRoot = "";
+Main.apiRoot = Main.serverRoot + "/api";
 Main.console = window.console;
 haxe_crypto_Base64.CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 haxe_crypto_Base64.BYTES = haxe_io_Bytes.ofString(haxe_crypto_Base64.CHARS);
 js_Boot.__toStr = ({ }).toString;
 js_html_compat_Uint8Array.BYTES_PER_ELEMENT = 1;
-stores_UserProfile.changed = new Event();
 stores_Authenticate.changed = new Event();
 stores_Authenticate.lock = (function($this) {
 	var $r;
-	var l = new Auth0Lock("zLh4kYC43212ipPZS4XM59XHcONzroWn","fuzzywuzzie.auth0.com",{ allowSignUp : true, container : stores_Authenticate.get_lockContainerID(), theme : { logo : "/logo.png", primaryColor : "#e91e63"}, languageDictionary : { title : "wysh"}, auth : { params : { scope : "openid email"}}});
+	var l = new Auth0Lock(null,null,{ allowSignUp : true, container : stores_Authenticate.get_lockContainerID(), theme : { logo : "/logo.png", primaryColor : "#e91e63"}, languageDictionary : { title : "wysh"}, auth : { params : { scope : "openid email"}}});
 	l.on("authenticated",stores_Authenticate.onAuthenticated);
 	l.on("authorization_error",stores_Authenticate.onUnauthorized);
 	$r = l;
@@ -826,8 +763,5 @@ stores_Authenticate.authenticated = false;
 stores_Authenticate.unauthorized = false;
 views_App.displayName = "App";
 views_Auth0Lock.displayName = "Auth0Lock";
-views_NavBar.displayName = "NavBar";
 Main.main();
 })(typeof window != "undefined" ? window : typeof global != "undefined" ? global : typeof self != "undefined" ? self : this);
-
-//# sourceMappingURL=app.js.map
