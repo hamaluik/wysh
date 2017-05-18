@@ -33,16 +33,13 @@ class App extends ReactComponentOfState<AppState> {
     }
 
     private function updateBackground():Void {
-        Main.console.log("updating background");
         if(!state.authenticated) {
             if(!js.Browser.document.body.classList.contains('cyan')) {
-                Main.console.log("adding cyan");
                 js.Browser.document.body.classList.add('cyan');
             }
         }
         else {
             if(js.Browser.document.body.classList.contains('cyan')) {
-                Main.console.log("removing cyan");
                 js.Browser.document.body.classList.remove('cyan');
             }
         }
@@ -54,19 +51,54 @@ class App extends ReactComponentOfState<AppState> {
 
     override public function render():ReactElement {
         return
-            React.createElement("div", { className: "container" }, renderContents());
+            React.createElement("div", {},
+                renderNav(),
+                React.createElement("div", { className: "container" },
+                    renderContents()
+                )
+            );
+    }
+
+    private function renderNav():Array<ReactElement> {
+        var nav:Array<ReactElement> = new Array<ReactElement>();
+
+        if(state.authenticated) {
+            nav.push(
+                React.createElement("nav", {},
+                    React.createElement("div", { className: "nav-wrapper row"},
+                        React.createElement("div", { className: "col s12" },
+                            React.createElement("a", { href: "#", className: "brand-logo" }, "wysh"),
+                            React.createElement("ul", { className: "right" },
+                                React.createElement("li", {},
+                                    React.createElement("a", { href: "#", onClick: logout },
+                                        React.createElement("i", { className: "material-icons left" }, "exit_to_app"),
+                                        "Log Out"
+                                    )
+                                )
+                            )
+                        )
+                    )
+                )
+            );
+        }
+
+        return nav;
     }
 
     private function renderContents():Array<ReactElement> {
         var contents:Array<ReactElement> = new Array<ReactElement>();
 
         if(!state.authenticated) {
-            contents.push(React.createElement(Login, {}));
+            contents.push(React.createElement(Auth0Lock));
         }
         else {
             contents.push(React.createElement("p", {}, "Logged in!"));
         }
 
         return contents;
+    }
+
+    private function logout():Void {
+        Authenticate.logout();
     }
 }

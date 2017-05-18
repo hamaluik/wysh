@@ -10,7 +10,7 @@ class Main {
     public static var console:Console = Browser.console;
 
     public static function main() {
-        stores.Authenticate.initialize();
+        stores.Authenticate.check();
         ReactDOM.render(react.React.createElement(App, {}), Browser.document.body);
     }
 }
