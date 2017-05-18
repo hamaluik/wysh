@@ -75,6 +75,19 @@ class NavBar extends ReactComponentOfState<NavBarState> {
                         )
                     ),
                     React.createElement("ul", { className: "side-nav", id: "main-side-nav" },
+                        React.createElement("li", { className: "userView"},
+                            React.createElement("div", { className:"background pink"}
+                            ),
+                            React.createElement("a", {},
+                                renderAvatar()
+                            ),
+                            React.createElement("a", {},
+                                React.createElement("span", { className: "white-text name" }, UserProfile.profile.name)
+                            ),
+                            React.createElement("a", {},
+                                React.createElement("span", { className: "white-text email" }, UserProfile.profile.email)
+                            )
+                        ),
                         React.createElement("li", {},
                             React.createElement("a", { href: "#", onClick: logout },
                                 React.createElement("i", { className: "material-icons left" }, "exit_to_app"),
@@ -89,11 +102,7 @@ class NavBar extends ReactComponentOfState<NavBarState> {
     private function renderAvatar():Array<ReactElement> {
         if(state.avatarURL != null) {
             return [
-                React.createElement("li", {},
-                    React.createElement("a", {},
-                        React.createElement("img", { className: "circle navbar-avatar", src: state.avatarURL })
-                    )
-                )
+                React.createElement("img", { className: "circle navbar-avatar", src: state.avatarURL })
             ];
         }
         return [];

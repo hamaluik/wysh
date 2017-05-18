@@ -767,18 +767,24 @@ views_NavBar.prototype = $extend(React.Component.prototype,{
 		var tmp4 = React.createElement("a",{ href : "#", onClick : $bind(this,this.logout)},tmp3,"Log Out");
 		var tmp5 = React.createElement("li",{ },tmp4);
 		var tmp6 = React.createElement("ul",{ className : "right hide-on-med-and-down"},tmp5);
-		var tmp7 = React.createElement("i",{ className : "material-icons left"},"exit_to_app");
-		var tmp8 = React.createElement("a",{ href : "#", onClick : $bind(this,this.logout)},tmp7,"Log Out");
-		var tmp9 = React.createElement("li",{ },tmp8);
-		var tmp10 = React.createElement("ul",{ className : "side-nav", id : "main-side-nav"},tmp9);
-		var tmp11 = React.createElement("div",{ className : "nav-wrapper container"},tmp,tmp2,tmp6,tmp10);
-		return React.createElement("nav",{ className : "z-depth-3"},tmp11);
+		var tmp7 = React.createElement("div",{ className : "background pink"});
+		var tmp8 = this.renderAvatar();
+		var tmp9 = React.createElement("a",{ },tmp8);
+		var tmp10 = React.createElement("span",{ className : "white-text name"},stores_UserProfile.get_profile().name);
+		var tmp11 = React.createElement("a",{ },tmp10);
+		var tmp12 = React.createElement("span",{ className : "white-text email"},stores_UserProfile.get_profile().email);
+		var tmp13 = React.createElement("a",{ },tmp12);
+		var tmp14 = React.createElement("li",{ className : "userView"},tmp7,tmp9,tmp11,tmp13);
+		var tmp15 = React.createElement("i",{ className : "material-icons left"},"exit_to_app");
+		var tmp16 = React.createElement("a",{ href : "#", onClick : $bind(this,this.logout)},tmp15,"Log Out");
+		var tmp17 = React.createElement("li",{ },tmp16);
+		var tmp18 = React.createElement("ul",{ className : "side-nav", id : "main-side-nav"},tmp14,tmp17);
+		var tmp19 = React.createElement("div",{ className : "nav-wrapper container"},tmp,tmp2,tmp6,tmp18);
+		return React.createElement("nav",{ className : "z-depth-3"},tmp19);
 	}
 	,renderAvatar: function() {
 		if(this.state.avatarURL != null) {
-			var tmp = React.createElement("img",{ className : "circle navbar-avatar", src : this.state.avatarURL});
-			var tmp1 = React.createElement("a",{ },tmp);
-			return [React.createElement("li",{ },tmp1)];
+			return [React.createElement("img",{ className : "circle navbar-avatar", src : this.state.avatarURL})];
 		}
 		return [];
 	}
