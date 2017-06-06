@@ -1,0 +1,10 @@
+-cp src/server
+
+-lib tink_http
+-lib tink_tcp
+-lib tink_runloop
+
+-lib record-macros
+
+-main Main
+-neko bin/wysh.n

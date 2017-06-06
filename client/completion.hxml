@@ -1,9 +1,0 @@
--cp client/src
--main Main
-
--D react_global
-
--lib react
--lib promhx
-
--js public/app.js

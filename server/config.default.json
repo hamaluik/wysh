@@ -1,8 +1,0 @@
-{
-    "port": 8080,
-    "database": "./wysh.db",
-    "webclient": "../client/public",
-    "auth": {
-        "secret": "some super hidden secret"
-    }
-}
