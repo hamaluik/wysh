@@ -5,6 +5,8 @@
 -lib tink_runloop
 
 -lib record-macros
+-lib jwt
 
 -main Main
 -neko bin/wysh.n
+
