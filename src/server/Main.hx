@@ -5,8 +5,27 @@ import sys.db.Connection;
 import sys.db.TableCreate;
 
 import models.User;
+import models.Group;
+import models.UserGroup;
 
 class Main {
+    static function ensureTablesExist():Void {
+        if(!TableCreate.exists(User.manager)) {
+            Log.trace('creating user table');
+            TableCreate.create(User.manager);
+        }
+
+        if(!TableCreate.exists(Group.manager)) {
+            Log.trace('creating group table');
+            TableCreate.create(Group.manager);
+        }
+
+        if(!TableCreate.exists(UserGroup.manager)) {
+            Log.trace('creating usergroup table');
+            TableCreate.create(UserGroup.manager);
+        }
+    }
+
     static function main() {
         // prepare the database
         Log.info('initializing database');
@@ -15,10 +34,7 @@ class Main {
         Manager.cnx = c;
 
         // create tables!
-        if(!TableCreate.exists(User.manager)) {
-            Log.trace('creating user table');
-            TableCreate.create(User.manager);
-        }
+        ensureTablesExist();
 
         // spin up the server
         var container = new TcpContainer(8080);
