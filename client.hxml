@@ -1,0 +1,7 @@
+-cp src/common
+-cp src/client
+
+-lib mithril
+
+-main Main
+-js bin/public/app.js

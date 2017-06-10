@@ -1,6 +1,4 @@
 -cp src/common
---each
-
 -cp src/server
 
 -lib tink_http
@@ -12,12 +10,3 @@
 
 -main Main
 -neko bin/wysh.n
-
---next
-
--cp src/client
-
--lib mithril
-
--main Main
--js bin/public/app.js
