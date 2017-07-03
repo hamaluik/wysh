@@ -1,24 +1,35 @@
 import js.html.Console;
 import mithril.M;
 
-class Example implements Mithril {
+class Root implements Mithril {
     public function new(){}
 
+
+    public function onmatch(params : haxe.DynamicAccess<String>, url : String) {
+        if(!Main.authenticated) {
+            M.routeSet('/login');
+        }
+        else {
+            M.routeSet('/dashboard');
+        }
+
+        return null;
+    }
+
     public function view() [
-        m("main", [
-            m("h1", { className: "title" }, "My first app"),
-            m("button", {
-                onclick: function() { Main.clicks++; }
-            }, '${Main.clicks} clicks')
-        ])
+        m("main", "root")
     ];
 }
 
 class Main {
     public static var console:Console;
-    public static var clicks:Int = 0;
+    public static var authenticated:Bool = false;
 
     public static function main():Void {
-        M.mount(js.Browser.document.body, new Example());
+        M.route(js.Browser.document.body, '/', {
+            '/': new Root(),
+            '/login': new views.Login(),
+            '/dashboard': new views.Dashboard()
+        });
     }
 }

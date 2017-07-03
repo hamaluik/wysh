@@ -7,6 +7,7 @@ import sys.db.TableCreate;
 import models.User;
 import models.Group;
 import models.UserGroup;
+import models.Invitation;
 
 class Main {
     static function ensureTablesExist():Void {
@@ -23,6 +24,11 @@ class Main {
         if(!TableCreate.exists(UserGroup.manager)) {
             Log.trace('creating usergroup table');
             TableCreate.create(UserGroup.manager);
+        }
+
+        if(!TableCreate.exists(Invitation.manager)) {
+            Log.trace('creating invitation table');
+            TableCreate.create(Invitation.manager);
         }
     }
 
