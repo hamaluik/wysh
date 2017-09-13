@@ -7,6 +7,8 @@
 
 -lib record-macros
 -lib jwt
+-lib hashids
+-lib yaml
 
 -main Main
 -neko bin/wysh.n

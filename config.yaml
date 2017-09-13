@@ -1,0 +1,5 @@
+oauth2:
+  redirecturi: http://localhost:8080/auth/redirect
+  clientid: derp
+hid:
+  salt: Let's go to the mall!
