@@ -1,3 +1,5 @@
+import haxe.CallStack;
+import haxe.CallStack.StackItem;
 import tink.http.Handler;
 import tink.http.containers.TcpContainer;
 import tink.http.Response;
@@ -21,7 +23,15 @@ import models.Followers;
 import routes.Root;
 
 class Server {
-    public static var hids:Hashids;
+    public static var listHID:Hashids;
+    public static var itemHID:Hashids;
+    public static var config:Config;
+
+    public static function extractID(hash:String, hid:Hashids):Int {
+        var ids:Array<Int> = hid.decode(hash.toLowerCase());
+        if(ids.length != 1) throw 'Invalid list id: $hash!';
+        return ids[0];
+    }
 
     static function ensureTablesExist():Void {
         if(!TableCreate.exists(User.manager)) {
@@ -44,10 +54,11 @@ class Server {
 
     static function main() {
         // load the config
-        var config:Dynamic = Yaml.read("config.yaml", Parser.options().useObjects());
+        config = Yaml.read("config.yaml", Parser.options().useObjects());
 
         // prepare the Hashids
-        hids = new Hashids(config.hid.salt, 6, "abcdefghijklmnopqrstuvwxyz012345679");
+        listHID = new Hashids(config.hid.listsalt, 6, "abcdefghijklmnopqrstuvwxyz012345679");
+        itemHID = new Hashids(config.hid.itemsalt, 6, "abcdefghijklmnopqrstuvwxyz012345679");
 
         // prepare the database
         Log.info('initializing database');
@@ -61,7 +72,20 @@ class Server {
         var root:Root = new Root();
         var router = new Router<JWTSession, Root>(root);
 
-        var handler:Handler = function(req) return router.route(Context.authed(req, JWTSession.new)).recover(OutgoingResponse.reportError);
+        var handler:Handler = function(req) {
+            try {
+                return router.route(Context.authed(req, JWTSession.new)).recover(OutgoingResponse.reportError);
+            }
+            catch(e:Dynamic) {
+                var stack:Array<StackItem> = CallStack.exceptionStack();
+                Log.error('Unhandled exception: ' + Std.string(e));
+                Log.error(CallStack.toString(stack));
+
+                var ft:tink.core.Future.FutureTrigger<OutgoingResponse> = new tink.core.Future.FutureTrigger<OutgoingResponse>();
+                ft.trigger(new OutgoingResponse(new ResponseHeader(500, 'Internal Error', null), ''));
+                return ft.asFuture();
+            }
+        }
 
         var container = new TcpContainer(8080);
         Log.info('listening on port 8080!');

@@ -6,10 +6,9 @@
 -lib tink_web
 
 -lib record-macros
--lib jwt
 -lib hashids
 -lib yaml
+-lib jwt
 
 -main Server
 -neko bin/wysh.n
-#-cpp bin/wysh
