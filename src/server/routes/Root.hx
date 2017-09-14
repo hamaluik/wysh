@@ -7,7 +7,7 @@ import tink.web.routing.*;
 class Root {
     public function new() {}
 
-    //@:restrict(true)
+    @:restrict(user.id == 42)
     @:sub public function lists() {
         return new Lists();
     }

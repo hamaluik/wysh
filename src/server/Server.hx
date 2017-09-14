@@ -1,3 +1,4 @@
+import tink.http.Handler;
 import tink.http.containers.TcpContainer;
 import tink.http.Response;
 import tink.web.routing.*;
@@ -57,11 +58,13 @@ class Server {
         // create tables!
         ensureTablesExist();
 
+        var root:Root = new Root();
+        var router = new Router<JWTSession, Root>(root);
+
+        var handler:Handler = function(req) return router.route(Context.authed(req, JWTSession.new)).recover(OutgoingResponse.reportError);
+
         var container = new TcpContainer(8080);
-        var router = new Router<Root>(new Root());
         Log.info('listening on port 8080!');
-        container.run(function(req) {
-            return router.route(Context.authed(req, Session.new)).recover(OutgoingResponse.reportError);
-        });
+        container.run(handler);
     }
 }

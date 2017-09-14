@@ -9,7 +9,7 @@ class User {
     public function new(id:Int) this.id = id;
 }
 
-class Session {
+class JWTSession {
     var header:IncomingRequestHeader;
 
     public function new(header:IncomingRequestHeader) {
@@ -19,7 +19,7 @@ class Session {
     public function getUser():Promise<Option<User>> {
         return switch header.byName('authorization') {
             case Success(auth): {
-                return Some(new User(42));
+                return Some(new User(Std.parseInt(auth)));
             }
 
             case Failure(e): e;
