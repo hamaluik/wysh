@@ -1,14 +1,26 @@
 package;
 
 typedef Config = {
+    public var siteroot:String;
+
     public var oauth2:{
-        public var redirecturi:String;
-        public var clientid:String;
+        public var google:{
+            public var id:String;
+            public var secret:String;
+        };
+        public var facebook:{
+            public var id:String;
+            public var secret:String;
+        };
     };
 
     public var hid:{
-        public var listsalt:String;
-        public var itemsalt:String;
+        public var minlength:Int;
+        public var alphabet:String;
+        public var salts:{
+            public var list:String;
+            public var item:String;
+        }
     };
 
     public var jwt:{

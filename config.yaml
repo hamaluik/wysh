@@ -1,8 +1,0 @@
-oauth2:
-  redirecturi: http://localhost:8080/auth/redirect
-  clientid: derp
-hid:
-  listsalt: Let's go to the mall!
-  itemsalt: Jabba the Hut
-jwt:
-  secret: I like pickles!

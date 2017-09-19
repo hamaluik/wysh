@@ -57,8 +57,8 @@ class Server {
         config = Yaml.read("config.yaml", Parser.options().useObjects());
 
         // prepare the Hashids
-        listHID = new Hashids(config.hid.listsalt, 6, "abcdefghijklmnopqrstuvwxyz012345679");
-        itemHID = new Hashids(config.hid.itemsalt, 6, "abcdefghijklmnopqrstuvwxyz012345679");
+        listHID = new Hashids(config.hid.salts.list, config.hid.minlength, config.hid.alphabet);
+        itemHID = new Hashids(config.hid.salts.item, config.hid.minlength, config.hid.alphabet);
 
         // prepare the database
         Log.info('initializing database');

@@ -1,0 +1,16 @@
+siteroot: "http://lvh.me:8080/"
+hid:
+  minlength: 6
+  alphabet: "abcdefghijklmnopqrstuvwxyz012345679"
+  salts:
+    list: "72046724-2632-49ff-8c06-a7146f6c6633"
+    item: "8946d47d-8fa5-4cb0-ae85-3ddead2cb867"
+oauth2:
+  google:
+    id: "?"
+    secret: "?"
+  facebook:
+    id: "?"
+    secret: "?"
+jwt:
+  secret: "503bb22c-3f63-49eb-b7b5-f995b3524c3c"
