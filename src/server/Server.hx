@@ -87,8 +87,8 @@ class Server {
             }
         }
 
-        var container = new TcpContainer(8080);
-        Log.info('listening on port 8080!');
+        var container = new TcpContainer(config.port);
+        Log.info('listening on port ${config.port}!');
         container.run(handler);
     }
 }

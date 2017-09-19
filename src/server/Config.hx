@@ -2,6 +2,7 @@ package;
 
 typedef Config = {
     public var siteroot:String;
+    public var port:Int;
 
     public var oauth2:{
         public var google:{
