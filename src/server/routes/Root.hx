@@ -11,4 +11,8 @@ class Root {
     @:sub public function lists() {
         return new Lists();
     }
+
+    @:sub public function oauth2() {
+        return new OAuth2();
+    }
 }
