@@ -52,6 +52,13 @@ class OAuth2 {
                 state = 'auth-google';
             }
 
+            case 'facebook': {
+                urlString = 'https://www.facebook.com/v2.10/dialog/oauth';
+                clientID = Server.config.oauth2.facebook.id;
+                scope = 'email public_profile';
+                state = 'auth-facebook';
+            }
+
             case _: return new NotFoundResponse(service);
         }
 
@@ -83,6 +90,13 @@ class OAuth2 {
                 clientSecret = Server.config.oauth2.google.secret;
             }
 
+            case 'auth-facebook': {
+                host = 'graph.facebook.com';
+                uri = '/v2.10/oauth/access_token';
+                clientID = Server.config.oauth2.facebook.id;
+                clientSecret = Server.config.oauth2.facebook.secret;
+            }
+
             case _: return Future.sync(new NotFoundResponse(query.state));
         }
 
@@ -99,37 +113,49 @@ class OAuth2 {
             new OutgoingRequestHeader(POST, new tink.url.Host(host), uri, headers),
             body
         ));
-        return req.next(function(res:IncomingResponse):Promise<Bytes> {
+        var derp = req.next(function(res:IncomingResponse):Promise<Bytes> {
             return res.body.all();
         })
-        .next(function(raw:Bytes) {
-            var result:AccessResult = haxe.Json.parse(raw.toString());
-            var payload:GoogleIDPayload = JWT.extract(result.id_token);
 
-            var users:List<models.User> = models.User.manager.search($email == payload.email);
-            var user:models.User = if(users.length < 1) {
-                // create a new user!
-                var u:models.User = new models.User();
-                u.name = payload.given_name + ' ' + payload.family_name;
-                u.email = payload.email;
-                u.insert();
-                Log.info('Created new user: ${u.name} <${u.email}>');
-                u;
-            }
-            else {
-                var u:models.User = users.first();
-                Log.info('Google user logged in: ${u.name} <${u.email}>');
-                u;
-            }
+        return switch(query.state.toLowerCase()) {
+            case 'auth-google':
+                derp.next(function(raw:Bytes) {
+                    var result:AccessResult = haxe.Json.parse(raw.toString());
+                    var payload:GoogleIDPayload = JWT.extract(result.id_token);
 
-            // TODO: some sort of redirect a la Auth0
-            var token:String = JWT.sign({
-                id: user.id
-            }, Server.config.jwt.secret);
+                    var users:List<models.User> = models.User.manager.search($email == payload.email);
+                    var user:models.User = if(users.length < 1) {
+                        // create a new user!
+                        var u:models.User = new models.User();
+                        u.name = payload.given_name + ' ' + payload.family_name;
+                        u.email = payload.email;
+                        u.insert();
+                        Log.info('Created new user: ${u.name} <${u.email}>');
+                        u;
+                    }
+                    else {
+                        var u:models.User = users.first();
+                        Log.info('Google user logged in: ${u.name} <${u.email}>');
+                        u;
+                    }
 
-            return new response.JsonResponse({
-                token: token
-            });
-        });
+                    // TODO: some sort of redirect a la Auth0
+                    var token:String = JWT.sign({
+                        id: user.id
+                    }, Server.config.jwt.secret);
+
+                    return new response.JsonResponse({
+                        token: token
+                    });
+                });
+
+            case 'auth-facebook':
+                derp.next(function(raw:Bytes) {
+                    var result:Dynamic = haxe.Json.parse(raw.toString());
+                    return new response.JsonResponse(result);
+                })
+
+            case _: Future.sync(new response.NotFoundResponse(query.state));
+        }
     }
 }
