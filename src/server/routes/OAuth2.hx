@@ -20,20 +20,6 @@ import response.NotFoundResponse;
 
 using StringTools;
 
-typedef AccessResult = {
-    var access_token:String;
-    var token_type:String;
-    var expires_in:Int;
-    var id_token:String;
-};
-
-typedef GoogleIDPayload = {
-    var email:String;
-    var given_name:String;
-    var family_name:String;
-    var picture:String;
-};
-
 class OAuth2 {
     public function new() {}
     
@@ -48,14 +34,14 @@ class OAuth2 {
             case 'google': {
                 urlString = 'https://accounts.google.com/o/oauth2/v2/auth';
                 clientID = Server.config.oauth2.google.id;
-                scope = 'https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email';
+                scope = 'openid profile';
                 state = 'auth-google';
             }
 
             case 'facebook': {
                 urlString = 'https://www.facebook.com/v2.10/dialog/oauth';
                 clientID = Server.config.oauth2.facebook.id;
-                scope = 'email public_profile';
+                scope = 'public_profile';
                 state = 'auth-facebook';
             }
 
@@ -68,6 +54,7 @@ class OAuth2 {
         urlString += '&scope=${scope.urlEncode()}';
         urlString += '&access_type=offline';
         urlString += '&state=${state.urlEncode()}';
+        urlString += '&nonce=${Math.random()}';
         var url:tink.Url = urlString;
         return url;
     }
@@ -109,33 +96,42 @@ class OAuth2 {
         headers.push(new HeaderField(HeaderName.ContentLength, body.length));
 
         var client = new SecureSocketClient();
-        var req:Promise<IncomingResponse> = client.request(new OutgoingRequest(
+        var req:Promise<Bytes> = client.request(new OutgoingRequest(
             new OutgoingRequestHeader(POST, new tink.url.Host(host), uri, headers),
             body
-        ));
-        var derp = req.next(function(res:IncomingResponse):Promise<Bytes> {
+        )).next(function(res:IncomingResponse):Promise<Bytes> {
             return res.body.all();
-        })
+        });
 
         return switch(query.state.toLowerCase()) {
             case 'auth-google':
-                derp.next(function(raw:Bytes) {
-                    var result:AccessResult = haxe.Json.parse(raw.toString());
-                    var payload:GoogleIDPayload = JWT.extract(result.id_token);
+                req.next(function(raw:Bytes):Promise<Response> {
+                    var result:Dynamic = haxe.Json.parse(raw.toString());
+                    var payload:Dynamic = JWT.extract(result.id_token);
+                    var sub:String = payload.sub;
 
-                    var users:List<models.User> = models.User.manager.search($email == payload.email);
+                    // verify the claims of the token
+                    if(payload.iss != 'https://accounts.google.com' || payload.aud != Server.config.oauth2.google.id)
+                        return new response.UnauthorizedResponse();
+
+                    // TODO: verify using Google's publickey
+
+                    var users:List<models.User> = models.User.manager.search($googleID == sub);
                     var user:models.User = if(users.length < 1) {
                         // create a new user!
                         var u:models.User = new models.User();
-                        u.name = payload.given_name + ' ' + payload.family_name;
-                        u.email = payload.email;
+                        u.name = payload.name;
+                        u.googleID = payload.sub;
+                        u.picture = payload.picture;
                         u.insert();
-                        Log.info('Created new user: ${u.name} <${u.email}>');
+                        Log.info('Created new Google user: ${u.name}');
                         u;
                     }
                     else {
                         var u:models.User = users.first();
-                        Log.info('Google user logged in: ${u.name} <${u.email}>');
+                        u.name = payload.name;
+                        u.picture = payload.picture;
+                        Log.info('Google user logged in: ${u.name}');
                         u;
                     }
 
@@ -150,10 +146,52 @@ class OAuth2 {
                 });
 
             case 'auth-facebook':
-                derp.next(function(raw:Bytes) {
+                req.next(function(raw:Bytes):Promise<IncomingResponse> {
                     var result:Dynamic = haxe.Json.parse(raw.toString());
-                    return new response.JsonResponse(result);
-                })
+                    var accessToken:String = result.access_token;
+
+                    return client.request(new OutgoingRequest(
+                        new OutgoingRequestHeader(
+                            GET,
+                            new tink.url.Host('graph.facebook.com'),
+                            '/v2.5/me?fields=id,name,picture&access_token=${accessToken.urlEncode()}'
+                        ), ''
+                    ));
+                }).next(function(res:IncomingResponse):Promise<Bytes> {
+                    return res.body.all();
+                }).next(function(raw:Bytes):Promise<Response> {
+                    var result:Dynamic = haxe.Json.parse(raw.toString());
+                    var fbID:String = result.id;
+
+                    var users:List<models.User> = models.User.manager.search($facebookID == fbID);
+                    var user:models.User = if(users.length < 1) {
+                        // create a new user!
+                        var u:models.User = new models.User();
+                        u.name = result.name;
+                        u.facebookID = fbID;
+                        u.picture = result.picture.data.url;
+                        u.insert();
+                        Log.info('Created new Facebook user: ${u.name}');
+                        u;
+                    }
+                    else {
+                        var u:models.User = users.first();
+                        u.name = result.name;
+                        if(!result.picture.data.is_silhouette)
+                            u.picture = result.picture.data.url;
+                        Log.info('Facebook user logged in: ${u.name}');
+                        u;
+                    }
+
+                    // TODO: some sort of redirect a la Auth0
+                    var token:String = JWT.sign({
+                        id: user.id
+                    }, Server.config.jwt.secret);
+
+                    return new response.JsonResponse({
+                        token: token
+                    });
+                });
 
             case _: Future.sync(new response.NotFoundResponse(query.state));
         }
