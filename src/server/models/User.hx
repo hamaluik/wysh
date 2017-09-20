@@ -7,5 +7,10 @@ import sys.db.Types;
 class User extends Object {
     public var id:SId;
     public var name:SString<255>;
-    public var email:SString<255>;
+    public var googleID:Null<SString<255>>;
+    public var facebookID:Null<SString<255>>;
+    public var picture:Null<SSmallText>;
+
+    public var createdOn:SDateTime;
+    public var modifiedOn:SDateTime;
 }

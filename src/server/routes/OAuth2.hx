@@ -123,14 +123,20 @@ class OAuth2 {
                         u.name = payload.name;
                         u.googleID = payload.sub;
                         u.picture = payload.picture;
+                        u.createdOn = Date.now();
+                        u.modifiedOn = Date.now();
                         u.insert();
                         Log.info('Created new Google user: ${u.name}');
                         u;
                     }
                     else {
                         var u:models.User = users.first();
-                        u.name = payload.name;
-                        u.picture = payload.picture;
+                        if(u.name != payload.name || u.picture != payload.picture) {
+                            u.name = payload.name;
+                            u.picture = payload.picture;
+                            u.modifiedOn = Date.now();
+                            u.update();
+                        }
                         Log.info('Google user logged in: ${u.name}');
                         u;
                     }
@@ -170,15 +176,21 @@ class OAuth2 {
                         u.name = result.name;
                         u.facebookID = fbID;
                         u.picture = result.picture.data.url;
+                        u.createdOn = Date.now();
+                        u.modifiedOn = Date.now();
                         u.insert();
                         Log.info('Created new Facebook user: ${u.name}');
                         u;
                     }
                     else {
                         var u:models.User = users.first();
-                        u.name = result.name;
-                        if(!result.picture.data.is_silhouette)
-                            u.picture = result.picture.data.url;
+                        if(u.name != result.name || (!result.picture.data.is_silhouette && u.picture != result.picture.data.url)) {
+                            u.name = result.name;
+                            if(!result.picture.data.is_silhouette)
+                                u.picture = result.picture.data.url;
+                            u.modifiedOn = Date.now();
+                            u.update();
+                        }
                         Log.info('Facebook user logged in: ${u.name}');
                         u;
                     }

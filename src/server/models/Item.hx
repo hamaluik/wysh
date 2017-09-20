@@ -11,4 +11,10 @@ class Item extends Object {
     public var url:Null<SSmallText>;
     public var comments:Null<SSmallText>;
     public var image_path:Null<SSmallText>;
+    
+    @:relation(pid) public var purchaser:Null<User>;
+    public var purchasedOn:Null<SDateTime>;
+
+    public var createdOn:SDateTime;
+    public var modifiedOn:SDateTime;
 }

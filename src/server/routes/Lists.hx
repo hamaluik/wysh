@@ -11,6 +11,7 @@ using Lambda;
 class Lists {
     public function new() {}
 
+    // TODO: create list!
     @:post('/') public function newList(body:{}):Response {
         return new UnauthorizedResponse();
     }
@@ -60,6 +61,8 @@ class Lists {
         item.url = body.url;
         item.comments = body.comments;
         item.image_path = body.image_path;
+        item.createdOn = Date.now();
+        item.modifiedOn = Date.now();
         item.insert();
 
         return new JsonResponse({
