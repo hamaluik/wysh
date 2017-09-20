@@ -1,4 +1,6 @@
-siteroot: "http://lvh.me:8080"
+root:
+  client: "http://lvh.me:8000"
+  api: "http://lvh.me:8080"
 port: 8080
 hid:
   minlength: 6

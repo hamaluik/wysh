@@ -24,7 +24,7 @@ class OAuth2 {
     public function new() {}
     
     @:get('/login/$service') public function login(service:String):Response {
-        var redirectURI:String = Server.config.siteroot + '/api/oauth2/redirect';
+        var redirectURI:String = Server.config.root.api + '/api/oauth2/redirect';
 
         var urlString:String = null;
         var clientID:String = null;
@@ -63,7 +63,7 @@ class OAuth2 {
         var headers:Array<HeaderField> = new Array<HeaderField>();
         headers.push(new HeaderField(HeaderName.ContentType, 'application/x-www-form-urlencoded'));
 
-        var redirectURI:String = Server.config.siteroot + '/api/oauth2/redirect';
+        var redirectURI:String = Server.config.root.api + '/api/oauth2/redirect';
         var host:String = null;
         var uri:String = null;
         var clientID:String = null;
@@ -145,7 +145,7 @@ class OAuth2 {
                         id: user.id
                     }, Server.config.jwt.secret);
 
-                    return new response.RedirectResponse(Server.config.siteroot + '#!/login/${token.urlEncode()}');
+                    return new response.RedirectResponse(Server.config.root.client + '#!/login/${token.urlEncode()}');
                 });
 
             case 'auth-facebook':
@@ -197,7 +197,7 @@ class OAuth2 {
                         id: user.id
                     }, Server.config.jwt.secret);
 
-                    return new response.RedirectResponse(Server.config.siteroot + '#!/login/${token.urlEncode()}');
+                    return new response.RedirectResponse(Server.config.root.client + '#!/login/${token.urlEncode()}');
                 });
 
             case _: Future.sync(new response.NotFoundResponse(query.state));

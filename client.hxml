@@ -1,0 +1,10 @@
+-cp src/common
+-cp src/client
+
+-lib mithril
+-lib jwt
+
+-debug
+
+-main Client
+-js bin/wysh.js
