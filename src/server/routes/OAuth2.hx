@@ -1,5 +1,6 @@
 package routes;
 
+import tink.core.Error;
 import haxe.crypto.Base64;
 import haxe.io.Bytes;
 
@@ -64,19 +65,7 @@ class OAuth2 {
         return url;
     }
 
-    private static function base64url_decode(s:String):Bytes {
-        var s64 = s.replace('-', '+').replace('_', '/');
-        s64 += switch(s64.length % 4) {
-            case 0: '';
-            case 1: '===';
-            case 2: '==';
-            case 3: '=';
-            case _: throw 'Illegal base64url string!';
-        }
-        return Base64.decode(s64);
-    }
-
-    @:get public function redirect(query:{code:String, state:String}):Future<Response> {
+    @:get public function redirect(query:{code:String, state:String}):Promise<Response> {
         var headers:Array<HeaderField> = new Array<HeaderField>();
         headers.push(new HeaderField(HeaderName.ContentType, 'application/x-www-form-urlencoded'));
 
@@ -97,8 +86,6 @@ class OAuth2 {
             case _: return Future.sync(new NotFoundResponse(query.state));
         }
 
-        var ft:FutureTrigger<Response> = new FutureTrigger<Response>();
-
         var body:String = 'code=${query.code.urlEncode()}';
         body += '&client_id=${clientID.urlEncode()}';
         body += '&client_secret=${clientSecret.urlEncode()}';
@@ -112,25 +99,37 @@ class OAuth2 {
             new OutgoingRequestHeader(POST, new tink.url.Host(host), uri, headers),
             body
         ));
-        req.next(function(res:IncomingResponse):Promise<Bytes> {
+        return req.next(function(res:IncomingResponse):Promise<Bytes> {
             return res.body.all();
         })
-        .next(function(raw:Bytes):Void {
+        .next(function(raw:Bytes) {
             var result:AccessResult = haxe.Json.parse(raw.toString());
-            
-            // parse the id_token
-            // TODO: incorporate this into the JWT library
-            var parts:Array<String> = result.id_token.split(".");
-            if(parts.length != 3) throw 'Invalid id_token!';
+            var payload:GoogleIDPayload = JWT.extract(result.id_token);
 
-            var p:String = base64url_decode(parts[1]).toString();
-            var payload:GoogleIDPayload = haxe.Json.parse(p);
+            var users:List<models.User> = models.User.manager.search($email == payload.email);
+            var user:models.User = if(users.length < 1) {
+                // create a new user!
+                var u:models.User = new models.User();
+                u.name = payload.given_name + ' ' + payload.family_name;
+                u.email = payload.email;
+                u.insert();
+                Log.info('Created new user: ${u.name} <${u.email}>');
+                u;
+            }
+            else {
+                var u:models.User = users.first();
+                Log.info('Google user logged in: ${u.name} <${u.email}>');
+                u;
+            }
 
-            // TODO: deal with account creation / issue JWT!
+            // TODO: some sort of redirect a la Auth0
+            var token:String = JWT.sign({
+                id: user.id
+            }, Server.config.jwt.secret);
 
-            ft.trigger(new response.JsonResponse(payload));
+            return new response.JsonResponse({
+                token: token
+            });
         });
-
-        return ft.asFuture();
     }
 }
