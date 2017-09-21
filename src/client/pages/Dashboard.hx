@@ -20,18 +20,31 @@ class Dashboard implements Mithril {
     }
 
     public function render(vnode) {
-        return m('p', switch(AppState.profile.profile.value) {
-            case Loading: 'Loading profile...';
-            case Done(p): [
-                'Welcome to your dashboard, ${p.name}!',
-                m("button", { onclick: logout }, "Log Out")
-            ];
-            case Failed(e): 'We could not load your profile :(';
-        });
-    }
-
-    function logout() {
-        AppState.auth.clearStoredToken();
-        M.routeSet('/');
+        return [
+            m(components.NavBar),
+            m('section.section',
+                m('.container', [
+                    m('.columns', [
+                        m('.column.is-two-thirds', [
+                            m('article.media', [
+                                m('span.icon.media-left', m('i.fa.fa-home')),
+                                m('.media-content', 'This is a news item!')
+                            ])
+                        ]),
+                        m('.column',
+                            m('nav.panel', [
+                                m('p.panel-heading', 'Wishlists'),
+                                m('p.panel-tabs', [
+                                    m('a.is-active', 'Mine'),
+                                    m('a', 'Others')
+                                ]),
+                                m('a.panel-block', 'birthday list'),
+                                m('a.panel-block', 'Christmas list')
+                            ])
+                        )
+                    ])
+                ])
+            )
+        ];
     }
 }

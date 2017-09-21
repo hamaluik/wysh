@@ -488,6 +488,47 @@ WebRequest.extract = function(xhr,options) {
 		return { code : xhr.status, message : xhr.responseText};
 	}
 };
+var components_NavBar = function() {
+	this.menuShowing = false;
+};
+components_NavBar.__name__ = true;
+components_NavBar.__interfaces__ = [mithril_Mithril];
+components_NavBar.view = function(vnode) {
+	if(arguments.length > 0 && arguments[0].tag != this) return arguments[0].tag.view.apply(arguments[0].tag, arguments);
+	var welcome;
+	var _g = tink_state__$State_State_$Impl_$.get_value(AppState.profile.profile);
+	switch(_g[1]) {
+	case 0:
+		welcome = null;
+		break;
+	case 1:
+		var profile = _g[2];
+		welcome = m.m("span.navbar-item","Welcome, " + profile.name + "!");
+		break;
+	case 2:
+		var error = _g[2];
+		welcome = null;
+		break;
+	}
+	var tmp = m.m("img",{ src : "res/wordmark.svg", width : 138, height : 28, alt : "wysh"});
+	var tmp1 = m.m("a.navbar-item",{ href : "/"},tmp);
+	var tmp2 = vnode.state.menuShowing ? ".is-active" : "";
+	var tmp3 = m.m("span");
+	var tmp4 = m.m("span");
+	var tmp5 = m.m("span");
+	var tmp6 = m.m(".navbar-brand",[tmp1,m.m("button.button.navbar-burger" + tmp2,{ onclick : function() {
+		vnode.state.menuShowing = !vnode.state.menuShowing;
+	}},[tmp3,tmp4,tmp5])]);
+	var tmp7 = m.m(".navbar-menu" + (vnode.state.menuShowing ? ".is-active" : ""),[m.m(".navbar-start"),m.m(".navbar-end",[welcome,m.m("a.navbar-item",{ onclick : components_NavBar.logout},"Sign Out")])]);
+	return m.m(".container",m.m("nav.navbar",{ role : "navigation"},[tmp6,tmp7]));
+};
+components_NavBar.logout = function() {
+	AppState.auth.clearStoredToken();
+	m.route.set("/", null, null);
+};
+components_NavBar.prototype = {
+	__class__: components_NavBar
+};
 var components_buttons_SignInFacebook = function() { };
 components_buttons_SignInFacebook.__name__ = true;
 components_buttons_SignInFacebook.__interfaces__ = [mithril_Mithril];
@@ -994,26 +1035,7 @@ pages_Dashboard.prototype = {
 		return null;
 	}
 	,render: function(vnode) {
-		var _g1 = tink_state__$State_State_$Impl_$.get_value(AppState.profile.profile);
-		var tmp;
-		switch(_g1[1]) {
-		case 0:
-			tmp = "Loading profile...";
-			break;
-		case 1:
-			var p = _g1[2];
-			tmp = ["Welcome to your dashboard, " + p.name + "!",m.m("button",{ onclick : $bind(this,this.logout)},"Log Out")];
-			break;
-		case 2:
-			var e = _g1[2];
-			tmp = "We could not load your profile :(";
-			break;
-		}
-		return m.m("p",tmp);
-	}
-	,logout: function() {
-		AppState.auth.clearStoredToken();
-		m.route.set("/", null, null);
+		return [m.m(components_NavBar),m.m("section.section",m.m(".container",[m.m(".columns",[m.m(".column.is-two-thirds",[m.m("article.media",[m.m("span.icon.media-left",m.m("i.fa.fa-home")),m.m(".media-content","This is a news item!")])]),m.m(".column",m.m("nav.panel",[m.m("p.panel-heading","Wishlists"),m.m("p.panel-tabs",[m.m("a.is-active","Mine"),m.m("a","Others")]),m.m("a.panel-block","birthday list"),m.m("a.panel-block","Christmas list")]))])]))];
 	}
 	,__class__: pages_Dashboard
 };
