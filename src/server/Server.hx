@@ -1,3 +1,4 @@
+import tink.http.Request.IncomingRequest;
 import haxe.CallStack;
 import haxe.CallStack.StackItem;
 import tink.http.Handler;
@@ -72,9 +73,9 @@ class Server {
         var root:Root = new Root();
         var router = new Router<JWTSession, Root>(root);
 
-        var handler:Handler = function(req) {
+        var handler:Handler = function(request:IncomingRequest) {
             try {
-                return router.route(Context.authed(req, JWTSession.new)).recover(OutgoingResponse.reportError);
+                return router.route(Context.authed(request, JWTSession.new)).recover(OutgoingResponse.reportError);
             }
             catch(e:Dynamic) {
                 var stack:Array<StackItem> = CallStack.exceptionStack();
@@ -86,6 +87,7 @@ class Server {
                 return ft.asFuture();
             }
         }
+        handler = handler.applyMiddleware(new CORS(['http://lvh.me:8000']));
 
         var container = new TcpContainer(config.port);
         Log.info('listening on port ${config.port}!');

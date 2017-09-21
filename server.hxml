@@ -1,6 +1,7 @@
 -cp src/common
 -cp src/server
 
+-lib tink_http_middleware
 -lib tink_tcp
 -lib tink_runloop
 -lib tink_web
