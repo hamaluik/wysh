@@ -1,9 +1,9 @@
+import tink.CoreApi.CallbackLink;
 import mithril.M;
 import js.html.Console;
 
 class Client implements Mithril {
     public static var console:Console = js.Browser.console;
-    public static var token:String = null;
 
     public static function main():Void {
         new Client();
@@ -19,7 +19,7 @@ class Client implements Mithril {
 
     public function onmatch(params:haxe.DynamicAccess<String>, url:String) {
         // if logged in, go to dashboard
-        if(token != null) M.routeSet('/dashboard');
+        if(Data.token.value != null) M.routeSet('/dashboard');
         return null;
     }
 

@@ -2,6 +2,7 @@
 -cp src/client
 
 -lib mithril
+-lib tink_state
 -lib jwt
 
 -debug
