@@ -384,12 +384,7 @@ Client.prototype = {
 		return null;
 	}
 	,render: function(vnode) {
-		var tmp = m.m("h1","Log In");
-		var tmp1 = m.m("a.button",{ href : "http://lvh.me:8080/api/oauth2/login/google"},"Sign in with Google");
-		var tmp2 = m.m("div",{ className : "column is-full"},[tmp1]);
-		var tmp3 = m.m("a.button",{ href : "http://lvh.me:8080/api/oauth2/login/facebook"},"Sign in with Facebook");
-		var tmp4 = m.m("div",{ className : "column is-full"},[tmp3]);
-		return [m.m("section.section.login",[m.m(".container",[m.m(".columns",[m.m("div.column.is-half.is-offset-one-quarter.content.box",[tmp,m.m("div",{ className : "columns is-multiline"},[tmp2,tmp4])])])])])];
+		return m.m("section.hero.is-fullheight.is-medium.is-primary.is-bold",m.m(".hero-body",m.m(".container",m.m(".columns.is-centered",m.m("article.card",m.m(".card-content",[m.m("h1.title",m.m("figure.image.is-2by1",m.m("img",{ src : "res/wordmark.svg"}))),m.m("p.login-button",m.m(components_buttons_SignInGoogle,{ uri : "http://lvh.me:8080/api/oauth2/login/google"})),m.m("p.login-button",m.m(components_buttons_SignInFacebook,{ uri : "http://lvh.me:8080/api/oauth2/login/facebook"}))]))))));
 	}
 	,__class__: Client
 };
@@ -492,6 +487,20 @@ WebRequest.extract = function(xhr,options) {
 	} else {
 		return { code : xhr.status, message : xhr.responseText};
 	}
+};
+var components_buttons_SignInFacebook = function() { };
+components_buttons_SignInFacebook.__name__ = true;
+components_buttons_SignInFacebook.__interfaces__ = [mithril_Mithril];
+components_buttons_SignInFacebook.view = function(vnode) {
+	if(arguments.length > 0 && arguments[0].tag != this) return arguments[0].tag.view.apply(arguments[0].tag, arguments);
+	return m.m("a.facebook-auth",{ href : vnode.attrs["uri"]},[m.m("span.facebook-icon"),m.m("span.facebook-text","Log in with Facebook")]);
+};
+var components_buttons_SignInGoogle = function() { };
+components_buttons_SignInGoogle.__name__ = true;
+components_buttons_SignInGoogle.__interfaces__ = [mithril_Mithril];
+components_buttons_SignInGoogle.view = function(vnode) {
+	if(arguments.length > 0 && arguments[0].tag != this) return arguments[0].tag.view.apply(arguments[0].tag, arguments);
+	return m.m("a.google-auth",{ href : vnode.attrs["uri"]},[m.m("span.google-icon"),m.m("span.google-text","Sign in with Google")]);
 };
 var haxe_StackItem = { __ename__ : true, __constructs__ : ["CFunction","Module","FilePos","Method","LocalFunction"] };
 haxe_StackItem.CFunction = ["CFunction",0];

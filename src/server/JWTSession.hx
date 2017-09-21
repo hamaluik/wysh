@@ -8,15 +8,12 @@ import jwt.JWT;
 
 typedef JWTPayload = {
     var id:Int;
-    var adm:Bool;
 };
 
 class User {
     public var id(default, null):Int;
-    public var admin(default, null):Bool;
-    public function new(id:Int, admin:Bool) {
+    public function new(id:Int) {
         this.id = id;
-        this.admin = admin;
     }
 }
 
@@ -37,8 +34,7 @@ class JWTSession {
                 var result:JWTResult<JWTPayload> = JWT.verify(parts[1], Server.config.jwt.secret);
                 return switch(result) {
                     case Valid(payload): {
-                        Log.trace('user authed with id=`${payload.id}`, adm=`${payload.adm}`');
-                        Some(new User(payload.id, payload.adm));
+                        Some(new User(payload.id));
                     }
 
                     case _: None;

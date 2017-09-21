@@ -25,25 +25,23 @@ class Client implements Mithril {
     }
 
     public function render(vnode) {
-        // TODO: actual social media login buttons!
-        return [
-            m("section.section.login", [
-                m(".container", [
-                    m(".columns", [
-                        m("div.column.is-half.is-offset-one-quarter.content.box", [
-                            m("h1", "Log In"),
-                            m("div", { className: "columns is-multiline" }, [
-                                m("div", { className: "column is-full" }, [
-                                    m("a.button", { href: "http://lvh.me:8080/api/oauth2/login/google" }, "Sign in with Google")
-                                ]),
-                                m("div", { className: "column is-full" }, [
-                                    m("a.button", { href: "http://lvh.me:8080/api/oauth2/login/facebook" }, "Sign in with Facebook")
-                                ])
+        return
+        m("section.hero.is-fullheight.is-medium.is-primary.is-bold",
+            m(".hero-body",
+                m(".container",
+                    m(".columns.is-centered",
+                        m("article.card",
+                            m(".card-content", [
+                                m("h1.title",
+                                    m("figure.image.is-2by1", m("img", { src: "res/wordmark.svg" }))
+                                ),
+                                m("p.login-button", m(components.buttons.SignInGoogle, { uri: "http://lvh.me:8080/api/oauth2/login/google" })),
+                                m("p.login-button", m(components.buttons.SignInFacebook, { uri: "http://lvh.me:8080/api/oauth2/login/facebook" })),
                             ])
-                        ])
-                    ])
-                ])
-            ])
-        ];
+                        )
+                    )
+                )
+            )
+        );
     }
 }

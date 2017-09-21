@@ -5,7 +5,7 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0"/>
         <title>wysh</title>
-        <link rel="stylesheet" href="https://unpkg.com/bulma@0.5.3/css/bulma.css" integrity="sha384-2h45s9SLAQTTmsubFwV+o3oe9+tWoaPFcr5BCom1Toit2PtclaZl7wuBocsbPFZ2" crossorigin="anonymous">
+        <link rel="stylesheet" href="https://unpkg.com/bulma@0.5.3/css/bulma.css" integrity="sha384-2h45s9SLAQTTmsubFwV+o3oe9+tWoaPFcr5BCom1Toit2PtclaZl7wuBocsbPFZ2" crossorigin="anonymous"/>
         <link rel="stylesheet" href="https://unpkg.com/font-awesome@4.7.0/css/font-awesome.min.css" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous" />
         <style>
             body {
@@ -13,16 +13,83 @@
                 min-height: 100vh;
                 flex-direction: column;
             }
-            
-            .section {
-                flex: 1;
+
+            .login-button {
+                padding-bottom: 16px;
             }
-            
-            .login {
-                display: flex;
-                align-items: center;
-                justify-content: center;
-            }
+
+            @import url("https://fonts.googleapis.com/css?family=Roboto:500");
+            a.google-auth {
+              display: block;
+              width: 100%;
+              border-radius: 1px;
+              padding: 0;
+              white-space: nowrap;
+              overflow: hidden;
+              outline: none;
+              cursor: pointer;
+              background: #fff;
+              border: #fff solid 1px;
+              box-shadow: 1px 1px 5px 0 #b7b7b7;
+              text-align: left; }
+            a.google-auth:hover {
+                box-shadow: 1px 1px 15px 0 #b7b7b7; }
+              a.google-auth span.google-icon {
+                background-image: url("res/g-logo.svg");
+                background-color: #fff;
+                background-size: 18px;
+                background-repeat: no-repeat;
+                background-position: 50%;
+                display: inline-block;
+                vertical-align: middle;
+                width: 40px;
+                height: 40px;
+                border-radius: 1px;
+                margin-right: 16px; }
+              a.google-auth span.google-text {
+                display: inline-block;
+                vertical-align: middle;
+                font-size: 14px;
+                font-weight: 500;
+                color: #000;
+                opacity: 0.54;
+                font-family: 'Roboto', sans-serif;
+                padding-right: 8px; }
+
+            a.facebook-auth {
+              display: block;
+              width: 100%;
+              border-radius: 1px;
+              padding: 0;
+              white-space: nowrap;
+              overflow: hidden;
+              outline: none;
+              cursor: pointer;
+              background: #4267b2;
+              box-shadow: 1px 1px 5px 0 #b7b7b7;
+              text-align: left; }
+            a.facebook-auth:hover {
+                box-shadow: 1px 1px 15px 0 #b7b7b7; }
+              a.facebook-auth span.facebook-icon {
+                background-image: url("res/f-logo.svg");
+                background-color: #4267b2;
+                background-size: 24px;
+                background-repeat: no-repeat;
+                background-position: 50%;
+                display: inline-block;
+                vertical-align: middle;
+                width: 40px;
+                height: 40px;
+                border-radius: 1px;
+                margin-right: 16px; }
+              a.facebook-auth span.facebook-text {
+                display: inline-block;
+                vertical-align: middle;
+                font-size: 14px;
+                font-weight: 500;
+                color: #fff;
+                font-family: Helvetica, Arial, sans-serif;
+                padding-right: 8px; }
         </style>
     </head>
     <body></body>
