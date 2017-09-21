@@ -1,4 +1,3 @@
-import tink.CoreApi.CallbackLink;
 import mithril.M;
 import js.html.Console;
 
@@ -15,11 +14,13 @@ class Client implements Mithril {
             '/login/:token': new pages.Login(),
             '/dashboard': new pages.Dashboard()
         });
+
+        AppState.auth.checkStoredToken();
     }
 
     public function onmatch(params:haxe.DynamicAccess<String>, url:String) {
         // if logged in, go to dashboard
-        if(Data.token.value != null) M.routeSet('/dashboard');
+        if(AppState.auth.token.value != null) M.routeSet('/dashboard');
         return null;
     }
 

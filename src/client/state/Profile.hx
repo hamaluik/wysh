@@ -1,6 +1,7 @@
+package state;
+
 import tink.state.State;
 import tink.state.Promised;
-
 import mithril.M;
 
 typedef TProfile = {
@@ -8,17 +9,19 @@ typedef TProfile = {
     var picture:String;
 };
 
-class Data {
-    public static var token:State<String> = new State<String>(null);
-    public static var profile:State<Promised<TProfile>> = new State<Promised<TProfile>>(Failed(null));
+class Profile {
+    @:allow(AppState)
+    private function new(){}
 
-    public static function fetchProfile():Void {
+    public var profile:State<Promised<TProfile>> = new State<Promised<TProfile>>(Failed(null));
+
+    public function fetchProfile():Void {
         profile.set(Loading);
         M.request(WebRequest.endpoint('/profile'), {
             method: 'GET',
             extract: WebRequest.extract,
             headers: {
-                Authorization: 'Bearer ' + token.value
+                Authorization: 'Bearer ' + AppState.auth.token.value
             }
         })
         .then(function(data:Dynamic) {

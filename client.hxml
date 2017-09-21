@@ -6,6 +6,7 @@
 -lib jwt
 
 -debug
+-dce full
 
 -main Client
 -js bin/wysh.js

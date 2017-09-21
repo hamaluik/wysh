@@ -6,11 +6,12 @@ class Dashboard implements Mithril {
     public function new() {}
 
     public function onmatch(params:haxe.DynamicAccess<String>, url:String) {
-        if(Data.token.value == null) M.routeSet('/');
+        Client.console.info('matched dashboard, token:', AppState.auth.token.value);
+        if(AppState.auth.token.value == null) M.routeSet('/');
         else {
             // fetch the profile if we don't have it yet
-            switch(Data.profile.value) {
-                case Failed(e): if(e == null) Data.fetchProfile();
+            switch(AppState.profile.profile.value) {
+                case Failed(e): if(e == null) AppState.profile.fetchProfile();
                 case _: {}
             }
         }
@@ -19,10 +20,18 @@ class Dashboard implements Mithril {
     }
 
     public function render(vnode) {
-        return m('p', switch(Data.profile.value) {
+        return m('p', switch(AppState.profile.profile.value) {
             case Loading: 'Loading profile...';
-            case Done(p): 'Welcome to your dashboard, ${p.name}!';
+            case Done(p): [
+                'Welcome to your dashboard, ${p.name}!',
+                m("button", { onclick: logout }, "Log Out")
+            ];
             case Failed(e): 'We could not load your profile :(';
         });
+    }
+
+    function logout() {
+        AppState.auth.clearStoredToken();
+        M.routeSet('/');
     }
 }
