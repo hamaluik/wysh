@@ -1,5 +1,6 @@
 class WebRequest {
     public inline static function endpoint(endpoint:String):String {
+        // TODO: use a define
         return 'http://lvh.me:8080/api' + endpoint;
     }
 
