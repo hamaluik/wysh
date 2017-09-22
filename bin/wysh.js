@@ -369,6 +369,9 @@ var mithril_Mithril = function() { };
 mithril_Mithril.__name__ = true;
 var Client = function() {
 	m.route(window.document.body,"/",{ "/" : this, "/login/:token" : new pages_Login(), "/dashboard" : new pages_Dashboard()});
+	tink_state__$Observable_Observable_$Impl_$.bind(AppState.auth.token,null,function(token) {
+		Client.console.info("token",token);
+	});
 	AppState.auth.checkStoredToken();
 };
 Client.__name__ = true;
@@ -495,33 +498,18 @@ components_NavBar.__name__ = true;
 components_NavBar.__interfaces__ = [mithril_Mithril];
 components_NavBar.view = function(vnode) {
 	if(arguments.length > 0 && arguments[0].tag != this) return arguments[0].tag.view.apply(arguments[0].tag, arguments);
-	var welcome;
+	var profileImage;
 	var _g = tink_state__$State_State_$Impl_$.get_value(AppState.profile.profile);
 	switch(_g[1]) {
-	case 0:
-		welcome = null;
-		break;
-	case 1:
-		var profile = _g[2];
-		welcome = [m.m("span.navbar-item","Signed in as"),m.m("span.navbar-item.has-text-weight-bold","" + profile.name),m.m("hr.navbar-divider")];
-		break;
-	case 2:
-		var error = _g[2];
-		welcome = null;
-		break;
-	}
-	var profileImage;
-	var _g1 = tink_state__$State_State_$Impl_$.get_value(AppState.profile.profile);
-	switch(_g1[1]) {
 	case 0:
 		profileImage = m.m("span.icon",m.m("i.fa.fa-home"));
 		break;
 	case 1:
-		var profile1 = _g1[2];
-		profileImage = [m.m("img.is-1by1",{ src : profile1.picture}),m.m("span.navbar-item.has-text-weight-bold",profile1.name)];
+		var profile = _g[2];
+		profileImage = [m.m("img.is-1by1",{ style : "margin-right: 16px", src : profile.picture}),m.m("span.has-text-weight-bold",profile.name)];
 		break;
 	case 2:
-		var error1 = _g1[2];
+		var error = _g[2];
 		profileImage = null;
 		break;
 	}
@@ -536,7 +524,9 @@ components_NavBar.view = function(vnode) {
 	}},[tmp3,tmp4,tmp5])]);
 	var tmp7 = vnode.state.menuShowing ? ".is-active" : "";
 	var tmp8 = m.m("span.icon",m.m("i.fa.fa-list"));
-	return m.m("nav.navbar.is-dark",[m.m(".container",[tmp6,m.m(".navbar-menu" + tmp7,[m.m(".navbar-start",[m.m("a.navbar-item",{ },[tmp8,"Lists"])]),m.m(".navbar-end",[m.m(".navbar-item.has-dropdown.is-hoverable",[m.m("a.navbar-link",profileImage),m.m(".navbar-dropdown",[m.m("a.navbar-item",{ onclick : components_NavBar.signout},"Sign Out")])])])])])]);
+	var tmp9 = m.m("a.navbar-item",{ },[tmp8,"Lists"]);
+	var tmp10 = m.m("span.icon",m.m("i.fa.fa-users"));
+	return m.m("nav.navbar.is-dark",[m.m(".container",[tmp6,m.m(".navbar-menu" + tmp7,[m.m(".navbar-start",[tmp9,m.m("a.navbar-item",{ },[tmp10,"Friends"])]),m.m(".navbar-end",[m.m(".navbar-item.has-dropdown.is-hoverable",[m.m("a.navbar-link",profileImage),m.m(".navbar-dropdown",[m.m("a.navbar-item",{ onclick : components_NavBar.signout},"Sign Out")])])])])])]);
 };
 components_NavBar.signout = function() {
 	AppState.auth.clearStoredToken();
@@ -1036,7 +1026,6 @@ pages_Dashboard.__name__ = true;
 pages_Dashboard.__interfaces__ = [mithril_Mithril];
 pages_Dashboard.prototype = {
 	onmatch: function(params,url) {
-		Client.console.info("matched dashboard, token:",tink_state__$State_State_$Impl_$.get_value(AppState.auth.token));
 		if(tink_state__$State_State_$Impl_$.get_value(AppState.auth.token) == null) {
 			m.route.set("/", null, null);
 		} else {
@@ -1051,7 +1040,7 @@ pages_Dashboard.prototype = {
 		return null;
 	}
 	,render: function(vnode) {
-		return [m.m(components_NavBar),m.m("section.section",m.m(".container",[m.m(".columns",[m.m(".column.is-two-thirds",[m.m("article.media",[m.m("span.icon.media-left",m.m("i.fa.fa-home")),m.m(".media-content","This is a news item!")])]),m.m(".column",m.m("nav.panel",[m.m("p.panel-heading","Wishlists"),m.m("p.panel-tabs",[m.m("a.is-active","Mine"),m.m("a","Others")]),m.m("a.panel-block","birthday list"),m.m("a.panel-block","Christmas list")]))])]))];
+		return [m.m(components_NavBar),m.m("section.section",m.m(".container",[m.m(".columns",[m.m(".column.is-two-thirds",[m.m("article.media",[m.m("span.icon.media-left",m.m("i.fa.fa-home")),m.m(".media-content","This is a news item!")])]),m.m(".column",m.m("nav.panel",[m.m("p.panel-heading","Wishlists"),m.m("p.panel-tabs",[m.m("a.is-active","Yours"),m.m("a","Friends")]),m.m("a.panel-block","birthday list"),m.m("a.panel-block","Christmas list")]))])]))];
 	}
 	,__class__: pages_Dashboard
 };

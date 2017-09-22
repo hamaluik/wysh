@@ -6,15 +6,9 @@ class NavBar implements Mithril {
     var menuShowing:Bool = false;
 
     public static function view(vnode:Vnode<NavBar>):Vnodes {
-        var welcome:Vnodes = switch(AppState.profile.profile.value) {
-            case Loading: null;
-            case Done(profile): [m('span.navbar-item', 'Signed in as'), m('span.navbar-item.has-text-weight-bold', '${profile.name}'), m('hr.navbar-divider')];
-            case Failed(error): null;
-        }
-
         var profileImage:Vnodes = switch(AppState.profile.profile.value) {
             case Loading: m('span.icon', m('i.fa.fa-home'));
-            case Done(profile): [m('img.is-1by1', { src: profile.picture }), m('span.navbar-item.has-text-weight-bold', profile.name)];
+            case Done(profile): [m('img.is-1by1', { style: 'margin-right: 16px', src: profile.picture }), m('span.has-text-weight-bold', profile.name)];
             case Failed(error): null;
         }
 
@@ -35,7 +29,8 @@ class NavBar implements Mithril {
                     ]),
                     m('.navbar-menu' + (vnode.state.menuShowing ? '.is-active' : ''), [
                         m('.navbar-start', [
-                            m('a.navbar-item', {}, [m('span.icon', m('i.fa.fa-list')), 'Lists'])
+                            m('a.navbar-item', {}, [m('span.icon', m('i.fa.fa-list')), 'Lists']),
+                            m('a.navbar-item', {}, [m('span.icon', m('i.fa.fa-users')), 'Friends'])
                         ]),
                         m('.navbar-end', [
                             m('.navbar-item.has-dropdown.is-hoverable', [

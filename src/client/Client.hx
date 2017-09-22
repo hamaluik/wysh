@@ -15,6 +15,10 @@ class Client implements Mithril {
             '/dashboard': new pages.Dashboard()
         });
 
+        AppState.auth.token.observe().bind(function(token:String) {
+            console.info('token', token);
+        });
+
         AppState.auth.checkStoredToken();
     }
 

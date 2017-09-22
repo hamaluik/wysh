@@ -2,13 +2,14 @@ package pages;
 
 import mithril.M;
 
+// TODO: rename to wishlists page
 class Dashboard implements Mithril {
     public function new() {}
 
     public function onmatch(params:haxe.DynamicAccess<String>, url:String) {
-        Client.console.info('matched dashboard, token:', AppState.auth.token.value);
         if(AppState.auth.token.value == null) M.routeSet('/');
         else {
+            // TODO: move this somewhere better
             // fetch the profile if we don't have it yet
             switch(AppState.profile.profile.value) {
                 case Failed(e): if(e == null) AppState.profile.fetchProfile();
@@ -35,8 +36,8 @@ class Dashboard implements Mithril {
                             m('nav.panel', [
                                 m('p.panel-heading', 'Wishlists'),
                                 m('p.panel-tabs', [
-                                    m('a.is-active', 'Mine'),
-                                    m('a', 'Others')
+                                    m('a.is-active', 'Yours'),
+                                    m('a', 'Friends')
                                 ]),
                                 m('a.panel-block', 'birthday list'),
                                 m('a.panel-block', 'Christmas list')
