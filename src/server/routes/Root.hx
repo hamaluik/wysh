@@ -12,12 +12,22 @@ class Root {
     }
 
     @:restrict(true)
+    @:sub('/api/auth') public function auth() {
+        return new Auth();
+    }
+
+    @:restrict(true)
     @:sub('/api/lists') public function lists() {
         return new Lists();
     }
 
     @:restrict(true)
-    @:sub('/api/profile') public function profile() {
-        return new Profile();
+    @:sub('/api/list') public function items() {
+        return new Items();
+    }
+
+    @:restrict(true)
+    @:sub('/api/user') public function user() {
+        return new User();
     }
 }

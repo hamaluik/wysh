@@ -7,7 +7,7 @@ import tink.http.Request.IncomingRequestHeader;
 import jwt.JWT;
 
 typedef JWTPayload = {
-    var id:Int;
+    > jwt.JWTPayloadBase,
 };
 
 class User {
@@ -34,7 +34,10 @@ class JWTSession {
                 var result:JWTResult<JWTPayload> = JWT.verify(parts[1], Server.config.jwt.secret);
                 return switch(result) {
                     case Valid(payload): {
-                        Some(new User(payload.id));
+                        if(payload.iss != Server.config.root.api) return None;
+                        if(payload.iat > Date.now().getTime() / 1000.0) return None;
+                        if(payload.exp <= Date.now().getTime() / 1000.0) return None;
+                        Some(new User(Server.extractID(payload.sub, Server.userHID)));
                     }
 
                     case _: None;

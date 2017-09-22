@@ -16,8 +16,6 @@ import tink.http.Request;
 
 import jwt.JWT;
 
-import response.NotFoundResponse;
-
 using StringTools;
 
 class OAuth2 {
@@ -45,7 +43,7 @@ class OAuth2 {
                 state = 'auth-facebook';
             }
 
-            case _: return new NotFoundResponse(service);
+            case _: return new response.NotFound(service);
         }
 
         urlString += '?client_id=${clientID.urlEncode()}';
@@ -84,7 +82,7 @@ class OAuth2 {
                 clientSecret = Server.config.oauth2.facebook.secret;
             }
 
-            case _: return Future.sync(new NotFoundResponse(query.state));
+            case _: return Future.sync(new response.NotFound(query.state));
         }
 
         var body:String = 'code=${query.code.urlEncode()}';
@@ -112,7 +110,7 @@ class OAuth2 {
 
                     // verify the claims of the token
                     if(payload.iss != 'https://accounts.google.com' || payload.aud != Server.config.oauth2.google.id)
-                        return new response.UnauthorizedResponse();
+                        return new response.Unauthorized();
 
                     // TODO: verify using Google's publickey
 
@@ -141,11 +139,8 @@ class OAuth2 {
                         u;
                     }
 
-                    var token:String = JWT.sign({
-                        id: user.id
-                    }, Server.config.jwt.secret);
-
-                    return new response.RedirectResponse(Server.config.root.client + '#!/login/${token.urlEncode()}');
+                    var token:String = Auth.buildToken(user.id);
+                    return new response.Redirect(Server.config.root.client + '#!/login/${token.urlEncode()}');
                 });
 
             case 'auth-facebook':
@@ -192,15 +187,11 @@ class OAuth2 {
                         u;
                     }
 
-                    // TODO: some sort of redirect a la Auth0
-                    var token:String = JWT.sign({
-                        id: user.id
-                    }, Server.config.jwt.secret);
-
-                    return new response.RedirectResponse(Server.config.root.client + '#!/login/${token.urlEncode()}');
+                    var token:String = Auth.buildToken(user.id);
+                    return new response.Redirect(Server.config.root.client + '#!/login/${token.urlEncode()}');
                 });
 
-            case _: Future.sync(new response.NotFoundResponse(query.state));
+            case _: Future.sync(new response.NotFound(query.state));
         }
     }
 }

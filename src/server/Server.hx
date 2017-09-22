@@ -24,11 +24,13 @@ import models.Followers;
 import routes.Root;
 
 class Server {
+    public static var userHID:Hashids;
     public static var listHID:Hashids;
     public static var itemHID:Hashids;
     public static var config:Config;
 
     public static function extractID(hash:String, hid:Hashids):Int {
+        if(hash == null) throw 'Hash is missing!';
         var ids:Array<Int> = hid.decode(hash.toLowerCase());
         if(ids.length != 1) throw 'Invalid list id: $hash!';
         return ids[0];
@@ -58,6 +60,7 @@ class Server {
         config = Yaml.read("config.yaml", Parser.options().useObjects());
 
         // prepare the Hashids
+        userHID = new Hashids(config.hid.salts.user, config.hid.minlength, config.hid.alphabet);
         listHID = new Hashids(config.hid.salts.list, config.hid.minlength, config.hid.alphabet);
         itemHID = new Hashids(config.hid.salts.item, config.hid.minlength, config.hid.alphabet);
 

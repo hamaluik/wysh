@@ -6,6 +6,7 @@ hid:
   minlength: 6
   alphabet: "abcdefghijklmnopqrstuvwxyz012345679"
   salts:
+    user: "12803e34-b7f9-4114-8458-643f351227cf"
     list: "72046724-2632-49ff-8c06-a7146f6c6633"
     item: "8946d47d-8fa5-4cb0-ae85-3ddead2cb867"
 oauth2:
@@ -17,3 +18,4 @@ oauth2:
     secret: "?"
 jwt:
   secret: "503bb22c-3f63-49eb-b7b5-f995b3524c3c"
+  duration: 86400

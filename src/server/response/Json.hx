@@ -2,10 +2,10 @@ package response;
 
 import tink.web.routing.Response;
 
-abstract JsonResponse(Response) from Response to Response {
+abstract Json(Response) from Response to Response {
     public function new(d:Dynamic)
-        this = JsonResponse.ofDynamic(d);
+        this = Json.ofDynamic(d);
 
-    @:from static function ofDynamic(d:Dynamic):JsonResponse
+    @:from static function ofDynamic(d:Dynamic):Json
         return Response.textual('application/json', haxe.Json.stringify(d));
 }

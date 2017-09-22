@@ -23,6 +23,7 @@ typedef Config = {
         public var minlength:Int;
         public var alphabet:String;
         public var salts:{
+            public var user:String;
             public var list:String;
             public var item:String;
         }
@@ -30,5 +31,6 @@ typedef Config = {
 
     public var jwt:{
         public var secret:String;
+        public var duration:Float;
     };
 };
