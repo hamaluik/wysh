@@ -10,6 +10,7 @@ class User {
         if(u == null) return new response.NotFound();
 
         return new response.Json({
+            id: Server.userHID.encode(u.id),
             name: u.name,
             picture: u.picture
         });
@@ -22,6 +23,7 @@ class User {
         if(u == null) return new response.NotFound();
 
         return new response.Json({
+            id: Server.userHID.encode(u.id),
             name: u.name,
             picture: u.picture
         });
