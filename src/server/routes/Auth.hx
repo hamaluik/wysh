@@ -17,6 +17,7 @@ class Auth {
 
     @:get public function refresh(user:JWTSession.User):Response {
         var token:String = Auth.buildToken(user.id);
+        Log.info('Issued refresh token for user ${user.id}!');
         return new response.Json({
             token: token
         });

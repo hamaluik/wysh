@@ -148,6 +148,7 @@ class Items {
             item.reserver = u;
             item.reservedOn = Date.now();
             item.update();
+            Log.info('${u.name} (${u.id}) reserved item ${item.id} on ${list.user.name}\'s (${list.user.id}) list ${list.name} (${list.id})');
         }
         else return new response.MalformedRequest();
 
@@ -187,6 +188,8 @@ class Items {
         if(item == null) {
             return new response.NotFound('item "${itemHash}"');
         }
+
+        Log.info('${list.user.name} (${list.user.id}) deleted item ${item.id} from their wishlist "${list.name}" (${list.id})!');
 
         // delete it!
         item.delete();

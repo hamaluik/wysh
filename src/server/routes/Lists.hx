@@ -28,6 +28,8 @@ class Lists {
         };
         list.insert();
 
+        Log.info('${u.name} (${u.id}) created a new list called "${list.name}"!');
+
         return new response.Json({
             id: Server.listHID.encode(list.id),
             name: list.name
@@ -90,7 +92,10 @@ class Lists {
             modified = true;
         }
 
-        if(modified) list.update();
+        if(modified) {
+            list.update();
+            Log.info('${list.user.name} updated their list "${list.name}"! ' + haxe.Json.stringify(body));
+        }
 
         return new response.Json({
             id: Server.listHID.encode(list.id),
@@ -111,6 +116,8 @@ class Lists {
         if(list.user.id != user.id) {
             return new response.Unauthorized();
         }
+
+        Log.info('User ${user.id} deleted list ${list.name} (${list.id})!');
 
         // delete it!
         list.delete();
