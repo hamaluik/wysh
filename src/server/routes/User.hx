@@ -16,7 +16,7 @@ class User {
     }
 
     @:get('/$userHash/profile') public function getProfile(userHash:String, user:JWTSession.User):Response {
-        // TODO: ensure friends
+        // TODO: make sure we have permission to view this user
 
         var u:models.User = models.User.manager.get(Server.extractID(userHash, Server.userHID));
         if(u == null) return new response.NotFound();
@@ -41,7 +41,7 @@ class User {
     }
     
     @:get('/$userHash/lists') public function geLists(userHash:String, user:JWTSession.User):Response {
-        // TODO: ensure friends
+        // TODO: make sure we have permission to view this user's lists
 
         var u:models.User = models.User.manager.get(Server.extractID(userHash, Server.userHID));
         if(u == null) return new response.NotFound();

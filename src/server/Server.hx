@@ -20,6 +20,7 @@ import models.User;
 import models.List;
 import models.Item;
 import models.Friends;
+import models.FriendRequests;
 
 import routes.Root;
 
@@ -52,6 +53,10 @@ class Server {
         if(!TableCreate.exists(Friends.manager)) {
             Log.trace('creating Friends table');
             TableCreate.create(Friends.manager);
+        }
+        if(!TableCreate.exists(FriendRequests.manager)) {
+            Log.trace('creating FriendRequests table');
+            TableCreate.create(FriendRequests.manager);
         }
     }
 

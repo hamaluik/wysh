@@ -41,6 +41,8 @@ class Items {
     }
 
     @:get('/$listHash') public function getItems(listHash:String):Response {
+        // TODO: make sure we have permission to view this list!
+
         var id:Int = Server.extractID(listHash, Server.listHID);
         var list:models.List = models.List.manager.get(id);
         if(list == null) {
