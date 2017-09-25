@@ -27,8 +27,31 @@ class Lists {
         });
     }
 
-    @:patch('/$listHash') public function updateList(listHash:String, body:{?name:String}, user:JWTSession.User):Response {
-        var lid:Int = Server.extractID(listHash, Server.listHID);
+    @:get('/friends') public function getMyLists(user:JWTSession.User):Response {
+        var u:models.User = models.User.manager.get(user.id);
+        if(u == null) return new response.NotFound();
+
+        var response:Array<Dynamic> = new Array<Dynamic>();
+        var friends:List<models.Friends> = models.Friends.manager.search($friendA == u);
+        for(friend in friends) {
+            var lists:List<models.List> = models.List.manager.search($user == friend.friendB && ($privacy == Public || $privacy == Friends));
+            response.push({
+                id: Server.userHID.encode(friend.friendB.id),
+                name: friend.friendB.name,
+                lists: [for(list in lists) {
+                    id: Server.listHID.encode(list.id),
+                    name: list.name
+                }]
+            });
+        }
+
+        return new response.Json({
+            friends: response
+        });
+    }
+
+    @:patch('/$listHash') public function updateList(listHash:String, body:{?name:String, ?privacy:String}, user:JWTSession.User):Response {
+        var lid:Int = try { Server.extractID(listHash, Server.listHID); } catch(e:Dynamic) return new response.NotFound();
 
         // ensure the list exists
         var list:models.List = models.List.manager.get(lid);

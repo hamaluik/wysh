@@ -6,6 +6,19 @@ using StringTools;
 class Friends {
     public function new() {}
 
+    @:get('/') public function getFriends(user:JWTSession.User):Response {
+        var u:models.User = models.User.manager.get(user.id);
+        if(u == null) return new response.NotFound();
+        var friends:List<models.Friends> = models.Friends.manager.search($friendA == u);
+        return new response.Json({
+            friends: [for(friend in friends) {
+                id: Server.userHID.encode(friend.friendB.id),
+                name: friend.friendB.name,
+                picture: friend.friendB.picture
+            }]
+        });
+    }
+
     @:post('/request') public function requestFriendship(body:{id:String}, user:JWTSession.User):Response {
         var u:models.User = models.User.manager.get(user.id);
         if(u == null) return new response.NotFound();
