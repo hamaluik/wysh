@@ -2,13 +2,15 @@ package routes;
 
 import tink.web.routing.*;
 
+import models.Privacy;
+
 using Lambda;
 using StringTools;
 
 class Lists {
     public function new() {}
 
-    @:post('/') public function newList(body:{name:String}, user:JWTSession.User):Response {
+    @:post('/') public function newList(body:{name:String, ?privacy:String}, user:JWTSession.User):Response {
         var u:models.User = models.User.manager.get(user.id);
         if(u == null) return new response.NotFound();
 
@@ -19,6 +21,11 @@ class Lists {
         list.user = u;
         list.createdOn = Date.now();
         list.modifiedOn = Date.now();
+        list.privacy = switch(body.privacy) {
+            case 'public': Privacy.Public;
+            case 'friends': Privacy.Friends;
+            case _: models.Privacy.Private;
+        };
         list.insert();
 
         return new response.Json({
@@ -68,6 +75,18 @@ class Lists {
         var modified:Bool = false;
         if(body.name != null && body.name.trim().length > 0) {
             list.name = body.name;
+            modified = true;
+        }
+        if(body.privacy == 'public') {
+            list.privacy = Privacy.Public;
+            modified = true;
+        }
+        else if(body.privacy == 'friends') {
+            list.privacy = Privacy.Friends;
+            modified = true;
+        }
+        else if(body.privacy == 'private') {
+            list.privacy = Privacy.Private;
             modified = true;
         }
 
