@@ -30,4 +30,9 @@ class Root {
     @:sub('/api/user') public function user() {
         return new User();
     }
+
+    @:restrict(true)
+    @:sub('/api/friends') public function friends() {
+        return new Friends();
+    }
 }
