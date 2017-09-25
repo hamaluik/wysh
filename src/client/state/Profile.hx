@@ -17,7 +17,7 @@ class Profile {
 
     public function fetchProfile():Void {
         profile.set(Loading);
-        M.request(WebRequest.endpoint('/profile'), {
+        M.request(WebRequest.endpoint('/user/profile'), {
             method: 'GET',
             extract: WebRequest.extract,
             headers: {

@@ -16,7 +16,7 @@ class NavBar implements Mithril {
             m('nav.navbar.is-dark', [
                 m('.container', [
                     m('.navbar-brand', [
-                        m('a.navbar-item', { href: '/' },
+                        m('a.navbar-item', { href: '#!/' },
                             m('img', { src: 'res/wordmark_inverted.svg', width: 138, height: 28, alt: 'wysh' })
                         ),
                         m('button.button.navbar-burger' + (vnode.state.menuShowing ? '.is-active' : ''), {
@@ -29,8 +29,8 @@ class NavBar implements Mithril {
                     ]),
                     m('.navbar-menu' + (vnode.state.menuShowing ? '.is-active' : ''), [
                         m('.navbar-start', [
-                            m('a.navbar-item', {}, [m('span.icon', m('i.fa.fa-list')), 'Lists']),
-                            m('a.navbar-item', {}, [m('span.icon', m('i.fa.fa-users')), 'Friends'])
+                            m('a.navbar-item', { href: '#!/lists' }, [m('span.icon', m('i.fa.fa-list')), 'Lists']),
+                            m('a.navbar-item', { href: '#!/friends' }, [m('span.icon', m('i.fa.fa-users')), 'Friends'])
                         ]),
                         m('.navbar-end', [
                             m('.navbar-item.has-dropdown.is-hoverable', [

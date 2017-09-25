@@ -2,8 +2,7 @@ package pages;
 
 import mithril.M;
 
-// TODO: rename to wishlists page
-class Dashboard implements Mithril {
+class Lists implements Mithril {
     public function new() {}
 
     public function onmatch(params:haxe.DynamicAccess<String>, url:String) {

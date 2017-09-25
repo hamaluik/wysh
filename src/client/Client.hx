@@ -12,7 +12,7 @@ class Client implements Mithril {
         M.route(js.Browser.document.body, '/', {
             '/': this,
             '/login/:token': new pages.Login(),
-            '/dashboard': new pages.Dashboard()
+            '/lists': new pages.Lists()
         });
 
         AppState.auth.token.observe().bind(function(token:String) {
@@ -24,7 +24,7 @@ class Client implements Mithril {
 
     public function onmatch(params:haxe.DynamicAccess<String>, url:String) {
         // if logged in, go to dashboard
-        if(AppState.auth.token.value != null) M.routeSet('/dashboard');
+        if(AppState.auth.token.value != null) M.routeSet('/lists');
         return null;
     }
 
