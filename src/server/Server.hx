@@ -19,7 +19,7 @@ import sys.db.TableCreate;
 import models.User;
 import models.List;
 import models.Item;
-import models.Followers;
+import models.Friends;
 
 import routes.Root;
 
@@ -49,9 +49,9 @@ class Server {
             Log.trace('creating Item table');
             TableCreate.create(Item.manager);
         }
-        if(!TableCreate.exists(Followers.manager)) {
-            Log.trace('creating Followers table');
-            TableCreate.create(Followers.manager);
+        if(!TableCreate.exists(Friends.manager)) {
+            Log.trace('creating Friends table');
+            TableCreate.create(Friends.manager);
         }
     }
 
