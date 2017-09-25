@@ -7,7 +7,7 @@ using Lambda;
 class Items {
     public function new() {}
 
-    @:post('/$listHash') public function newItem(listHash:String, body:{name:String, ?url:String, ?comments:String, ?image_path:String}, user:JWTSession.User):Response {
+    @:post('/$listHash') public function newItem(listHash:String, body:{name:String, ?url:String, ?comments:String, ?image_path:String, ?reservable:Bool}, user:JWTSession.User):Response {
         var id:Int = try { Server.extractID(listHash, Server.listHID); } catch(e:Dynamic) return new response.NotFound();
 
         // ensure the list exists
@@ -27,20 +27,30 @@ class Items {
         item.url = body.url;
         item.comments = body.comments;
         item.image_path = body.image_path;
+        item.reservable = switch(body.reservable) {
+            case false: false;
+            case _: true;
+        };
         item.createdOn = Date.now();
         item.modifiedOn = Date.now();
         item.insert();
+
+        Log.info('Added item "${item.name}" to user ${user.id}\'s list "${list.name}" (${list.id})!');
 
         return new response.Json({
             id: Server.itemHID.encode(item.id),
             name: item.name,
             url: item.url,
             comments: item.comments,
-            image_path: item.image_path
+            image_path: item.image_path,
+            reservable: item.reservable
         });
     }
 
-    @:get('/$listHash') public function getItems(listHash:String):Response {
+    @:get('/$listHash') public function getItems(listHash:String, user:JWTSession.User):Response {
+        var u:models.User = models.User.manager.get(user.id);
+        if(u == null) return new response.NotFound();
+
         // TODO: make sure we have permission to view this list!
 
         var id:Int = try { Server.extractID(listHash, Server.listHID); } catch(e:Dynamic) return new response.NotFound();
@@ -61,25 +71,30 @@ class Items {
                     name: item.name,
                     url: item.url,
                     comments: item.comments,
-                    image_path: item.image_path
+                    image_path: item.image_path,
+                    reservable: item.reservable,
+                    reserver: list.user == u || item.reserver == null ? null : {
+                        id: Server.userHID.encode(item.reserver.id),
+                        name: item.reserver.name,
+                        picture: item.reserver.picture
+                    },
+                    reservedOn: list.user == u ? null : item.reservedOn
                 }
             }).array()
         });
     }
 
-    @:patch('/$listHash/$itemHash') public function updateItem(listHash:String, itemHash:String, body:{?name:String, ?url:String, ?comments:String, ?image_path:String}, user:JWTSession.User):Response {
+    @:patch('/$listHash/$itemHash') public function updateItem(listHash:String, itemHash:String, body:{?name:String, ?url:String, ?comments:String, ?image_path:String, ?reservable:Bool, ?reserve:Bool, ?clearReserved:Bool}, user:JWTSession.User):Response {
         var lid:Int = try { Server.extractID(listHash, Server.listHID); } catch(e:Dynamic) return new response.NotFound();
         var iid:Int = try { Server.extractID(itemHash, Server.itemHID); } catch(e:Dynamic) return new response.NotFound();
+
+        var u:models.User = models.User.manager.get(user.id);
+        if(u == null) return new response.NotFound();
 
         // ensure the list exists
         var list:models.List = models.List.manager.get(lid);
         if(list == null) {
             return new response.NotFound('list "${listHash}"');
-        }
-
-        // ensure the user owns this list
-        if(list.user.id != user.id) {
-            return new response.Unauthorized();
         }
 
         // ensure the item exists
@@ -88,36 +103,67 @@ class Items {
             return new response.NotFound('item "${itemHash}"');
         }
 
-        // update the properties
-        var modified:Bool = false;
-        if(body.name != null) {
-            item.name = body.name;
-            modified = true;
-        }
-        if(body.url != null) {
-            item.url = body.url;
-            modified = true;
-        }
-        if(body.comments != null) {
-            item.comments = body.comments;
-            modified = true;
-        }
-        if(body.image_path != null) {
-            item.image_path = body.image_path;
-            modified = true;
-        }
+        // see what we're allowed to do based on ownership
+        if(list.user == u) {
+            // the list's owner is making changes
+            var modified:Bool = false;
+            if(body.name != null) {
+                item.name = body.name;
+                modified = true;
+            }
+            if(body.url != null) {
+                item.url = body.url;
+                modified = true;
+            }
+            if(body.comments != null) {
+                item.comments = body.comments;
+                modified = true;
+            }
+            if(body.image_path != null) {
+                item.image_path = body.image_path;
+                modified = true;
+            }
+            if(body.reservable != null) {
+                item.reservable = body.reservable;
+                modified = true;
+            }
+            if(body.clearReserved != null && body.clearReserved) {
+                item.reserver = null;
+                item.reservedOn = null;
+                modified = true;
+            }
 
-        if(modified) {
-            item.modifiedOn = Date.now();
+            if(modified) {
+                item.modifiedOn = Date.now();
+                item.update();
+                Log.info('${u.name} (${u.id}) updated their wishlist! ' + haxe.Json.stringify(body));
+            }
+        }
+        else if(body.reserve != null && body.reserve) {
+            // someone else is making changes—presumably to the reservation
+            if(!item.reservable) return new response.MalformedRequest('That item can\'t be reserved!');
+            if(item.reserver != null) return new response.MalformedRequest('That item has already been reserved!');
+
+            // reserve it!
+            item.reserver = u;
+            item.reservedOn = Date.now();
             item.update();
         }
+        else return new response.MalformedRequest();
 
         return new response.Json({
             id: Server.itemHID.encode(item.id),
             name: item.name,
             url: item.url,
             comments: item.comments,
-            image_path: item.image_path
+            image_path: item.image_path,
+            reservable: item.reservable,
+            reserver: list.user.id == user.id ? null : {
+                id: Server.userHID.encode(item.reserver.id),
+                name: item.reserver.name,
+                picture: item.reserver.picture
+            },
+            reservedOn: list.user.id == user.id ? null : item.reservedOn
         });
     }
 

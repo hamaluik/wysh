@@ -12,8 +12,9 @@ class Item extends Object {
     public var comments:Null<SSmallText>;
     public var image_path:Null<SSmallText>;
     
-    @:relation(pid) public var purchaser:Null<User>;
-    public var purchasedOn:Null<SDateTime>;
+    public var reservable:SBool;
+    @:relation(rid) public var reserver:Null<User>;
+    public var reservedOn:Null<SDateTime>;
 
     public var createdOn:SDateTime;
     public var modifiedOn:SDateTime;
