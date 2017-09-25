@@ -8,7 +8,7 @@ class Items {
     public function new() {}
 
     @:post('/$listHash') public function newItem(listHash:String, body:{name:String, ?url:String, ?comments:String, ?image_path:String}, user:JWTSession.User):Response {
-        var id:Int = Server.extractID(listHash, Server.listHID);
+        var id:Int = try { Server.extractID(listHash, Server.listHID); } catch(e:Dynamic) return new response.NotFound();
 
         // ensure the list exists
         var list:models.List = models.List.manager.get(id);
@@ -43,7 +43,7 @@ class Items {
     @:get('/$listHash') public function getItems(listHash:String):Response {
         // TODO: make sure we have permission to view this list!
 
-        var id:Int = Server.extractID(listHash, Server.listHID);
+        var id:Int = try { Server.extractID(listHash, Server.listHID); } catch(e:Dynamic) return new response.NotFound();
         var list:models.List = models.List.manager.get(id);
         if(list == null) {
             return new response.NotFound('list "${listHash}"');
@@ -68,8 +68,8 @@ class Items {
     }
 
     @:patch('/$listHash/$itemHash') public function updateItem(listHash:String, itemHash:String, body:{?name:String, ?url:String, ?comments:String, ?image_path:String}, user:JWTSession.User):Response {
-        var lid:Int = Server.extractID(listHash, Server.listHID);
-        var iid:Int = Server.extractID(itemHash, Server.itemHID);
+        var lid:Int = try { Server.extractID(listHash, Server.listHID); } catch(e:Dynamic) return new response.NotFound();
+        var iid:Int = try { Server.extractID(itemHash, Server.itemHID); } catch(e:Dynamic) return new response.NotFound();
 
         // ensure the list exists
         var list:models.List = models.List.manager.get(lid);
@@ -122,8 +122,8 @@ class Items {
     }
 
     @:delete('/$listHash/$itemHash') public function deleteItem(listHash:String, itemHash:String, user:JWTSession.User):Response {
-        var lid:Int = Server.extractID(listHash, Server.listHID);
-        var iid:Int = Server.extractID(itemHash, Server.itemHID);
+        var lid:Int = try { Server.extractID(listHash, Server.listHID); } catch(e:Dynamic) return new response.NotFound();
+        var iid:Int = try { Server.extractID(itemHash, Server.itemHID); } catch(e:Dynamic) return new response.NotFound();
 
         // ensure the list exists
         var list:models.List = models.List.manager.get(lid);

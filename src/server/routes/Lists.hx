@@ -80,7 +80,7 @@ class Lists {
     }
 
     @:delete('/$listHash') public function deleteList(listHash:String, user:JWTSession.User):Response {
-        var lid:Int = Server.extractID(listHash, Server.listHID);
+        var lid:Int = try { Server.extractID(listHash, Server.listHID); } catch(e:Dynamic) return new response.NotFound();
 
         // ensure the list exists
         var list:models.List = models.List.manager.get(lid);
