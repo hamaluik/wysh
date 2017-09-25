@@ -56,7 +56,7 @@ class User {
     }
 
     @:get('/search') public function searchUsers(query:{name:String}):Response {
-        var users:List<models.User> = models.User.manager.search($name.like(query.name));
+        var users:List<models.User> = models.User.manager.search($name.like('%${query.name}%'));
         return new response.Json({
             users: [for(user in users) {
                 id: Server.userHID.encode(user.id),
