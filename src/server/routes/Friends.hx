@@ -159,4 +159,39 @@ class Friends {
             message: 'Friend request denied!'
         });
     }
+
+    @:delete('/$userHash') public function unfriend(userHash:String, user:JWTSession.User):Response {
+        var deleter:models.User = models.User.manager.get(user.id);
+        if(deleter == null) return new response.NotFound();
+
+        var friendID:Int = try { Server.extractID(userHash, Server.userHID); } catch(e:Dynamic) return new response.NotFound();
+        var friend:models.User = models.User.manager.get(friendID);
+        if(friend == null) return new response.NotFound();
+
+        // make sure they're both friends
+        var friends:List<models.Friends> = models.Friends.manager.search(
+            ($friendA == deleter && $friendB == friend) ||
+            ($friendB == deleter && $friendA == friend)
+        );
+        if(friends.length < 1) return new response.MalformedRequest('You aren\'t friends!');
+
+        Log.info('${deleter.name} (${deleter.id}) unfriended ${friend.name} (${friend.id})!');
+
+        for(f in friends) {
+            f.delete();
+        }
+
+        // also delete any assosciations in the request table so they can form a friendship again
+        var requests:List<models.FriendRequests> = models.FriendRequests.manager.search(
+            ($requester == deleter && $requestee == friend) ||
+            ($requester == friend && $requestee == deleter)
+        );
+        for(r in requests) {
+            r.delete();
+        }
+
+        return new response.Json({
+            message: 'Unfriended!'
+        });
+    }
 }
