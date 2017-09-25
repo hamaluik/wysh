@@ -2,7 +2,6 @@ package pages;
 
 import mithril.M;
 
-// TODO: rename to wishlists page
 class Friends implements Mithril {
     public function new() {}
 

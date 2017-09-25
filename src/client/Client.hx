@@ -1,3 +1,4 @@
+import state.Profile.TProfile;
 import mithril.M;
 import js.html.Console;
 
@@ -12,11 +13,28 @@ class Client implements Mithril {
         M.route(js.Browser.document.body, '/', {
             '/': this,
             '/login/:token': new pages.Login(),
-            '/lists': new pages.Lists()
+            '/lists': new pages.Lists(),
+            '/friends': new pages.Friends()
         });
 
-        AppState.auth.token.observe().bind(function(token:String) {
+        /*AppState.auth.token.observe().bind(function(token:String) {
             console.info('token', token);
+        });*/
+
+        // automatically fetch the profile when we log in
+        AppState.auth.token.observe().bind(function(token:String) {
+            if(token != null) {
+                switch(AppState.profile.profile.value) {
+                    case Failed(e): if(e == null) {
+                        AppState.profile.fetchProfile()
+                        .next(function(profile:TProfile):Void {
+                            M.redraw();
+                        });
+                        // TODO: handle error?
+                    }
+                    case _: AppState.profile.profile.set(null);
+                }
+            }
         });
 
         AppState.auth.checkStoredToken();

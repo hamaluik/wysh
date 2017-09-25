@@ -7,15 +7,6 @@ class Lists implements Mithril {
 
     public function onmatch(params:haxe.DynamicAccess<String>, url:String) {
         if(AppState.auth.token.value == null) M.routeSet('/');
-        else {
-            // TODO: move this somewhere better
-            // fetch the profile if we don't have it yet
-            switch(AppState.profile.profile.value) {
-                case Failed(e): if(e == null) AppState.profile.fetchProfile();
-                case _: {}
-            }
-        }
-
         return null;
     }
 
