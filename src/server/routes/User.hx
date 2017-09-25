@@ -40,7 +40,7 @@ class User {
         });
     }
     
-    @:get('/$userHash/lists') public function geLists(userHash:String, user:JWTSession.User):Response {
+    @:get('/$userHash/lists') public function getLists(userHash:String, user:JWTSession.User):Response {
         // TODO: make sure we have permission to view this user's lists
 
         var u:models.User = models.User.manager.get(Server.extractID(userHash, Server.userHID));
@@ -51,6 +51,17 @@ class User {
             lists: [for(list in lists) {
                 id: Server.listHID.encode(list.id),
                 name: list.name
+            }]
+        });
+    }
+
+    @:get('/search') public function searchUsers(query:{name:String}):Response {
+        var users:List<models.User> = models.User.manager.search($name.like(query.name));
+        return new response.Json({
+            users: [for(user in users) {
+                id: Server.userHID.encode(user.id),
+                name: user.name,
+                picture: user.picture
             }]
         });
     }
