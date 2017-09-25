@@ -36,7 +36,7 @@ class Lists {
         });
     }
 
-    @:get('/friends') public function getMyLists(user:JWTSession.User):Response {
+    /*@:get('/friends') public function getMyLists(user:JWTSession.User):Response {
         var u:models.User = models.User.manager.get(user.id);
         if(u == null) return new response.NotFound();
 
@@ -57,7 +57,7 @@ class Lists {
         return new response.Json({
             friends: response
         });
-    }
+    }*/
 
     @:patch('/$listHash') public function updateList(listHash:String, body:{?name:String, ?privacy:String}, user:JWTSession.User):Response {
         var lid:Int = try { Server.extractID(listHash, Server.listHID); } catch(e:Dynamic) return new response.NotFound();
