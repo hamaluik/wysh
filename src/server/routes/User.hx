@@ -57,8 +57,16 @@ class User {
         });
     }
 
-    @:get('/search') public function searchUsers(query:{name:String}):Response {
-        var users:List<models.User> = models.User.manager.search($name.like('%${query.name}%'));
+    @:get('/search') public function searchUsers(query:{name:String}, user:JWTSession.User):Response {
+        if(query.name == null || StringTools.trim(query.name).length < 3)
+            return new response.Json({
+                users: []
+            });
+
+        var users:List<models.User> = models.User.manager.search(
+            $name.like('%${query.name}%')
+            && $id != user.id
+        );
         return new response.Json({
             users: [for(user in users) {
                 id: Server.userHID.encode(user.id),

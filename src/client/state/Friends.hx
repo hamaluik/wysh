@@ -1,5 +1,6 @@
 package state;
 
+import tink.CoreApi.Promise;
 import tink.CoreApi.FutureTrigger;
 import tink.core.Future;
 import tink.state.State;
@@ -18,6 +19,8 @@ class Friends {
 
     public var friendRequestsUpdate:State<Promised<Date>> = Failed(null);
     public var friendRequests:StringMap<TProfile> = new StringMap<TProfile>();
+
+    public var userSearch:State<Promised<Array<TProfile>>> = Failed(null);
 
     public function fetchFriends():Future<Noise> {
         var ft:FutureTrigger<Noise> = new FutureTrigger<Noise>();
@@ -72,6 +75,32 @@ class Friends {
         })
         .catchError(function(error) {
             friendRequestsUpdate.set(Failed(error));
+            ft.trigger(null);
+        });
+
+        return ft.asFuture();
+    }
+
+    public function searchForUsers(name:String):Future<Noise> {
+        var ft:FutureTrigger<Noise> = new FutureTrigger<Noise>();
+
+        userSearch.set(Loading);
+        M.request(WebRequest.endpoint('/user/search'), {
+            method: 'GET',
+            extract: WebRequest.extract,
+            data: {
+                name: name
+            },
+            headers: {
+                Authorization: 'Bearer ' + AppState.auth.token.value
+            }
+        })
+        .then(function(data:Dynamic) {
+            userSearch.set(Done(data.users));
+            ft.trigger(null);
+        })
+        .catchError(function(error) {
+            userSearch.set(Failed(error));
             ft.trigger(null);
         });
 
