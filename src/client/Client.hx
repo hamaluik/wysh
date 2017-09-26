@@ -1,4 +1,4 @@
-import state.Profile.TProfile;
+import types.TProfile;
 import mithril.M;
 import js.html.Console;
 
@@ -17,9 +17,9 @@ class Client implements Mithril {
             '/friends': new pages.Friends()
         });
 
-        /*AppState.auth.token.observe().bind(function(token:String) {
+        AppState.auth.token.observe().bind(function(token:String) {
             console.info('token', token);
-        });*/
+        });
 
         // automatically fetch the profile when we log in
         AppState.auth.token.observe().bind(function(token:String) {
@@ -27,21 +27,38 @@ class Client implements Mithril {
                 switch(AppState.profile.profile.value) {
                     case Failed(e): if(e == null) {
                         AppState.profile.fetchProfile()
-                        .next(function(profile:TProfile):Void {
+                        .handle(function(noise) {
                             M.redraw();
                         });
-                        // TODO: handle error?
                     }
-                    case _: AppState.profile.profile.set(null);
+                    case _: {}
                 }
             }
+            else AppState.profile.profile.set(Failed(null));
+        });
+
+        // automatically fetch friend requests when we log in
+        AppState.auth.token.observe().bind(function(token:String) {
+            if(token != null) {
+                switch(AppState.friends.friendRequestsUpdate.value) {
+                    case Failed(e): if(e == null) {
+                        AppState.friends.fetchFriendRequests()
+                        .handle(function(noise) {
+                            M.redraw();
+                        });
+                    }
+
+                    case _: {}
+                }
+            }
+            else AppState.friends.friendRequestsUpdate.set(Failed(null));
         });
 
         AppState.auth.checkStoredToken();
     }
 
     public function onmatch(params:haxe.DynamicAccess<String>, url:String) {
-        // if logged in, go to dashboard
+        // if logged in, go to lists
         if(AppState.auth.token.value != null) M.routeSet('/lists');
         return null;
     }
