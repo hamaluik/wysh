@@ -9,4 +9,4 @@
 -dce full
 
 -main Client
--js bin/wysh.js
+-js public/wysh.js
