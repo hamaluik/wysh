@@ -6,7 +6,8 @@ import tink.core.Future;
 import tink.state.State;
 import tink.state.Promised;
 import tink.core.Noise;
-import types.TProfile;
+import api.Profile;
+import api.Profiles;
 import haxe.ds.StringMap;
 import mithril.M;
 
@@ -15,12 +16,12 @@ class Friends {
     private function new(){}
 
     public var friendsUpdate:State<Promised<Date>> = Failed(null);
-    public var friends:StringMap<TProfile> = new StringMap<TProfile>();
+    public var friends:StringMap<Profile> = new StringMap<Profile>();
 
     public var friendRequestsUpdate:State<Promised<Date>> = Failed(null);
-    public var friendRequests:StringMap<TProfile> = new StringMap<TProfile>();
+    public var friendRequests:StringMap<Profile> = new StringMap<Profile>();
 
-    public var userSearch:State<Promised<Array<TProfile>>> = Failed(null);
+    public var userSearch:State<Promised<Array<Profile>>> = Failed(null);
 
     public function fetchFriends():Future<Noise> {
         var ft:FutureTrigger<Noise> = new FutureTrigger<Noise>();
@@ -33,11 +34,10 @@ class Friends {
                 Authorization: 'Bearer ' + Store.auth.token.value
             }
         })
-        .then(function(data:Dynamic) {
-            var df:Array<TProfile> = data.friends;
+        .then(function(response:Profiles) {
             // TODO: better way to remove old data?
             for(fk in friends.keys()) friends.remove(fk);
-            for(friend in df) {
+            for(friend in response.profiles) {
                 friends.set(friend.id, friend);
             }
             friendsUpdate.set(Done(Date.now()));
@@ -62,11 +62,10 @@ class Friends {
                 Authorization: 'Bearer ' + Store.auth.token.value
             }
         })
-        .then(function(data:Dynamic) {
-            var users:Array<TProfile> = data.users;
+        .then(function(response:Profiles) {
             // TODO: better way to remove old data?
             for(fk in friendRequests.keys()) friendRequests.remove(fk);
-            for(user in users) {
+            for(user in response.profiles) {
                 friendRequests.set(user.id, user);
             }
 
@@ -95,8 +94,8 @@ class Friends {
                 Authorization: 'Bearer ' + Store.auth.token.value
             }
         })
-        .then(function(data:Dynamic) {
-            userSearch.set(Done(data.users));
+        .then(function(response:Profiles) {
+            userSearch.set(Done(response.profiles));
             ft.trigger(null);
         })
         .catchError(function(error) {

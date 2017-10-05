@@ -9,7 +9,8 @@ class MessageObject implements APIResponseObject {
         this.message = message;
 }
 
-abstract Message(MessageObject) to APIResponse {
+@:forward
+abstract Message(MessageObject) from MessageObject to MessageObject to APIResponse {
     public function new(message:String)
         this = new MessageObject(message);
 

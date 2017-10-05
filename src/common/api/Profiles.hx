@@ -1,9 +1,11 @@
 package api;
 
 import api.APIResponse;
+#if sys
 import models.User;
 import models.Friends;
 import models.FriendRequests;
+#end
 
 @:allow(api.Profiles)
 class ProfilesObject implements APIResponseObject {
@@ -14,10 +16,12 @@ class ProfilesObject implements APIResponseObject {
     }
 }
 
-abstract Profiles(ProfilesObject) from ProfilesObject to APIResponse {
+@:forward
+abstract Profiles(ProfilesObject) from ProfilesObject to ProfilesObject to APIResponse {
     public function new(profiles:Array<Profile>)
         this = new ProfilesObject(profiles);
 
+#if sys
     @:from
     public static inline function fromDBUsers(users:Iterable<User>):Profiles
         return new Profiles([for(user in users) user]);
@@ -29,4 +33,5 @@ abstract Profiles(ProfilesObject) from ProfilesObject to APIResponse {
     @:from
     public static inline function fromDBFriendRequests(requests:Iterable<FriendRequests>):Profiles
         return new Profiles([for(request in requests) request]);
+#end
 }

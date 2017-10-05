@@ -10,6 +10,8 @@ class Auth {
         token.observe().bind(function(token:String):Void {
             if(token != null) {
                 js.Browser.getLocalStorage().setItem('token', token);
+
+                // TODO: refresh the token periodically!
             }
         });
     }

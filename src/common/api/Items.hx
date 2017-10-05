@@ -11,10 +11,12 @@ class ItemsObject implements APIResponseObject {
     }
 }
 
-abstract Items(ItemsObject) from ItemsObject to APIResponse {
+@:forward
+abstract Items(ItemsObject) from ItemsObject to ItemsObject to APIResponse {
     public function new(items:Array<Item>)
         this = new ItemsObject(items);
 
+#if sys
     @:from
     public static inline function fromDBItems(items:Iterable<models.Item>):Items
         return new Items([for(item in items) item]);
@@ -24,4 +26,5 @@ abstract Items(ItemsObject) from ItemsObject to APIResponse {
         for(item in this.items) item.hideReservedStatus();
         return this;
     }
+#end
 }

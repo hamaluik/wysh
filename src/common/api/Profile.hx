@@ -2,9 +2,12 @@ package api;
 
 import types.TProfile;
 import api.APIResponse;
+
+#if sys
 import models.User;
 import models.Friends;
 import models.FriendRequests;
+#end
 
 @:allow(api.Profile)
 class ProfileObject implements APIResponseObject {
@@ -19,7 +22,8 @@ class ProfileObject implements APIResponseObject {
     }
 }
 
-abstract Profile(ProfileObject) to APIResponse {
+@:forward
+abstract Profile(ProfileObject) from ProfileObject to ProfileObject to APIResponse {
     public function new(profile:TProfile)
         this = new ProfileObject(profile);
 
@@ -27,6 +31,15 @@ abstract Profile(ProfileObject) to APIResponse {
     public static inline function fromObj(profile:TProfile):Profile
         return new Profile(profile);
 
+    @:to
+    public inline function toObj():TProfile
+        return {
+            id: this.id,
+            name: this.name,
+            picture: this.picture
+        };
+
+#if sys
     @:from
     public static inline function fromDBUser(user:User):Profile
         return new Profile({
@@ -50,4 +63,5 @@ abstract Profile(ProfileObject) to APIResponse {
             name: request.requester.name,
             picture: request.requester.picture
         });
+#end
 }

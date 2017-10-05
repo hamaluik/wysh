@@ -28,10 +28,12 @@ class ItemObject implements APIResponseObject {
     }
 }
 
-abstract Item(ItemObject) to APIResponse {
+@:forward
+abstract Item(ItemObject) from ItemObject to ItemObject to APIResponse {
     public function new(item:TItem)
         this = new ItemObject(item);
 
+#if sys
     @:from
     public static inline function fromDB(item:models.Item):Item {
         return new Item({
@@ -52,4 +54,5 @@ abstract Item(ItemObject) to APIResponse {
         this.reservedOn = null;
         return this;
     }
+#end
 }

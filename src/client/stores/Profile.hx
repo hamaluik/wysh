@@ -9,13 +9,13 @@ import tink.state.State;
 import tink.state.Promised;
 import tink.core.Promise;
 import mithril.M;
-import types.TProfile;
+//import types.TProfile;
 
 class Profile {
     @:allow(Store)
     private function new(){}
 
-    public var profile:State<Promised<TProfile>> = new State<Promised<TProfile>>(Failed(null));
+    public var profile:State<Promised<api.Profile>> = new State<Promised<api.Profile>>(Failed(null));
 
     public function fetchProfile():Future<Noise> {
         var ft:FutureTrigger<Noise> = new FutureTrigger<Noise>();
@@ -28,7 +28,7 @@ class Profile {
                 Authorization: 'Bearer ' + Store.auth.token.value
             }
         })
-        .then(function(data:Dynamic) {
+        .then(function(data:api.Profile):Void {
             profile.set(Done(data));
             ft.trigger(null);
         })

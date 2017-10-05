@@ -11,11 +11,14 @@ class ListsObject implements APIResponseObject {
     }
 }
 
-abstract Lists(ListsObject) from ListsObject to APIResponse {
+@:forward
+abstract Lists(ListsObject) from ListsObject to ListsObject to APIResponse {
     public function new(lists:Array<List>)
         this = new ListsObject(lists);
 
+#if sys
     @:from
     public static inline function fromDB(lists:Iterable<models.List>):Lists
         return new Lists([for(list in lists) list]);
+#end
 }

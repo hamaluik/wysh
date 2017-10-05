@@ -9,7 +9,8 @@ class TokenObject implements APIResponseObject {
         this.token = token;
 }
 
-abstract Token(TokenObject) to APIResponse {
+@:forward
+abstract Token(TokenObject) from TokenObject to TokenObject to APIResponse {
     public function new(token:String)
         this = new TokenObject(token);
 
