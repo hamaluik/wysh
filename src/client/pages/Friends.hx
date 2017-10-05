@@ -9,12 +9,12 @@ class Friends implements Mithril {
     private var searchName:Ref<String> = '';
 
     public function onmatch(params:haxe.DynamicAccess<String>, url:String) {
-        if(AppState.auth.token.value == null) M.routeSet('/');
+        if(Store.auth.token.value == null) M.routeSet('/');
         return null;
     }
 
     public function render(vnode) {
-        var searchResults:Vnodes = switch(AppState.friends.userSearch.value) {
+        var searchResults:Vnodes = switch(Store.friends.userSearch.value) {
             case Loading: m('span.icon', m('i.fa.fa-spinner.fa-pulse.fa-3x'));
             case Done(results): [
                 for(user in results)
@@ -56,8 +56,8 @@ class Friends implements Mithril {
 
     function search(e:js.html.Event):Void {
         if(e != null) e.preventDefault();
-        AppState.friends.searchForUsers(searchName.value)
-        .handle(function(noise) {
+        Store.friends.searchForUsers(searchName.value)
+        .handle(function(_) {
             Client.console.info('Search results obtained!');
         });
     }

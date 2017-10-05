@@ -1,4 +1,4 @@
-package state;
+package stores;
 
 import tink.CoreApi.Promise;
 import tink.CoreApi.FutureTrigger;
@@ -11,7 +11,7 @@ import haxe.ds.StringMap;
 import mithril.M;
 
 class Friends {
-    @:allow(AppState)
+    @:allow(Store)
     private function new(){}
 
     public var friendsUpdate:State<Promised<Date>> = Failed(null);
@@ -30,7 +30,7 @@ class Friends {
             method: 'GET',
             extract: WebRequest.extract,
             headers: {
-                Authorization: 'Bearer ' + AppState.auth.token.value
+                Authorization: 'Bearer ' + Store.auth.token.value
             }
         })
         .then(function(data:Dynamic) {
@@ -59,7 +59,7 @@ class Friends {
             method: 'GET',
             extract: WebRequest.extract,
             headers: {
-                Authorization: 'Bearer ' + AppState.auth.token.value
+                Authorization: 'Bearer ' + Store.auth.token.value
             }
         })
         .then(function(data:Dynamic) {
@@ -92,7 +92,7 @@ class Friends {
                 name: name
             },
             headers: {
-                Authorization: 'Bearer ' + AppState.auth.token.value
+                Authorization: 'Bearer ' + Store.auth.token.value
             }
         })
         .then(function(data:Dynamic) {

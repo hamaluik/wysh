@@ -6,7 +6,7 @@ class Lists implements Mithril {
     public function new() {}
 
     public function onmatch(params:haxe.DynamicAccess<String>, url:String) {
-        if(AppState.auth.token.value == null) M.routeSet('/');
+        if(Store.auth.token.value == null) M.routeSet('/');
         return null;
     }
 

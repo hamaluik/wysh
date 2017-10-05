@@ -1,11 +1,11 @@
-package state;
+package stores;
 
 import tink.state.State;
 
 class Auth {
     public var token:State<String> = new State<String>(null);
 
-    @:allow(AppState)
+    @:allow(Store)
     private function new() {
         token.observe().bind(function(token:String):Void {
             if(token != null) {
@@ -31,7 +31,7 @@ class Auth {
     }
 
     public function clearStoredToken():Void {
-        token.set(null);
         js.Browser.getLocalStorage().removeItem('token');
+        token.set(null);
     }
 }

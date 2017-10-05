@@ -17,16 +17,16 @@ class Client implements Mithril {
             '/friends': new pages.Friends()
         });
 
-        AppState.auth.token.observe().bind(function(token:String) {
+        Store.auth.token.observe().bind(function(token:String) {
             console.info('token', token);
         });
 
         // automatically fetch the profile when we log in
-        AppState.auth.token.observe().bind(function(token:String) {
+        Store.auth.token.observe().bind(function(token:String) {
             if(token != null) {
-                switch(AppState.profile.profile.value) {
+                switch(Store.profile.profile.value) {
                     case Failed(e): if(e == null) {
-                        AppState.profile.fetchProfile()
+                        Store.profile.fetchProfile()
                         .handle(function(noise) {
                             M.redraw();
                         });
@@ -34,16 +34,16 @@ class Client implements Mithril {
                     case _: {}
                 }
             }
-            else AppState.profile.profile.set(Failed(null));
+            else Store.profile.profile.set(Failed(null));
         });
 
         // automatically fetch friend requests when we log in
-        AppState.auth.token.observe().bind(function(token:String) {
+        Store.auth.token.observe().bind(function(token:String) {
             if(token != null) {
-                switch(AppState.friends.friendRequestsUpdate.value) {
+                switch(Store.friends.friendRequestsUpdate.value) {
                     case Failed(e): if(e == null) {
-                        AppState.friends.fetchFriendRequests()
-                        .handle(function(noise) {
+                        Store.friends.fetchFriendRequests()
+                        .handle(function(_) {
                             M.redraw();
                         });
                     }
@@ -51,15 +51,15 @@ class Client implements Mithril {
                     case _: {}
                 }
             }
-            else AppState.friends.friendRequestsUpdate.set(Failed(null));
+            else Store.friends.friendRequestsUpdate.set(Failed(null));
         });
 
-        AppState.auth.checkStoredToken();
+        Store.auth.checkStoredToken();
     }
 
     public function onmatch(params:haxe.DynamicAccess<String>, url:String) {
         // if logged in, go to lists
-        if(AppState.auth.token.value != null) M.routeSet('/lists');
+        if(Store.auth.token.value != null) M.routeSet('/lists');
         return null;
     }
 

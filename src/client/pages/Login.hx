@@ -6,7 +6,7 @@ class Login implements Mithril {
     public function new(){}
 
     public function onmatch(params:haxe.DynamicAccess<String>, url:String) {
-        AppState.auth.token.set(params.get('token'));
+        Store.auth.token.set(params.get('token'));
         M.routeSet('/');
         return null;
     }

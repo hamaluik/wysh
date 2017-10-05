@@ -6,16 +6,16 @@ class NavBar implements Mithril {
     var menuShowing:Bool = false;
 
     public static function view(vnode:Vnode<NavBar>):Vnodes {
-        var profileImage:Vnodes = switch(AppState.profile.profile.value) {
+        var profileImage:Vnodes = switch(Store.profile.profile.value) {
             case Loading: m('span.icon', m('i.fa.fa-home'));
             case Done(profile): [m('img.is-1by1', { style: 'margin-right: 16px', src: profile.picture }), m('span.has-text-weight-bold', profile.name)];
             case Failed(error): null;
         }
 
-        var friendRequests:Vnodes = switch(AppState.friends.friendRequestsUpdate.value) {
+        var friendRequests:Vnodes = switch(Store.friends.friendRequestsUpdate.value) {
             case Loading: [m('span.navbar-item.icon', m('i.fa.fa-spinner.fa-pulse.fa-3x')), m('hr.navbar-divider')];
             case Done(updated): {
-                var count:Int = Lambda.count(AppState.friends.friendRequests);
+                var count:Int = Lambda.count(Store.friends.friendRequests);
                 [
                     m('span.navbar-item', count == 0 ? 'No friend requests' : 'You have ${count} friend request${count == 1 ? '' : 's'}!'),
                     m('hr.navbar-divider')
@@ -59,7 +59,7 @@ class NavBar implements Mithril {
     }
 
     static function signout() {
-        AppState.auth.clearStoredToken();
+        Store.auth.clearStoredToken();
         M.routeSet('/');
     }
 }

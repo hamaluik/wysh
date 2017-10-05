@@ -1,4 +1,4 @@
-package state;
+package stores;
 
 import tink.CoreApi.Noise;
 import tink.CoreApi.Future;
@@ -12,7 +12,7 @@ import mithril.M;
 import types.TProfile;
 
 class Profile {
-    @:allow(AppState)
+    @:allow(Store)
     private function new(){}
 
     public var profile:State<Promised<TProfile>> = new State<Promised<TProfile>>(Failed(null));
@@ -25,7 +25,7 @@ class Profile {
             method: 'GET',
             extract: WebRequest.extract,
             headers: {
-                Authorization: 'Bearer ' + AppState.auth.token.value
+                Authorization: 'Bearer ' + Store.auth.token.value
             }
         })
         .then(function(data:Dynamic) {
