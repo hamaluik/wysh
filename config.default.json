@@ -1,0 +1,33 @@
+{
+    "port": 8080,
+    "root": {
+        "client": "http://lvh.me:8000",
+        "api": "http://lvh.me:8080"
+    },
+
+    "oauth2": {
+        "google": {
+                "id": "?",
+                "secret": "?"
+        },
+            "facebook": {
+                "id": "?",
+                "secret": "?"
+        }
+    },
+
+    "hid": {
+        "minlength": 6,
+        "alphabet": "abcdefghijklmnopqrstuvwxyz012345679",
+        "salts": {
+                "user": "c9e33547-04d6-40a6-81ad-ba974a90b0ed",
+                "list": "6c797bc4-fab1-46e1-aabd-4f1aee6fc398",
+                "item": "6c13e03f-52bb-45bc-9850-93d02a5b4d7c"
+        }
+    },
+
+    "jwt": {
+        "secret": "af712db8-43d9-42ec-89c6-52ba7c5d27d4",
+        "duration": 86400
+    }
+}

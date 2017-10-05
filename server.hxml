@@ -2,16 +2,21 @@
 -cp src/server
 
 -lib tink_http_middleware
--lib tink_tcp
--lib tink_runloop
 -lib tink_web
 
 -lib record-macros
 -lib hashids
 -lib yaml
 -lib jwt
--lib hashids
--lib yaml
 
 -main Server
+
+--each
+
+-lib tink_runloop
+-lib tink_tcp
 -neko bin/wysh.n
+
+--next
+
+-php bin/wysh.php

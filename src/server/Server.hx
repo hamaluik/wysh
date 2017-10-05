@@ -2,12 +2,8 @@ import tink.http.Request.IncomingRequest;
 import haxe.CallStack;
 import haxe.CallStack.StackItem;
 import tink.http.Handler;
-import tink.http.containers.TcpContainer;
 import tink.http.Response;
 import tink.web.routing.*;
-
-import yaml.Yaml;
-import yaml.Parser;
 
 import hashids.Hashids;
 
@@ -62,7 +58,8 @@ class Server {
 
     static function main() {
         // load the config
-        config = Yaml.read("config.yaml", Parser.options().useObjects());
+        var configFile:String = sys.io.File.getContent("config.json");
+        config = haxe.Json.parse(configFile);
 
         // prepare the Hashids
         userHID = new Hashids(config.hid.salts.user, config.hid.minlength, config.hid.alphabet);
@@ -97,7 +94,11 @@ class Server {
         }
         handler = handler.applyMiddleware(new CORS(['http://lvh.me:8000']));
 
-        var container = new TcpContainer(config.port);
+        #if php
+        var container = tink.http.containers.PhpContainer.inst;
+        #else
+        var container = new tink.http.containers.TcpContainer(config.port);
+        #end
         Log.info('listening on port ${config.port}!');
         container.run(handler);
     }
