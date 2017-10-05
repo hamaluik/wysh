@@ -36,15 +36,7 @@ class Items {
         item.insert();
 
         Log.info('Added item "${item.name}" to user ${user.id}\'s list "${list.name}" (${list.id})!');
-
-        return new response.Json({
-            id: Server.itemHID.encode(item.id),
-            name: item.name,
-            url: item.url,
-            comments: item.comments,
-            image_path: item.image_path,
-            reservable: item.reservable
-        });
+        return new response.API<api.Item>(item);
     }
 
     @:get('/$listHash') public function getItems(listHash:String, user:JWTSession.User):Response {
@@ -62,26 +54,7 @@ class Items {
         var items:List<models.Item> = models.Item.manager.search($lid == list.id);
         if(items == null) items = new List<models.Item>();
 
-        return new response.Json({
-            id: Server.listHID.encode(list.id),
-            name: list.name,
-            items: items.map(function(item:models.Item):Dynamic {
-                return {
-                    id: Server.itemHID.encode(item.id),
-                    name: item.name,
-                    url: item.url,
-                    comments: item.comments,
-                    image_path: item.image_path,
-                    reservable: item.reservable,
-                    reserver: list.user == u || item.reserver == null ? null : {
-                        id: Server.userHID.encode(item.reserver.id),
-                        name: item.reserver.name,
-                        picture: item.reserver.picture
-                    },
-                    reservedOn: list.user == u ? null : item.reservedOn
-                }
-            }).array()
-        });
+        return new response.API(api.Items.fromDBItems(items).hideReservedStatus());
     }
 
     @:patch('/$listHash/$itemHash') public function updateItem(listHash:String, itemHash:String, body:{?name:String, ?url:String, ?comments:String, ?image_path:String, ?reservable:Bool, ?reserve:Bool, ?clearReserved:Bool}, user:JWTSession.User):Response {
@@ -152,20 +125,7 @@ class Items {
         }
         else return new response.MalformedRequest();
 
-        return new response.Json({
-            id: Server.itemHID.encode(item.id),
-            name: item.name,
-            url: item.url,
-            comments: item.comments,
-            image_path: item.image_path,
-            reservable: item.reservable,
-            reserver: list.user.id == user.id ? null : {
-                id: Server.userHID.encode(item.reserver.id),
-                name: item.reserver.name,
-                picture: item.reserver.picture
-            },
-            reservedOn: list.user.id == user.id ? null : item.reservedOn
-        });
+        return new response.API(api.Item.fromDB(item).hideReservedStatus());
     }
 
     @:delete('/$listHash/$itemHash') public function deleteItem(listHash:String, itemHash:String, user:JWTSession.User):Response {
@@ -194,6 +154,6 @@ class Items {
         // delete it!
         item.delete();
 
-        return new response.Json({});
+        return new response.API<api.Message>('Item deleted!');
     }
 }

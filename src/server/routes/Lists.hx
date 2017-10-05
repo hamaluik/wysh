@@ -29,35 +29,8 @@ class Lists {
         list.insert();
 
         Log.info('${u.name} (${u.id}) created a new list called "${list.name}"!');
-
-        return new response.Json({
-            id: Server.listHID.encode(list.id),
-            name: list.name
-        });
+        return new response.API<api.List>(list);
     }
-
-    /*@:get('/friends') public function getMyLists(user:JWTSession.User):Response {
-        var u:models.User = models.User.manager.get(user.id);
-        if(u == null) return new response.NotFound();
-
-        var response:Array<Dynamic> = new Array<Dynamic>();
-        var friends:List<models.Friends> = models.Friends.manager.search($friendA == u);
-        for(friend in friends) {
-            var lists:List<models.List> = models.List.manager.search($user == friend.friendB && ($privacy == Public || $privacy == Friends));
-            response.push({
-                id: Server.userHID.encode(friend.friendB.id),
-                name: friend.friendB.name,
-                lists: [for(list in lists) {
-                    id: Server.listHID.encode(list.id),
-                    name: list.name
-                }]
-            });
-        }
-
-        return new response.Json({
-            friends: response
-        });
-    }*/
 
     @:patch('/$listHash') public function updateList(listHash:String, body:{?name:String, ?privacy:String}, user:JWTSession.User):Response {
         var lid:Int = try { Server.extractID(listHash, Server.listHID); } catch(e:Dynamic) return new response.NotFound();
@@ -97,10 +70,7 @@ class Lists {
             Log.info('${list.user.name} updated their list "${list.name}"! ' + haxe.Json.stringify(body));
         }
 
-        return new response.Json({
-            id: Server.listHID.encode(list.id),
-            name: list.name
-        });
+        return new response.API<api.List>(list);
     }
 
     @:delete('/$listHash') public function deleteList(listHash:String, user:JWTSession.User):Response {
@@ -122,6 +92,6 @@ class Lists {
         // delete it!
         list.delete();
 
-        return new response.Json({});
+        return new response.API<api.Message>('List deleted!');
     }
 }

@@ -1,7 +1,6 @@
 package types;
 
-typedef TProfile = {
+typedef TList = {
     var id:String;
     var name:String;
-    var picture:Null<String>;
 };

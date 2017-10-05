@@ -1,6 +1,7 @@
 package routes;
 
 import tink.web.routing.*;
+
 using StringTools;
 
 class Friends {
@@ -10,13 +11,7 @@ class Friends {
         var u:models.User = models.User.manager.get(user.id);
         if(u == null) return new response.NotFound();
         var friends:List<models.Friends> = models.Friends.manager.search($friendA == u);
-        return new response.Json({
-            friends: [for(friend in friends) {
-                id: Server.userHID.encode(friend.friendB.id),
-                name: friend.friendB.name,
-                picture: friend.friendB.picture
-            }]
-        });
+        return new response.API<api.Profiles>(friends);
     }
 
     @:post('/request') public function requestFriendship(body:{id:String}, user:JWTSession.User):Response {
@@ -55,9 +50,7 @@ class Friends {
 
         Log.info('${requester.name} (${requester.id}) sent friend request to ${requestee.name} (${requestee.id})!');
 
-        return new response.Json({
-            message: 'Friend request sent!'
-        });
+        return new response.API<api.Message>('Friend request sent!');
     }
 
     @:get('/requests') public function getFriendRequests(user:JWTSession.User):Response {
@@ -65,13 +58,7 @@ class Friends {
         if(u == null) return new response.NotFound();
 
         var requests:List<models.FriendRequests> = models.FriendRequests.manager.search($requestee == u && $status == models.FriendRequestStatus.Pending, { orderBy: -createdOn });
-        return new response.Json({
-            users: [for(request in requests) {
-                id: Server.userHID.encode(request.requester.id),
-                name: request.requester.name,
-                picture: request.requester.picture
-            }]
-        });
+        return new response.API<api.Profiles>(requests);
     }
 
     @:post('/accept') public function acceptRequest(body:{id:String}, user:JWTSession.User):Response {
@@ -119,9 +106,7 @@ class Friends {
 
         Log.info('${requestee.name} (${requestee.id}) accepted friend request from ${requester.name} (${requester.id})!');
 
-        return new response.Json({
-            message: 'Friend request accepted!'
-        });
+        return new response.API<api.Message>('Friend request accepted!');
     }
 
     @:post('/reject') public function rejectRequest(body:{id:String}, user:JWTSession.User):Response {
@@ -155,9 +140,7 @@ class Friends {
 
         Log.info('${requestee.name} (${requestee.id}) rejected friend request from ${requester.name} (${requester.id})!');
 
-        return new response.Json({
-            message: 'Friend request denied!'
-        });
+        return new response.API<api.Message>('Friend request denied!');
     }
 
     @:delete('/$userHash') public function unfriend(userHash:String, user:JWTSession.User):Response {
@@ -190,8 +173,6 @@ class Friends {
             r.delete();
         }
 
-        return new response.Json({
-            message: 'Unfriended!'
-        });
+        return new response.API<api.Message>('Unfriended!');
     }
 }
