@@ -12,6 +12,18 @@ class NavBar implements Mithril {
             case Failed(error): null;
         }
 
+        var friendRequests:Vnodes = switch(AppState.friends.friendRequestsUpdate.value) {
+            case Loading: [m('span.navbar-item.icon', m('i.fa.fa-spinner.fa-pulse.fa-3x')), m('hr.navbar-divider')];
+            case Done(updated): {
+                var count:Int = Lambda.count(AppState.friends.friendRequests);
+                [
+                    m('span.navbar-item', count == 0 ? 'No friend requests' : 'You have ${count} friend request${count == 1 ? '' : 's'}!'),
+                    m('hr.navbar-divider')
+                ];
+            }
+            case Failed(error): null;
+        }
+
         return
             m('nav.navbar.is-dark', [
                 m('.container', [
@@ -36,6 +48,7 @@ class NavBar implements Mithril {
                             m('.navbar-item.has-dropdown.is-hoverable', [
                                 m('a.navbar-link', profileImage),
                                 m('.navbar-dropdown', [
+                                    friendRequests,
                                     m('a.navbar-item', { onclick: signout }, 'Sign Out')
                                 ])
                             ])

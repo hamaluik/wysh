@@ -1,5 +1,6 @@
 package state;
 
+import tink.CoreApi.Noise;
 import tink.CoreApi.Future;
 import tink.core.Outcome;
 import tink.core.Error;
@@ -8,12 +9,7 @@ import tink.state.State;
 import tink.state.Promised;
 import tink.core.Promise;
 import mithril.M;
-
-typedef TProfile = {
-    var id:String;
-    var name:String;
-    var picture:String;
-};
+import types.TProfile;
 
 class Profile {
     @:allow(AppState)
@@ -21,8 +17,8 @@ class Profile {
 
     public var profile:State<Promised<TProfile>> = new State<Promised<TProfile>>(Failed(null));
 
-    public function fetchProfile():Promise<TProfile> {
-        var f:FutureTrigger<Outcome<TProfile, Error>> = Future.trigger();
+    public function fetchProfile():Future<Noise> {
+        var ft:FutureTrigger<Noise> = new FutureTrigger<Noise>();
 
         profile.set(Loading);
         M.request(WebRequest.endpoint('/user/profile'), {
@@ -34,13 +30,13 @@ class Profile {
         })
         .then(function(data:Dynamic) {
             profile.set(Done(data));
-            f.trigger(Success(data));
+            ft.trigger(null);
         })
         .catchError(function(error) {
             profile.set(Failed(error));
-            f.trigger(Failure(error));
+            ft.trigger(null);
         });
 
-        return f.asFuture();
+        return ft.asFuture();
     }
 }
