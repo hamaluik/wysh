@@ -1,8 +1,6 @@
 -cp src/common
 -cp src/server
 
--lib tink_runloop
--lib tink_tcp
 -lib tink_http_middleware
 -lib tink_web
 
@@ -12,4 +10,4 @@
 -lib jwt
 
 -main Server
--neko bin/wysh.n
+-php bin/wysh.php

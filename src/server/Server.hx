@@ -92,7 +92,7 @@ class Server {
                 return ft.asFuture();
             }
         }
-        handler = handler.applyMiddleware(new CORS(['http://lvh.me:8000']));
+        handler = handler.applyMiddleware(new CORS());
 
         #if php
         var container = tink.http.containers.PhpContainer.inst;
