@@ -1,0 +1,3 @@
+# @install: lix --silent download "haxelib:jwt#1.3.0" into jwt/1.3.0/haxelib
+-D jwt=1.3.0
+-cp ${HAXESHIM_LIBCACHE}/jwt/1.3.0/haxelib/src

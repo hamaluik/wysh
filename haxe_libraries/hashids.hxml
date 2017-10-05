@@ -1,0 +1,3 @@
+# @install: lix --silent download "haxelib:hashids#1.0.0" into hashids/1.0.0/haxelib
+-D hashids=1.0.0
+-cp ${HAXESHIM_LIBCACHE}/hashids/1.0.0/haxelib/src
