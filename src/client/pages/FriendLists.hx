@@ -23,11 +23,10 @@ class FriendLists implements Mithril {
                                     m('a.is-active', { href: '#!/lists/friends' }, 'Friends'),
                                     m('a', { href: '#!/lists/self' }, 'Yours'),
                                 ]),
-                                m('.panel-block', [
-                                    m('a', 'Dennie'),
-                                    m('span', '/'),
-                                    m('a', 'My Christmas List')
-                                ]),
+                                m('a.panel-block', [
+                                    m('span.has-text-weight-bold', 'Dennie'),
+                                    m('span[style="white-space:pre"]', ' / Christmas List')
+                                ])
                             ])
                         ),
                         m('.column', [
