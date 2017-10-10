@@ -56,9 +56,6 @@ class Friends implements Mithril {
 
     function search(e:js.html.Event):Void {
         if(e != null) e.preventDefault();
-        Store.friends.searchForUsers(searchName.value)
-        .handle(function(_) {
-            Client.console.info('Search results obtained!');
-        });
+        Store.friends.searchForUsers(searchName.value);
     }
 }
