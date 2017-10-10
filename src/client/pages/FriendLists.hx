@@ -2,7 +2,7 @@ package pages;
 
 import mithril.M;
 
-class Lists implements Mithril {
+class FriendLists implements Mithril {
     public function new() {}
 
     public function onmatch(params:haxe.DynamicAccess<String>, url:String) {
@@ -16,23 +16,23 @@ class Lists implements Mithril {
             m('section.section',
                 m('.container', [
                     m('.columns', [
-                        m('.column.is-two-thirds', [
-                            m('article.media', [
-                                m('span.icon.media-left', m('i.fa.fa-home')),
-                                m('.media-content', 'This is a news item!')
-                            ])
-                        ]),
-                        m('.column',
+                        m('.column.is-one-third',
                             m('nav.panel', [
                                 m('p.panel-heading', 'Wishlists'),
                                 m('p.panel-tabs', [
-                                    m('a.is-active', 'Yours'),
-                                    m('a', 'Friends')
+                                    m('a.is-active', { href: '#!/lists/friends' }, 'Friends'),
+                                    m('a', { href: '#!/lists/self' }, 'Yours'),
                                 ]),
-                                m('a.panel-block', 'birthday list'),
-                                m('a.panel-block', 'Christmas list')
+                                m('.panel-block', [
+                                    m('a', 'Dennie'),
+                                    m('span', '/'),
+                                    m('a', 'My Christmas List')
+                                ]),
                             ])
-                        )
+                        ),
+                        m('.column', [
+                            m('p', 'Your friends don\'t have any lists!')
+                        ]),
                     ])
                 ])
             )

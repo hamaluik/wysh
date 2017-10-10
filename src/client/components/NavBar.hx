@@ -41,7 +41,7 @@ class NavBar implements Mithril {
                     ]),
                     m('.navbar-menu' + (vnode.state.menuShowing ? '.is-active' : ''), [
                         m('.navbar-start', [
-                            m('a.navbar-item', { href: '#!/lists' }, [m('span.icon', m('i.fa.fa-list')), 'Lists']),
+                            m('a.navbar-item', { href: '#!/lists/friends' }, [m('span.icon', m('i.fa.fa-list')), 'Lists']),
                             m('a.navbar-item', { href: '#!/friends' }, [m('span.icon', m('i.fa.fa-users')), 'Friends'])
                         ]),
                         m('.navbar-end', [
