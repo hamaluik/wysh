@@ -2,14 +2,10 @@ package stores;
 
 import tink.CoreApi.Noise;
 import tink.CoreApi.Future;
-import tink.core.Outcome;
-import tink.core.Error;
 import tink.CoreApi.FutureTrigger;
 import tink.state.State;
 import tink.state.Promised;
-import tink.core.Promise;
 import mithril.M;
-//import types.TProfile;
 
 class Profile {
     @:allow(Store)
@@ -28,7 +24,7 @@ class Profile {
                 Authorization: 'Bearer ' + Store.auth.token.value
             }
         })
-        .then(function(data:api.Profile):Void {
+        .then(function(data:Dynamic):Void {
             profile.set(Done(data));
             ft.trigger(null);
         })
