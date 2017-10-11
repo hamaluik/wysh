@@ -2,7 +2,8 @@ config.json
 *.db
 bin/
 
-# Created by https://www.gitignore.io/api/osx,node,linux,windows,visualstudiocode
+
+# Created by https://www.gitignore.io/api/osx,node,linux,windows,visualstudiocode,sass
 
 ### Linux ###
 *~
@@ -107,12 +108,17 @@ Network Trash Folder
 Temporary Items
 .apdisk
 
+### Sass ###
+.sass-cache/
+*.css.map
+
 ### VisualStudioCode ###
 .vscode/*
 !.vscode/settings.json
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
+.history
 
 ### Windows ###
 # Windows thumbnail cache files
@@ -135,4 +141,4 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 
-# End of https://www.gitignore.io/api/osx,node,linux,windows,visualstudiocode
+# End of https://www.gitignore.io/api/osx,node,linux,windows,visualstudiocode,sass
