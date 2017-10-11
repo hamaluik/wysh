@@ -1,1 +1,1 @@
--cmd sass -t compressed --sourcemap=none style.sass public/bulma.min.css
+-cmd sass -t compressed --sourcemap=none style.scss public/style.min.css

@@ -1,0 +1,85 @@
+@import "node_modules/bulma/bulma.sass";
+@import "node_modules/bulma-badge/badge.sass";
+
+body {
+    display: flex;
+    min-height: 100vh;
+    flex-direction: column;
+}
+
+.login-button {
+    padding-bottom: 16px;
+}
+
+@import url("https://fonts.googleapis.com/css?family=Roboto:500");
+a.google-auth {
+  display: block;
+  width: 100%;
+  border-radius: 1px;
+  padding: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  outline: none;
+  cursor: pointer;
+  background: #fff;
+  border: #fff solid 1px;
+  box-shadow: 1px 1px 5px 0 #b7b7b7;
+  text-align: left; }
+a.google-auth:hover {
+    box-shadow: 1px 1px 15px 0 #b7b7b7; }
+  a.google-auth span.google-icon {
+    background-image: url("res/g-logo.svg");
+    background-color: #fff;
+    background-size: 18px;
+    background-repeat: no-repeat;
+    background-position: 50%;
+    display: inline-block;
+    vertical-align: middle;
+    width: 40px;
+    height: 40px;
+    border-radius: 1px;
+    margin-right: 16px; }
+  a.google-auth span.google-text {
+    display: inline-block;
+    vertical-align: middle;
+    font-size: 14px;
+    font-weight: 500;
+    color: #000;
+    opacity: 0.54;
+    font-family: 'Roboto', sans-serif;
+    padding-right: 8px; }
+
+a.facebook-auth {
+  display: block;
+  width: 100%;
+  border-radius: 1px;
+  padding: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  outline: none;
+  cursor: pointer;
+  background: #4267b2;
+  box-shadow: 1px 1px 5px 0 #b7b7b7;
+  text-align: left; }
+a.facebook-auth:hover {
+    box-shadow: 1px 1px 15px 0 #b7b7b7; }
+  a.facebook-auth span.facebook-icon {
+    background-image: url("res/f-logo.svg");
+    background-color: #4267b2;
+    background-size: 24px;
+    background-repeat: no-repeat;
+    background-position: 50%;
+    display: inline-block;
+    vertical-align: middle;
+    width: 40px;
+    height: 40px;
+    border-radius: 1px;
+    margin-right: 16px; }
+  a.facebook-auth span.facebook-text {
+    display: inline-block;
+    vertical-align: middle;
+    font-size: 14px;
+    font-weight: 500;
+    color: #fff;
+    font-family: Helvetica, Arial, sans-serif;
+    padding-right: 8px; }
