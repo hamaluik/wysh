@@ -1,6 +1,7 @@
 package pages;
 
 import mithril.M;
+import components.ListSelector;
 
 class MyLists implements Mithril {
     public function new() {}
@@ -16,17 +17,7 @@ class MyLists implements Mithril {
             m('section.section',
                 m('.container', [
                     m('.columns', [
-                        m('.column.is-one-third',
-                            m('nav.panel', [
-                                m('p.panel-heading', 'Wishlists'),
-                                m('p.panel-tabs', [
-                                    m('a', { href: '#!/lists/friends' }, 'Friends'),
-                                    m('a.is-active', { href: '#!/lists/self' }, 'Yours'),
-                                ]),
-                                m('a.panel-block', 'Christmas List'),
-                                m('a.panel-block', 'Birthday List'),
-                            ])
-                        ),
+                        m(ListSelector, { type: Self }),
                         m('.column', [
                             m('p', 'You don\'t have any lists!')
                         ]),

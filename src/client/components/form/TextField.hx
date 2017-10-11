@@ -1,13 +1,13 @@
 package components.form;
 
-import tink.core.Ref;
+import tink.state.State;
 import mithril.M;
 
 class TextField implements Mithril {
     var value:String = null;
 
     public static function view(vnode:Vnode<TextField>):Vnodes {
-        var store:Ref<String> = vnode.attrs.get('store');
+        var store:State<String> = vnode.attrs.get('store');
         vnode.state.value = store.value;
 
         var options:Dynamic = {
@@ -16,7 +16,7 @@ class TextField implements Mithril {
             placeholder: (vnode.attrs.exists('placeholder') && vnode.attrs.get('placeholder') != null) ? vnode.attrs.get('placeholder') : '',
             oninput: M.withAttr("value", function(value:String):Void {
                 vnode.state.value = value;
-                store.value = value;
+                store.set(value);
             }),
             value: vnode.state.value,
             readonly: vnode.attrs.exists('readonly') && cast(vnode.attrs.get('readonly'), Bool),

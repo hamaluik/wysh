@@ -1,13 +1,13 @@
 package pages;
 
-import tink.core.Ref;
+import tink.state.State;
 import mithril.M;
 import api.Profile;
 
 class Friends implements Mithril {
     public function new() {}
 
-    private var searchName:Ref<String> = '';
+    private var searchName:State<String> = '';
 
     public function onmatch(params:haxe.DynamicAccess<String>, url:String) {
         if(Store.auth.token.value == null) M.routeSet('/');

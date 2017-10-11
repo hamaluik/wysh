@@ -10,7 +10,5 @@ class BadgeSpan implements Mithril {
     public static function oncreate(vnode:Vnode<BadgeSpan>):Void {
         if(vnode.attrs.exists('badge') && vnode.attrs.get('badge') != null)
             vnode.dom.dataset.badge = vnode.attrs.get('badge');
-        else
-            vnode.dom.removeAttribute('data-badge');
     }
 }

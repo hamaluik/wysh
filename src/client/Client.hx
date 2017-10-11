@@ -10,18 +10,6 @@ class Client implements Mithril {
     }
 
     public function new() {
-        M.route(js.Browser.document.body, '/', {
-            '/': this,
-            '/login/:token': new pages.Login(),
-            '/lists/friends': new pages.FriendLists(),
-            '/lists/self': new pages.MyLists(),
-            '/friends': new pages.Friends()
-        });
-
-        Store.auth.token.observe().bind(function(token:String) {
-            console.info('token', token);
-        });
-
         // automatically fetch the profile when we log in
         Store.auth.token.observe().bind(function(token:String) {
             if(token != null) {
@@ -52,8 +40,20 @@ class Client implements Mithril {
             }
             else Store.friends.friendRequestsUpdate.set(Failed(null));
         });
-
+        
         Store.auth.checkStoredToken();
+        M.route(js.Browser.document.body, '/', {
+            '/': this,
+            '/login/:token': new pages.Login(),
+            '/lists/friends': new pages.FriendLists(),
+            '/lists/self': new pages.MyLists(),
+            '/lists/new': new pages.NewList(),
+            '/friends': new pages.Friends()
+        });
+
+        Store.auth.token.observe().bind(function(token:String) {
+            console.info('token', token);
+        });
     }
 
     public function onmatch(params:haxe.DynamicAccess<String>, url:String) {

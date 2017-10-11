@@ -1,6 +1,6 @@
 package components.form;
 
-import tink.core.Ref;
+import tink.state.State;
 import mithril.M;
 
 class SearchBar implements Mithril {
@@ -8,7 +8,7 @@ class SearchBar implements Mithril {
 
     public static function view(vnode:Vnode<SearchBar>):Vnodes {
         var clickHandler:js.html.Event->Void = vnode.attrs.get('onclick');
-        var store:Ref<String> = vnode.attrs.get('store');
+        var store:State<String> = vnode.attrs.get('store');
         vnode.state.value = store.value;
 
         var options:Dynamic = {
@@ -17,7 +17,7 @@ class SearchBar implements Mithril {
             placeholder: (vnode.attrs.exists('placeholder') && vnode.attrs.get('placeholder') != null) ? vnode.attrs.get('placeholder') : '',
             oninput: M.withAttr("value", function(value:String):Void {
                 vnode.state.value = value;
-                store.value = value;
+                store.set(value);
                 clickHandler(null);
             }),
             value: vnode.state.value,
