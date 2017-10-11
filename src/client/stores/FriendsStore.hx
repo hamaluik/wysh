@@ -1,31 +1,28 @@
 package stores;
 
-import tink.CoreApi.Promise;
-import tink.CoreApi.FutureTrigger;
-import tink.core.Future;
 import tink.state.State;
 import tink.state.Promised;
-import tink.core.Noise;
-import api.Profile;
-import api.Profiles;
 import haxe.ds.StringMap;
 import mithril.M;
+import api.Profile;
+import api.Profiles;
 
-class Friends {
+class FriendsStore {
     @:allow(Store)
     private function new(){}
 
     public var friendsUpdate:State<Promised<Date>> = Failed(null);
-    public var friends:StringMap<Profile> = new StringMap<Profile>();
+    public var friends:StringMap<api.Profile> = new StringMap<api.Profile>();
 
     public var friendRequestsUpdate:State<Promised<Date>> = Failed(null);
-    public var friendRequests:StringMap<Profile> = new StringMap<Profile>();
+    public var friendRequests:StringMap<api.Profile> = new StringMap<api.Profile>();
 
-    public var userSearch:State<Promised<Array<Profile>>> = Failed(null);
+    public var userSearch:State<Promised<Array<api.Profile>>> = Failed(null);
 
-    public function fetchFriends():Future<Noise> {
-        var ft:FutureTrigger<Noise> = new FutureTrigger<Noise>();
+    public var pendingFriendRequestsUpdate:State<Promised<Date>> = Failed(null);
+    public var pendingFriendRequests:StringMap<api.Profile> = new StringMap<api.Profile>();
 
+    public function fetchFriends():Void {
         friendsUpdate.set(Loading);
         M.request(WebRequest.endpoint('/friends'), {
             method: 'GET',
@@ -41,19 +38,13 @@ class Friends {
                 friends.set(friend.id, friend);
             }
             friendsUpdate.set(Done(Date.now()));
-            ft.trigger(null);
         })
         .catchError(function(error) {
             friendsUpdate.set(Failed(error));
-            ft.trigger(null);
         });
-
-        return ft.asFuture();
     }
 
-    public function fetchFriendRequests():Future<Noise> {
-        var ft:FutureTrigger<Noise> = new FutureTrigger<Noise>();
-
+    public function fetchFriendRequests():Void {
         friendRequestsUpdate.set(Loading);
         M.request(WebRequest.endpoint('/friends/requests'), {
             method: 'GET',
@@ -70,19 +61,36 @@ class Friends {
             }
 
             friendRequestsUpdate.set(Done(Date.now()));
-            ft.trigger(null);
         })
         .catchError(function(error) {
             friendRequestsUpdate.set(Failed(error));
-            ft.trigger(null);
         });
-
-        return ft.asFuture();
     }
 
-    public function searchForUsers(name:String):Future<Noise> {
-        var ft:FutureTrigger<Noise> = new FutureTrigger<Noise>();
+    public function fetchPendingRequests():Void {
+        pendingFriendRequestsUpdate.set(Loading);
+        M.request(WebRequest.endpoint('/friends/requests'), {
+            method: 'GET',
+            extract: WebRequest.extract,
+            headers: {
+                Authorization: 'Bearer ' + Store.auth.token.value
+            }
+        })
+        .then(function(response:Profiles) {
+            // TODO: better way to remove old data?
+            for(fk in pendingFriendRequests.keys()) pendingFriendRequests.remove(fk);
+            for(user in response.profiles) {
+                pendingFriendRequests.set(user.id, user);
+            }
 
+            pendingFriendRequestsUpdate.set(Done(Date.now()));
+        })
+        .catchError(function(error) {
+            pendingFriendRequestsUpdate.set(Failed(error));
+        });
+    }
+
+    public function searchForUsers(name:String):Void {
         userSearch.set(Loading);
         M.request(WebRequest.endpoint('/user/search'), {
             method: 'GET',
@@ -96,13 +104,31 @@ class Friends {
         })
         .then(function(response:Profiles) {
             userSearch.set(Done(response.profiles));
-            ft.trigger(null);
         })
         .catchError(function(error) {
             userSearch.set(Failed(error));
-            ft.trigger(null);
         });
+    }
 
-        return ft.asFuture();
+    public function requestFriend(user:Profile):Void {
+        pendingFriendRequestsUpdate.set(Loading);
+        M.request(WebRequest.endpoint('/friends/request'), {
+            method: 'POST',
+            extract: WebRequest.extract,
+            data: {
+                id: user.id
+            },
+            headers: {
+                Authorization: 'Bearer ' + Store.auth.token.value
+            }
+        })
+        .then(function(resp:Dynamic) {
+            var response:api.Message = cast(resp);
+            pendingFriendRequests.set(user.id, user);
+            pendingFriendRequestsUpdate.set(Done(Date.now()));
+        })
+        .catchError(function(error) {
+            pendingFriendRequestsUpdate.set(Failed(error));
+        });
     }
 }

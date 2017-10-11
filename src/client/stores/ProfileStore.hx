@@ -1,21 +1,17 @@
 package stores;
 
-import tink.CoreApi.Noise;
-import tink.CoreApi.Future;
-import tink.CoreApi.FutureTrigger;
 import tink.state.State;
 import tink.state.Promised;
 import mithril.M;
+import api.Profile;
 
-class Profile {
+class ProfileStore {
     @:allow(Store)
     private function new(){}
 
-    public var profile:State<Promised<api.Profile>> = new State<Promised<api.Profile>>(Failed(null));
+    public var profile:State<Promised<Profile>> = new State<Promised<Profile>>(Failed(null));
 
-    public function fetchProfile():Future<Noise> {
-        var ft:FutureTrigger<Noise> = new FutureTrigger<Noise>();
-
+    public function fetchProfile():Void {
         profile.set(Loading);
         M.request(WebRequest.endpoint('/user/profile'), {
             method: 'GET',
@@ -26,13 +22,9 @@ class Profile {
         })
         .then(function(data:Dynamic):Void {
             profile.set(Done(data));
-            ft.trigger(null);
         })
         .catchError(function(error) {
             profile.set(Failed(error));
-            ft.trigger(null);
         });
-
-        return ft.asFuture();
     }
 }

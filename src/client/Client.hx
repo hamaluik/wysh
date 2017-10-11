@@ -28,9 +28,9 @@ class Client implements Mithril {
                 switch(Store.profile.profile.value) {
                     case Failed(e): if(e == null) {
                         Store.profile.fetchProfile()
-                        .handle(function(noise) {
+                        /*.handle(function(noise) {
                             M.redraw();
-                        });
+                        })*/;
                     }
                     case _: {}
                 }
@@ -43,10 +43,8 @@ class Client implements Mithril {
             if(token != null) {
                 switch(Store.friends.friendRequestsUpdate.value) {
                     case Failed(e): if(e == null) {
-                        Store.friends.fetchFriendRequests()
-                        .handle(function(_) {
-                            M.redraw();
-                        });
+                        Store.friends.fetchFriendRequests();
+                        Store.friends.fetchPendingRequests();
                     }
 
                     case _: {}

@@ -2,7 +2,7 @@ package stores;
 
 import tink.state.State;
 
-class Auth {
+class AuthStore {
     public var token:State<String> = new State<String>(null);
 
     @:allow(Store)

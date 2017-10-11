@@ -2,6 +2,7 @@ package pages;
 
 import tink.core.Ref;
 import mithril.M;
+import api.Profile;
 
 class Friends implements Mithril {
     public function new() {}
@@ -17,7 +18,19 @@ class Friends implements Mithril {
         var searchResults:Vnodes = switch(Store.friends.userSearch.value) {
             case Loading: m('span.icon', m('i.fa.fa-spinner.fa-pulse.fa-3x'));
             case Done(results): [
-                for(user in results)
+                for(user in results) {
+                    var addLink:Vnodes =
+                        if(Store.friends.pendingFriendRequests.exists(user.id))
+                            m('span', [
+                                m('span.icon', m('i.fa.fa-check')),
+                                ' Friend request sent!'
+                            ]);
+                        else
+                            m('a', { onclick: function() { addFriend(user); } }, [
+                                m('span.icon', m('i.fa.fa-plus')),
+                                ' Add friend'
+                            ]);
+
                     m('article.media', [
                         m('figure.media-left',
                             m('p.image.is-64x64', m('img', { src: user.picture }))
@@ -25,12 +38,10 @@ class Friends implements Mithril {
                         m('.media-content', m('.content', m('p', [
                             m('strong', user.name),
                             m('br'),
-                            m('a', {}, [
-                                m('span.icon', m('i.fa.fa-plus')),
-                                ' Add Friend'
-                            ])
+                            addLink
                         ])))
-                    ])
+                    ]);
+                }
             ];
             case Failed(error): null;
         };
@@ -57,5 +68,9 @@ class Friends implements Mithril {
     function search(e:js.html.Event):Void {
         if(e != null) e.preventDefault();
         Store.friends.searchForUsers(searchName.value);
+    }
+
+    function addFriend(profile:Profile):Void {
+        Store.friends.requestFriend(profile);
     }
 }

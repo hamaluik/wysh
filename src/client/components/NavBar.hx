@@ -1,23 +1,38 @@
 package components;
 
 import mithril.M;
+using Lambda;
 
 class NavBar implements Mithril {
     var menuShowing:Bool = false;
 
     public static function view(vnode:Vnode<NavBar>):Vnodes {
+        var notifications:Int = 0;
+        notifications += Store.friends.friendRequests.count();
+
         var profileImage:Vnodes = switch(Store.profile.profile.value) {
             case Loading: m('span.icon', m('i.fa.fa-home'));
-            case Done(profile): [m('img.is-1by1', { style: 'margin-right: 16px', src: profile.picture }), m('span.has-text-weight-bold', profile.name)];
+            case Done(profile): [
+                m('img.is-1by1', { style: 'margin-right: 16px', src: profile.picture }),
+                m(BadgeSpan, {
+                    classes: '.has-text-weight-bold',
+                    badge: notifications > 0
+                        ? Std.string(notifications)
+                        : null
+                }, profile.name)
+            ];
             case Failed(error): null;
         }
 
         var friendRequests:Vnodes = switch(Store.friends.friendRequestsUpdate.value) {
             case Loading: [m('span.navbar-item.icon', m('i.fa.fa-spinner.fa-pulse.fa-3x')), m('hr.navbar-divider')];
             case Done(updated): {
-                var count:Int = Lambda.count(Store.friends.friendRequests);
+                var count:Int = Store.friends.friendRequests.count();
                 [
-                    m('span.navbar-item', count == 0 ? 'No friend requests' : 'You have ${count} friend request${count == 1 ? '' : 's'}!'),
+                    switch(count) {
+                        case 0: m('span.navbar-item', 'No friend requests');
+                        case _: m('a.navbar-item', { href: '#!/friends' }, 'You have ${count} friend request${count == 1 ? '' : 's'}!');
+                    },
                     m('hr.navbar-divider')
                 ];
             }

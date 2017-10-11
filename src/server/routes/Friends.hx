@@ -61,6 +61,14 @@ class Friends {
         return new response.API<api.Profiles>(requests);
     }
 
+    @:get('/pending') public function getPendingRequests(user:JWTSession.User):Response {
+        var u:models.User = models.User.manager.get(user.id);
+        if(u == null) return new response.NotFound();
+
+        var requests:List<models.FriendRequests> = models.FriendRequests.manager.search($requester == u && $status == models.FriendRequestStatus.Pending, { orderBy: -createdOn });
+        return new response.API<api.Profiles>(requests);
+    }
+
     @:post('/accept') public function acceptRequest(body:{id:String}, user:JWTSession.User):Response {
         var u:models.User = models.User.manager.get(user.id);
         if(u == null) return new response.NotFound();
