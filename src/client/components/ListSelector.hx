@@ -1,6 +1,8 @@
 package components;
 
 import mithril.M;
+import types.TPrivacy;
+using Lambda;
 
 enum TListType {
     Friends;
@@ -19,9 +21,22 @@ class ListSelector implements Mithril {
                 ])
             ];
 
-            case Self: [
-                m('.panel-block', 'You don\'t have any lists yet!'),
-            ];
+            case Self: {
+                if(Store.lists.myLists.count() < 1)
+                    m('.panel-block', 'You don\'t have any lists yet!');
+                else [
+                    for(list in Store.lists.myLists.iterator())
+                        m('a.panel-block', [
+                            m(Icon, { name: switch(list.privacy) {
+                                case Public: 'globe';
+                                case Friends: 'users';
+                                case Private: 'lock';
+                                case _: 'question';
+                            } }),
+                            m('span', list.name)
+                        ])
+                ];
+            }
         }
 
         var addButton:Vnodes = switch(type) {

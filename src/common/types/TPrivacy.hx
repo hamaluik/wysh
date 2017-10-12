@@ -1,6 +1,6 @@
-package models;
+package types;
 
-enum Privacy {
+enum TPrivacy {
     Private;
     Friends;
     Public;

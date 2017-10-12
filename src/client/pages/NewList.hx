@@ -6,13 +6,21 @@ import mithril.M;
 import components.ListSelector;
 import components.form.TextField;
 import components.form.SubmitButton;
+import components.form.DropDown;
 import components.Icon;
+
+using StringTools;
 
 class NewList implements Mithril {
     private var newListName:State<String> = "";
+    private var newListPrivacy:State<String> = "Friends";
     private var addButtonEnabled:Bool = false;
+    private var privacyTypes:Array<String>;
+    private var loading:Bool = false;
 
     public function new() {
+        privacyTypes = haxe.EnumTools.getConstructors(types.TPrivacy);
+
         newListName.observe().bind(function(v:String):Void {
             addButtonEnabled = v != null && StringTools.trim(v).length > 0;
             M.redraw();
@@ -35,7 +43,8 @@ class NewList implements Mithril {
                             m('h1', 'New List'),
                             m('form', { onsubmit: createList }, [
                                 m(TextField, { label: 'List Name', placeholder: 'Christmas List', store: newListName }),
-                                m(SubmitButton, { disabled: !addButtonEnabled }, [
+                                m(DropDown, { label: 'Privacy', store: newListPrivacy, types: privacyTypes }),
+                                m(SubmitButton, { disabled: !addButtonEnabled, loading: loading }, [
                                     m(Icon, { name: 'plus' }),
                                     m('span', 'Create List')
                                 ])
@@ -49,6 +58,13 @@ class NewList implements Mithril {
 
     function createList(e:Event):Void {
         if(e != null) e.preventDefault();
-        Client.console.info('Creating list: ' + newListName.value);
+        if(newListName.value.trim().length < 1) return;
+        loading = true;
+        M.redraw();
+        Store.lists.createList(newListName.value.trim(), newListPrivacy.value)
+        .handle(function(_):Void {
+            loading = false;
+            M.routeSet('/lists/self');
+        });
     }
 }

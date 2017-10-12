@@ -2,7 +2,7 @@ package routes;
 
 import tink.web.routing.*;
 
-import models.Privacy;
+import types.TPrivacy;
 
 using Lambda;
 using StringTools;
@@ -21,14 +21,15 @@ class Lists {
         list.user = u;
         list.createdOn = Date.now();
         list.modifiedOn = Date.now();
+        if(body.privacy != null) body.privacy = body.privacy.toLowerCase();
         list.privacy = switch(body.privacy) {
-            case 'public': Privacy.Public;
-            case 'friends': Privacy.Friends;
-            case _: models.Privacy.Private;
+            case 'public': Public;
+            case 'friends': Friends;
+            case _: Private;
         };
         list.insert();
 
-        Log.info('${u.name} (${u.id}) created a new list called "${list.name}"!');
+        Log.info('${u.name} (${u.id}) created a new list called "${list.name}" (privacy: ${list.privacy})!');
         return new response.API<api.List>(list);
     }
 
@@ -53,15 +54,15 @@ class Lists {
             modified = true;
         }
         if(body.privacy == 'public') {
-            list.privacy = Privacy.Public;
+            list.privacy = Public;
             modified = true;
         }
         else if(body.privacy == 'friends') {
-            list.privacy = Privacy.Friends;
+            list.privacy = Friends;
             modified = true;
         }
         else if(body.privacy == 'private') {
-            list.privacy = Privacy.Private;
+            list.privacy = Private;
             modified = true;
         }
 

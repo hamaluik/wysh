@@ -40,6 +40,20 @@ class Client implements Mithril {
             }
             else Store.friends.friendRequestsUpdate.set(Failed(null));
         });
+
+        // automatically fetch our lists when we log in
+        Store.auth.token.observe().bind(function(token:String) {
+            if(token != null) {
+                switch(Store.lists.myListsUpdate.value) {
+                    case Failed(e): if(e == null) {
+                        Store.lists.fetchMyLists();
+                    }
+
+                    case _: {}
+                }
+            }
+            else Store.friends.friendRequestsUpdate.set(Failed(null));
+        });
         
         Store.auth.checkStoredToken();
         M.route(js.Browser.document.body, '/', {
