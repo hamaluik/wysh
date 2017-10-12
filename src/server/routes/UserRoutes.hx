@@ -2,7 +2,7 @@ package routes;
 
 import tink.web.routing.*;
 
-class User {
+class UserRoutes {
     public function new() {}
 
     @:get('/profile') public function getMyProfile(user:JWTSession.User):Response {
@@ -11,7 +11,7 @@ class User {
         return new response.API<api.Profile>(u);
     }
 
-    @:get('/$userHash/profile') public function getProfile(userHash:String, user:JWTSession.User):Response {
+    @:get('/profile/$userHash') public function getProfile(userHash:String, user:JWTSession.User):Response {
         // TODO: make sure we have permission to view this user
 
         var u:models.User = models.User.manager.get(Server.extractID(userHash, Server.userHID));
@@ -27,7 +27,7 @@ class User {
         return new response.API<api.Lists>(lists);
     }
     
-    @:get('/$userHash/lists') public function getLists(userHash:String, user:JWTSession.User):Response {
+    @:get('/lists/$userHash') public function getLists(userHash:String, user:JWTSession.User):Response {
         // TODO: make sure we have permission to view this user's lists
 
         var u:models.User = models.User.manager.get(Server.extractID(userHash, Server.userHID));

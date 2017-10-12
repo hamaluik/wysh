@@ -3,7 +3,7 @@ package routes;
 import tink.web.routing.*;
 import jwt.JWT;
 
-class Auth {
+class AuthRoutes {
     public function new() {}
 
     public static function buildToken(id:Int):String {
@@ -16,7 +16,7 @@ class Auth {
     }
 
     @:get public function refresh(user:JWTSession.User):Response {
-        var token:String = Auth.buildToken(user.id);
+        var token:String = buildToken(user.id);
         Log.info('Issued refresh token for user ${user.id}!');
         return new response.API(new api.Token(token));
     }

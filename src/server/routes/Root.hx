@@ -13,26 +13,26 @@ class Root {
 
     @:restrict(true)
     @:sub('/api/auth') public function auth() {
-        return new Auth();
+        return new AuthRoutes();
     }
 
     @:restrict(true)
-    @:sub('/api/lists') public function lists() {
-        return new Lists();
+    @:sub('/api/list') public function list() {
+        return new ListRoutes();
     }
 
     @:restrict(true)
-    @:sub('/api/list') public function items() {
-        return new Items();
+    @:sub('/api/item') public function items() {
+        return new ItemRoutes();
     }
 
     @:restrict(true)
     @:sub('/api/user') public function user() {
-        return new User();
+        return new UserRoutes();
     }
 
     @:restrict(true)
     @:sub('/api/friends') public function friends() {
-        return new Friends();
+        return new FriendRoutes();
     }
 }

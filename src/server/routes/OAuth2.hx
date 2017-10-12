@@ -139,7 +139,7 @@ class OAuth2 {
                         u;
                     }
 
-                    var token:String = Auth.buildToken(user.id);
+                    var token:String = AuthRoutes.buildToken(user.id);
                     return new response.Redirect(Server.config.root.client + '#!/login/${token.urlEncode()}');
                 });
 
@@ -187,7 +187,7 @@ class OAuth2 {
                         u;
                     }
 
-                    var token:String = Auth.buildToken(user.id);
+                    var token:String = AuthRoutes.buildToken(user.id);
                     return new response.Redirect(Server.config.root.client + '#!/login/${token.urlEncode()}');
                 });
 

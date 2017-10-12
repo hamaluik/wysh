@@ -4,7 +4,7 @@ import tink.web.routing.*;
 
 using StringTools;
 
-class Friends {
+class FriendRoutes {
     public function new() {}
 
     @:get('/') public function getFriends(user:JWTSession.User):Response {
