@@ -1,0 +1,14 @@
+@import "../node_modules/bulma/bulma.sass";
+@import "../node_modules/bulma-badge/badge.sass";
+@import "sociallogins.scss";
+@import "fa.scss";
+
+body {
+    display: flex;
+    min-height: 100vh;
+    flex-direction: column;
+}
+
+.icon {
+  margin-right: 0.5em;
+}
