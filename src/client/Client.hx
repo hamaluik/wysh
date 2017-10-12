@@ -17,6 +17,7 @@ class Client implements Mithril {
             '/lists/friends': new pages.FriendLists(),
             '/lists/self': new pages.MyLists(),
             '/lists/new': new pages.NewList(),
+            '/list/:listid': new pages.ViewList(),
             '/friends': new pages.Friends()
         });
     }

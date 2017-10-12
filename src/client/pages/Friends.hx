@@ -97,28 +97,24 @@ class Friends implements Mithril {
             m('section.section',
                 m('.container',
                     m('.columns', [
-                        m('.column.is-half',
-                            m('.box.content', [
-                                m('h1', 'Friend Requests'),
-                                m('form', { onsubmit: search }, [
-                                    m(components.form.SearchBar, {
-                                        store: searchName,
-                                        placeholder: 'Search for people by name',
-                                        onclick: search,
-                                        loading: Store.friends.userSearch.value.match(Loading)
-                                    })
-                                ]),
-                                searchResults,
-                                friendRequests,
-                                pendingRequests
-                            ])
-                        ),
-                        m('.column.is-half',
-                                m('.box.content', [
-                                m('h1', 'Friends'),
-                                friendsList
-                            ])
-                        )
+                        m('.column.is-half', [
+                            m('h1', 'Friend Requests'),
+                            m('form', { onsubmit: search }, [
+                                m(components.form.SearchBar, {
+                                    store: searchName,
+                                    placeholder: 'Search for people by name',
+                                    onclick: search,
+                                    loading: Store.friends.userSearch.value.match(Loading)
+                                })
+                            ]),
+                            searchResults,
+                            friendRequests,
+                            pendingRequests
+                        ]),
+                        m('.column.is-half.content',[
+                            m('h1', 'Friends'),
+                            friendsList
+                        ])
                     ])
                 )
             )

@@ -43,19 +43,17 @@ class NewList implements Mithril {
                 m('.container', [
                     m('.columns', [
                         m(ListSelector, { type: Self }),
-                        m('.column.content',
-                            m('.box', [
-                                m('h1', 'New List'),
-                                m('form', { onsubmit: createList }, [
-                                    m(TextField, { label: 'List Name', placeholder: 'Christmas List', store: newListName }),
-                                    m(DropDown, { label: 'Privacy', store: newListPrivacy, types: privacyTypes }),
-                                    m(SubmitButton, { disabled: !addButtonEnabled, loading: loading }, [
-                                        m(Icon, { name: 'plus' }),
-                                        m('span', 'Create List')
-                                    ])
+                        m('.column.content', [
+                            m('h1.title', 'New List'),
+                            m('form', { onsubmit: createList }, [
+                                m(TextField, { label: 'List Name', placeholder: 'Christmas List', store: newListName }),
+                                m(DropDown, { label: 'Privacy', store: newListPrivacy, types: privacyTypes }),
+                                m(SubmitButton, { disabled: !addButtonEnabled, loading: loading }, [
+                                    m(Icon, { name: 'plus' }),
+                                    m('span', 'Create List')
                                 ])
                             ])
-                        ),
+                        ]),
                     ])
                 ])
             )

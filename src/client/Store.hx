@@ -3,4 +3,5 @@ class Store {
     public static var profile(default, null):stores.ProfileStore = new stores.ProfileStore();
     public static var friends(default, null):stores.FriendsStore = new stores.FriendsStore();
     public static var lists(default, null):stores.ListsStore = new stores.ListsStore();
+    public static var items(default, null):stores.ItemsStore = new stores.ItemsStore();
 }

@@ -26,7 +26,9 @@ class ListSelector implements Mithril {
                     m('.panel-block', 'You don\'t have any lists yet!');
                 else [
                     for(list in Store.lists.myLists.iterator())
-                        m('a.panel-block', [
+                        m('a.panel-block', {
+                                href: '#!/list/${list.id}'
+                            }, [
                             m(Icon, { name: switch(list.privacy) {
                                 case Public: 'globe';
                                 case Friends: 'users';
