@@ -6,6 +6,7 @@ import mithril.M;
 import components.ListSelector;
 import components.form.TextField;
 import components.form.SubmitButton;
+import components.Icon;
 
 class NewList implements Mithril {
     private var newListName:State<String> = "";
@@ -35,7 +36,7 @@ class NewList implements Mithril {
                             m('form', { onsubmit: createList }, [
                                 m(TextField, { label: 'List Name', placeholder: 'Christmas List', store: newListName }),
                                 m(SubmitButton, { disabled: !addButtonEnabled }, [
-                                    m('span.icon', m('i.fa.fa-plus')),
+                                    m(Icon, { name: 'plus' }),
                                     m('span', 'Create List')
                                 ])
                             ])

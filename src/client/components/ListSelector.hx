@@ -31,7 +31,7 @@ class ListSelector implements Mithril {
                     m('a.button.is-link.is-outlined.is-fullwidth', {
                         href: '#!/lists/new'
                     }, [
-                        m('span.icon', m('i.fa.fa-plus')),
+                        m(Icon, { name: 'plus' }),
                         m('span', 'New list')
                     ])
                 );

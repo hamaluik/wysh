@@ -3,6 +3,7 @@ package pages;
 import tink.state.State;
 import mithril.M;
 import api.Profile;
+import components.Icon;
 
 class Friends implements Mithril {
     public function new() {}
@@ -16,19 +17,19 @@ class Friends implements Mithril {
 
     public function render(vnode) {
         var searchResults:Vnodes = switch(Store.friends.userSearch.value) {
-            case Loading: m('span.icon', m('i.fa.fa-spinner.fa-pulse.fa-3x'));
+            case Loading: m(Icon, { name: 'spinner-third', spin: true } );
             case Done(results): [
                 for(user in results) {
                     var addLink:Vnodes =
                         if(Store.friends.pendingFriendRequests.exists(user.id))
                             m('span', [
-                                m('span.icon', m('i.fa.fa-check')),
+                                m(Icon, { name: 'check' } ),
                                 ' Friend request sent!'
                             ]);
                         else
                             m('a', { onclick: function() { addFriend(user); } }, [
-                                m('span.icon', m('i.fa.fa-plus')),
-                                ' Add friend'
+                                m(Icon, { name: 'plus' }),
+                                m('span', 'Add friend')
                             ]);
 
                     m('article.media', [
@@ -48,7 +49,6 @@ class Friends implements Mithril {
 
         var friendRequests:Vnodes = [
             for(user in Store.friends.friendRequests.iterator()) {
-
                 m('article.media', [
                     m('figure.media-left',
                         m('p.image.is-64x64', m('img', { src: user.picture }))
@@ -57,9 +57,24 @@ class Friends implements Mithril {
                         m('strong', user.name),
                         m('br'),
                         m('a', { onclick: function() { acceptRequest(user); } }, [
-                            m('span.icon', m('i.fa.fa-check')),
+                            m(Icon, { name: 'check' } ),
                             ' Accept'
                         ])
+                    ])))
+                ]);
+            }
+        ];
+
+        var pendingRequests:Vnodes = [
+            for(user in Store.friends.pendingFriendRequests.iterator()) {
+                m('article.media', [
+                    m('figure.media-left',
+                        m('p.image.is-64x64', m('img', { src: user.picture }))
+                    ),
+                    m('.media-content', m('.content', m('p', [
+                        m('strong', user.name),
+                        m('br'),
+                        m('span', 'Invite sent!')
                     ])))
                 ]);
             }
@@ -97,7 +112,8 @@ class Friends implements Mithril {
                     ]),
                     m('.column.is-one-third.content', [
                         m('h1', 'Friend Requests'),
-                        friendRequests
+                        friendRequests,
+                        pendingRequests
                     ]),
                     m('.column.is-one-third.content', [
                         m('h1', 'Friends'),

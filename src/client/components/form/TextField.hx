@@ -37,9 +37,7 @@ class TextField implements Mithril {
                 m("p.control" + (hasIcon ? ".has-icons-left" : ""), [
                     m("input", options),
                     hasIcon
-                        ? m("span.icon.is-small.is-left", [
-                            m('i.fa.fa-${vnode.attrs.get('icon')}')
-                        ])
+                        ? m(Icon, { name: vnode.attrs.get('icon') })
                         : null
                 ])
             ]);

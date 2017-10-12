@@ -11,7 +11,7 @@ class NavBar implements Mithril {
         notifications += Store.friends.friendRequests.count();
 
         var profileImage:Vnodes = switch(Store.profile.profile.value) {
-            case Loading: m('span.icon', m('i.fa.fa-home'));
+            case Loading: m(Icon, { name: 'home' } );
             case Done(profile): [
                 m('img.is-1by1', { style: 'margin-right: 16px', src: profile.picture }),
                 m(BadgeSpan, {
@@ -25,7 +25,7 @@ class NavBar implements Mithril {
         }
 
         var friendRequests:Vnodes = switch(Store.friends.friendRequestsUpdate.value) {
-            case Loading: [m('span.navbar-item.icon', m('i.fa.fa-spinner.fa-pulse.fa-3x')), m('hr.navbar-divider')];
+            case Loading: [m('span.navbar-item', m(Icon, { name: 'spinner-third' })), m('hr.navbar-divider')];
             case Done(updated): {
                 var count:Int = Store.friends.friendRequests.count();
                 [
@@ -56,8 +56,8 @@ class NavBar implements Mithril {
                     ]),
                     m('.navbar-menu' + (vnode.state.menuShowing ? '.is-active' : ''), [
                         m('.navbar-start', [
-                            m('a.navbar-item', { href: '#!/lists/friends' }, [m('span.icon', m('i.fa.fa-list')), 'Lists']),
-                            m('a.navbar-item', { href: '#!/friends' }, [m('span.icon', m('i.fa.fa-users')), 'Friends'])
+                            m('a.navbar-item', { href: '#!/lists/friends' }, [m(Icon, { name: 'list' }), m('span', 'Lists')]),
+                            m('a.navbar-item', { href: '#!/friends' }, [m(Icon, { name: 'users' }), m('span', 'Friends')])
                         ]),
                         m('.navbar-end', [
                             m('.navbar-item.has-dropdown.is-hoverable', [

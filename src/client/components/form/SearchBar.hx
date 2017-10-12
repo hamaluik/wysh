@@ -37,7 +37,7 @@ class SearchBar implements Mithril {
                             clickHandler(null);
                         }
                     }},
-                        m('span.icon', m('i.fa.fa-search'))
+                        m(Icon, { name: 'search' })
                     )
                 )
             ]);
