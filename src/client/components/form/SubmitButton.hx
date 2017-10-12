@@ -9,7 +9,7 @@ class SubmitButton implements Mithril {
 
         var isHorizontal:Bool = vnode.attrs.exists('horizontal') && cast(vnode.attrs.get('horizontal'), Bool);
         var body:Vnodes = 
-            m(".field", [
+            m(".field.is-pulled-right", [
                 m("p.control", [
                     m("button.button.is-primary" + (vnode.attrs.get('loading') ? '.is-loading' : ''), {
                         type: "submit",

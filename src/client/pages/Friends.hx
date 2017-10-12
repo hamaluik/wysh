@@ -46,20 +46,63 @@ class Friends implements Mithril {
             case Failed(error): null;
         };
 
+        var friendRequests:Vnodes = [
+            for(user in Store.friends.friendRequests.iterator()) {
+
+                m('article.media', [
+                    m('figure.media-left',
+                        m('p.image.is-64x64', m('img', { src: user.picture }))
+                    ),
+                    m('.media-content', m('.content', m('p', [
+                        m('strong', user.name),
+                        m('br'),
+                        m('a', { onclick: function() { acceptRequest(user); } }, [
+                            m('span.icon', m('i.fa.fa-check')),
+                            ' Accept'
+                        ])
+                    ])))
+                ]);
+            }
+        ];
+
+        var friendsList:Vnodes = [
+            for(user in Store.friends.friends.iterator()) {
+                m('article.media', [
+                    m('figure.media-left',
+                        m('p.image.is-64x64', m('img', { src: user.picture }))
+                    ),
+                    m('.media-content', m('.content', m('p', [
+                        m('strong', user.name)
+                    ])))
+                ]);
+            }
+        ];
+
         return [
             m(components.NavBar),
             m('section.section',
-                m('.container', [
-                    m('form', { onsubmit: search }, [
-                        m(components.form.SearchBar, {
-                            store: searchName,
-                            placeholder: 'Search for people by name',
-                            onclick: search
-                        })
+                m('.columns', [
+                    m('.column.is-one-third.content', [
+                        m('h1', 'Search For Users'),
+                        m('form', { onsubmit: search }, [
+                            m(components.form.SearchBar, {
+                                store: searchName,
+                                placeholder: 'Search for people by name',
+                                onclick: search
+                            })
+                        ]),
+                        m('section.section',
+                            m('.container', searchResults)
+                        )
                     ]),
-                    m('section.section',
-                        m('.container', searchResults)
-                    )
+                    m('.column.is-one-third.content', [
+                        m('h1', 'Friend Requests'),
+                        friendRequests
+                    ]),
+                    m('.column.is-one-third.content', [
+                        m('h1', 'Friends'),
+                        friendsList
+                    ])
                 ])
             )
         ];
@@ -72,5 +115,9 @@ class Friends implements Mithril {
 
     function addFriend(profile:Profile):Void {
         Store.friends.requestFriend(profile);
+    }
+
+    function acceptRequest(profile:Profile):Void {
+        Client.console.info('Accepting request from profile', profile);
     }
 }

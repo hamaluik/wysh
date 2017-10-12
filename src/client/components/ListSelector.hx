@@ -20,8 +20,7 @@ class ListSelector implements Mithril {
             ];
 
             case Self: [
-                m('a.panel-block', 'Christmas List'),
-                m('a.panel-block', 'Birthday List'),
+                m('.panel-block', 'You don\'t have any lists yet!'),
             ];
         }
 
