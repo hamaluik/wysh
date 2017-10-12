@@ -9,6 +9,17 @@ using StringTools;
 
 class Lists {
     public function new() {}
+    
+    @:get('/$listHash') public function getList(listHash:String, user:JWTSession.User):Response {
+        var lid:Int = try { Server.extractID(listHash, Server.listHID); } catch(e:Dynamic) return new response.NotFound();
+
+        // TODO: make sure we have permission to view this list
+        var list:models.List = models.List.manager.get(lid);
+        if(list == null) {
+            return new response.NotFound('list "${listHash}"');
+        }
+        return new response.API<api.List>(list);
+    }
 
     @:post('/') public function newList(body:{name:String, ?privacy:TPrivacy}, user:JWTSession.User):Response {
         var u:models.User = models.User.manager.get(user.id);

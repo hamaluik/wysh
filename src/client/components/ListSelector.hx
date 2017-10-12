@@ -1,8 +1,7 @@
 package components;
 
+import types.IDList;
 import mithril.M;
-import types.TPrivacy;
-using Lambda;
 
 enum TListType {
     Friends;
@@ -22,10 +21,12 @@ class ListSelector implements Mithril {
             ];
 
             case Self: {
-                if(Store.lists.myLists.count() < 1)
+                var lists:Array<IDList> = Store.getSelfLists();
+                if(lists.length < 1)
                     m('.panel-block', 'You don\'t have any lists yet!');
                 else [
-                    for(list in Store.lists.myLists.iterator())
+                    for(listID in lists) {
+                        var list:api.List = Store.lists.get(listID);
                         m('a.panel-block', {
                                 href: '#!/list/${list.id}'
                             }, [
@@ -36,7 +37,8 @@ class ListSelector implements Mithril {
                                 case _: 'question';
                             } }),
                             m('span', list.name)
-                        ])
+                        ]);
+                    }
                 ];
             }
         }

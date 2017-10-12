@@ -4,19 +4,21 @@ import tink.state.State;
 import mithril.M;
 import api.Profile;
 import components.Icon;
+import types.APIArray;
 
 class Friends implements Mithril {
     public function new() {}
 
     private var searchName:State<String> = '';
+    public var searchResults:APIArray<Profile> = new APIArray<Profile>();
 
     public function onmatch(params:haxe.DynamicAccess<String>, url:String) {
-        if(Store.auth.token.value == null) M.routeSet('/');
+        if(Store.token.value == null) M.routeSet('/');
         return null;
     }
 
     public function render(vnode) {
-        var searchResults:Array<Vnode<Dynamic>> = switch(Store.friends.userSearch.value) {
+        var searchResultsBlock:Array<Vnode<Dynamic>> = [];/*switch(Store.friends.userSearch.value) {
             case Done(results): [
                 for(user in results) {
                     var addLink:Vnodes =
@@ -44,9 +46,9 @@ class Friends implements Mithril {
                 }
             ];
             case _: null;
-        };
+        };*/
 
-        var friendRequests:Array<Vnode<Dynamic>> = [
+        /*var friendRequests:Array<Vnode<Dynamic>> = [
             for(user in Store.friends.friendRequests.iterator()) {
                 m('article.media', [
                     m('figure.media-left',
@@ -90,7 +92,7 @@ class Friends implements Mithril {
                     ])))
                 ]);
             }
-        ];
+        ];*/
 
         return [
             m(components.NavBar),
@@ -104,16 +106,16 @@ class Friends implements Mithril {
                                     store: searchName,
                                     placeholder: 'Search for people by name',
                                     onclick: search,
-                                    loading: Store.friends.userSearch.value.match(Loading)
+                                    loading: searchResults.state.value.match(Loading)
                                 })
                             ]),
-                            searchResults,
-                            friendRequests,
-                            pendingRequests
+                            searchResultsBlock,
+                            /*friendRequests,
+                            pendingRequests*/
                         ]),
                         m('.column.is-half.content',[
                             m('h1', 'Friends'),
-                            friendsList
+                            //friendsList
                         ])
                     ])
                 )
@@ -123,16 +125,20 @@ class Friends implements Mithril {
 
     function search(e:js.html.Event):Void {
         if(e != null) e.preventDefault();
-        Store.friends.searchForUsers(searchName.value);
+        Actions.profile.searchProfiles(searchName.value)
+        .handle(function(profiles:Array<Profile>) {
+            searchResults = new APIArray<Profile>(profiles);
+            M.redraw();
+        });
     }
 
     function addFriend(profile:Profile):Void {
         // TODO: display loading status
-        Store.friends.requestFriend(profile);
+        //Store.friends.requestFriend(profile);
     }
 
     function acceptRequest(profile:Profile):Void {
         // TODO: display loading status
-        Store.friends.acceptRequest(profile);
+        //Store.friends.acceptRequest(profile);
     }
 }

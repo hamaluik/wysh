@@ -1,43 +1,36 @@
 package components;
 
 import mithril.M;
-using Lambda;
 
 class NavBar implements Mithril {
     var menuShowing:Bool = false;
 
     public static function view(vnode:Vnode<NavBar>):Vnodes {
         var notifications:Int = 0;
-        notifications += Store.friends.friendRequests.count();
+        notifications += Store.incomingFriendRequests.length;
 
-        var profileImage:Vnodes = switch(Store.profile.profile.value) {
-            case Loading: m(Icon, { name: 'home' } );
+        var profileImage:Vnodes = switch(Store.profile.value) {
+            case Uninitialized | Loading: m(Icon, { name: 'spinner-third', spin: true } );
             case Done(profile): [
-                m('img.is-1by1', { style: 'margin-right: 16px', src: profile.picture }),
+                m('img.is-1by1', { style: 'margin-right: 16px', src: Store.profiles.get(profile).picture }),
                 m(BadgeSpan, {
                     classes: '.has-text-weight-bold',
                     badge: notifications > 0
                         ? Std.string(notifications)
                         : null
-                }, profile.name)
+                }, Store.profiles.get(profile).name)
             ];
             case Failed(error): null;
         }
 
-        var friendRequests:Vnodes = switch(Store.friends.friendRequestsUpdate.value) {
-            case Loading: [m('span.navbar-item', m(Icon, { name: 'spinner-third' })), m('hr.navbar-divider')];
-            case Done(updated): {
-                var count:Int = Store.friends.friendRequests.count();
-                [
-                    switch(count) {
-                        case 0: m('span.navbar-item', 'No friend requests');
-                        case _: m('a.navbar-item', { href: '#!/friends' }, 'You have ${count} friend request${count == 1 ? '' : 's'}!');
-                    },
-                    m('hr.navbar-divider')
-                ];
-            }
-            case Failed(error): null;
-        }
+        var friendRequests:Vnodes = [
+            switch(Store.incomingFriendRequests.length) {
+                case 0: m('span.navbar-item', 'No friend requests');
+                case count: m('a.navbar-item', { href: '#!/friends' }, 'You have ${count} friend request${count == 1 ? '' : 's'}!');
+            },
+            Store.incomingFriendRequests.state.value.match(Loading) ? m('span.navbar-item.has-text-centered', m(Icon, { name: 'spinner-third', spin: true })) : null,
+            m('hr.navbar-divider')
+        ];
 
         return
             m('nav.navbar.is-primary', [
@@ -74,7 +67,7 @@ class NavBar implements Mithril {
     }
 
     static function signout() {
-        Store.auth.clearStoredToken();
+        Actions.auth.clearStoredToken();
         M.routeSet('/');
     }
 }

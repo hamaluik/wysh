@@ -32,7 +32,7 @@ class NewList implements Mithril {
     }
 
     public function onmatch(params:haxe.DynamicAccess<String>, url:String) {
-        if(Store.auth.token.value == null) M.routeSet('/');
+        if(Store.token.value == null) M.routeSet('/');
         return null;
     }
 
@@ -65,7 +65,7 @@ class NewList implements Mithril {
         if(newListName.value.trim().length < 1) return;
         loading = true;
         M.redraw();
-        Store.lists.createList(newListName.value.trim(), newListPrivacy.value)
+        Actions.list.createList(newListName.value, newListPrivacy.value)
         .handle(function(_):Void {
             loading = false;
             M.routeSet('/lists/self');

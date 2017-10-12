@@ -10,7 +10,7 @@ class Client implements Mithril {
     }
 
     public function new() {
-        Store.auth.checkStoredToken();
+        Actions.auth.checkStoredToken();
         M.route(js.Browser.document.body, '/', {
             '/': this,
             '/login/:token': new pages.Login(),
@@ -24,7 +24,7 @@ class Client implements Mithril {
 
     public function onmatch(params:haxe.DynamicAccess<String>, url:String) {
         // if logged in, go to lists
-        if(Store.auth.token.value != null) M.routeSet('/lists/friends');
+        if(Store.token.value != null) M.routeSet('/lists/friends');
         return null;
     }
 

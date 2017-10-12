@@ -1,34 +1,49 @@
 package pages;
 
+import types.IDItem;
+import tink.state.Observable;
+import tink.state.State;
 import api.Item;
 import mithril.M;
 import components.Icon;
 import components.ListSelector;
+import types.APIState;
+
+using Lambda;
 
 class ViewList implements Mithril {
     public function new() {}
 
     private var listID:String = null;
+    private var downloadState:State<APIState> = Idle;
 
     public function onmatch(params:haxe.DynamicAccess<String>, url:String) {
-        if(Store.auth.token.value == null) M.routeSet('/');
+        if(Store.token.value == null) M.routeSet('/');
         listID = params.get('listid');
+        if(!Store.lists.exists(listID)) {
+            downloadState.set(Loading);
+            Actions.list.downloadList(listID); // TODO: handle the promise
+        }
         return null;
     }
 
     public function render(vnode) {
-        var selfOwned:Bool = false;
-        var list:api.List = switch([
-            Store.lists.myLists.exists(listID),
-            Store.lists.friendLists.exists(listID)
-        ]) {
-            case [true, false] | [true, true]: {
-                selfOwned = true;
-                Store.lists.myLists.get(listID);
-            }
-            case [false, true]: Store.lists.friendLists.get(listID);
+        var profile:Null<String> = switch(Store.profile.value) {
+            case Done(pid): pid;
             case _: null;
-        };
+        }
+        if(profile == null)
+            return [
+                m(components.NavBar),
+                m('section.section',
+                    m('.container', [
+                        m('.loading-bar')
+                    ])
+                )
+            ];
+
+        var list:api.List = Store.lists.get(listID);
+        var selfOwned:Bool = Store.getListProfile(listID) == profile;
 
         var title:Vnodes =
             if(list == null) m('h1.title', m(Icon, { name: 'spinner-third', spin: true }));
@@ -45,10 +60,12 @@ class ViewList implements Mithril {
             }
 
         var items:Array<Item> =
-            if(list == null) [];
-            else Store.items.getItems(list.id);
+            if(list == null || !Store.listItems.exists(listID)) [];
+            else Store.listItems.get(listID).map(function(id:Observable<IDItem>):Item {
+                return Store.items.get(id.value);
+            }).array();
         var loadingBlocks:Vnodes =
-            if(Store.items.itemsUpdate.value.match(Loading)) m(Icon, { name: 'spinner-third', spin: true });
+            if(downloadState.value.match(Loading)) m(Icon, { name: 'spinner-third', spin: true });
             else null;
         var itemBlocks:Vnodes = [
             for(item in items) {
