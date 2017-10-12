@@ -14,8 +14,7 @@ import types.APIArray;
 class Store {
     // auth
     public static var token(default, null):State<String> = new State<String>(null);
-
-    // profile
+    public static var uid(default, null):State<String> = new State<String>(null);
     public static var profile(default, null):State<APIPromised<IDProfile>> = Uninitialized;
 
     // raw data
@@ -32,15 +31,8 @@ class Store {
     public static var profileLists(default, null):ObservableMap<IDProfile, ObservableArray<IDList>> = new ObservableMap<IDProfile, ObservableArray<IDList>>(new StringMap<ObservableArray<IDList>>());
     public static var listItems(default, null):ObservableMap<IDList, ObservableArray<IDItem>> = new ObservableMap<IDList, ObservableArray<IDItem>>(new StringMap<ObservableArray<IDItem>>());
 
-    // utilities
     // TODO: move these somewhere sane
-    public static function getSelfLists():Array<IDList> {
-        return switch(profile.value) {
-            case Done(id): profileLists.exists(id) ? profileLists.get(id).toArray() : [];
-            case _: [];
-        };
-    }
-
+    // utilities
     public static function getListProfile(id:IDList):Null<IDProfile> {
         for(profileID in profileLists.keys()) {
             for(listID in profileLists.get(profileID)) {

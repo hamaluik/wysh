@@ -1,3 +1,7 @@
+import tink.core.Promise;
+import mithril.M;
+using tink.core.Future.JsPromiseTools;
+
 class WebRequest {
     public inline static function endpoint(endpoint:String):String {
         // TODO: use a define
@@ -10,5 +14,16 @@ class WebRequest {
             code: xhr.status,
             message: xhr.responseText
         };
+    }
+
+    public static function request<T>(method:String, endpoint:String, useAuth:Bool=true, ?data:Dynamic):Promise<T> {
+        return M.request(WebRequest.endpoint(endpoint), {
+            method: method,
+            extract: WebRequest.extract,
+            data: data,
+            headers: useAuth ? {
+                Authorization: 'Bearer ' + Store.token.value
+            } : {}
+        }).toPromise();
     }
 }

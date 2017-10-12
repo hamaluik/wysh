@@ -10,6 +10,12 @@ class AuthActions {
         Store.token.observe().bind(function(token:String):Void {
             if(token != null) {
                 js.Browser.getLocalStorage().setItem('token', token);
+                
+                var payloadEncoded:String = token.split(".")[1];
+                var payload:Dynamic = haxe.Json.parse(haxe.crypto.Base64.decode(payloadEncoded).toString());
+                Store.uid.set(payload.sub);
+
+                // auto-refresh
                 haxe.Timer.delay(function():Void {
                     refreshToken();
                 }, 5 * 60 * 1000);

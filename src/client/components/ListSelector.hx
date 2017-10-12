@@ -21,7 +21,10 @@ class ListSelector implements Mithril {
             ];
 
             case Self: {
-                var lists:Array<IDList> = Store.getSelfLists();
+                var lists:Array<IDList>
+                    = Store.profileLists.exists(Store.uid.value)
+                        ? Store.profileLists.get(Store.uid.value).toArray()
+                        : [];
                 if(lists.length < 1)
                     m('.panel-block', 'You don\'t have any lists yet!');
                 else [

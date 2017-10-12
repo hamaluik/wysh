@@ -1,5 +1,6 @@
 package pages;
 
+import tink.core.Error;
 import types.IDItem;
 import tink.state.Observable;
 import tink.state.State;
@@ -22,7 +23,15 @@ class ViewList implements Mithril {
         listID = params.get('listid');
         if(!Store.lists.exists(listID)) {
             downloadState.set(Loading);
-            Actions.list.downloadList(listID); // TODO: handle the promise
+            Actions.list.fetchList(listID)
+            .next(function(x) {
+                downloadState.set(Idle);
+                return x;
+            })
+            .tryRecover(function(error:Error) {
+                downloadState.set(Failed(error));
+                return error;
+            });
         }
         return null;
     }

@@ -8,17 +8,18 @@ import api.Profile;
 class ProfileActions {
     @:allow(Actions)
     private function new() {
-        Store.token.observe().bind(function(token:String) {
-            if(token == null) return;
+        Store.uid.observe().bind(function(uid:String) {
+            if(uid == null) return;
             if(!Store.profile.value.match(Uninitialized)) return;
             fetchProfile();
         });
     }
 
+    // TODO: overhaul to promises
     public function fetchProfile():Future<Noise> {
         var ft = Future.trigger();
         Store.profile.set(Loading);
-        M.request(WebRequest.endpoint('/user/profile'), {
+        M.request(WebRequest.endpoint('/user/${Store.uid.value}/profile'), {
             method: 'GET',
             extract: WebRequest.extract,
             headers: {
@@ -38,6 +39,7 @@ class ProfileActions {
         return ft.asFuture();
     }
 
+    // TODO: overhaul to promises
     public function searchProfiles(query:String):Future<Array<Profile>> {
         var ft = Future.trigger();
 
@@ -45,7 +47,7 @@ class ProfileActions {
             ft.trigger([]);
         }
         else {
-            M.request(WebRequest.endpoint('/user/search'), {
+            M.request(WebRequest.endpoint('/search/users'), {
                 method: 'GET',
                 extract: WebRequest.extract,
                 data: {
