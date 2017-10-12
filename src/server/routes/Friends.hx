@@ -61,7 +61,7 @@ class Friends {
         return new response.API<api.Profiles>(requests);
     }
 
-    @:get('/pending') public function getPendingRequests(user:JWTSession.User):Response {
+    @:get('/sentrequests') public function getSentRequests(user:JWTSession.User):Response {
         var u:models.User = models.User.manager.get(user.id);
         if(u == null) return new response.NotFound();
 

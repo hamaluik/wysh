@@ -130,10 +130,12 @@ class Friends implements Mithril {
     }
 
     function addFriend(profile:Profile):Void {
+        // TODO: display loading status
         Store.friends.requestFriend(profile);
     }
 
     function acceptRequest(profile:Profile):Void {
-        Client.console.info('Accepting request from profile', profile);
+        // TODO: display loading status
+        Store.friends.acceptRequest(profile);
     }
 }

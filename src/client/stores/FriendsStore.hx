@@ -69,7 +69,7 @@ class FriendsStore {
 
     public function fetchPendingRequests():Void {
         pendingFriendRequestsUpdate.set(Loading);
-        M.request(WebRequest.endpoint('/friends/requests'), {
+        M.request(WebRequest.endpoint('/friends/sentrequests'), {
             method: 'GET',
             extract: WebRequest.extract,
             headers: {
@@ -129,6 +129,28 @@ class FriendsStore {
         })
         .catchError(function(error) {
             pendingFriendRequestsUpdate.set(Failed(error));
+        });
+    }
+
+    public function acceptRequest(user:Profile):Void {
+        friendRequestsUpdate.set(Loading);
+        M.request(WebRequest.endpoint('/friends/accept'), {
+            method: 'POST',
+            extract: WebRequest.extract,
+            data: {
+                id: user.id
+            },
+            headers: {
+                Authorization: 'Bearer ' + Store.auth.token.value
+            }
+        })
+        .then(function(response:Dynamic) {
+            friendRequests.remove(user.id);
+            friends.set(user.id, user);
+            friendRequestsUpdate.set(Done(Date.now()));
+        })
+        .catchError(function(error) {
+            friendRequestsUpdate.set(Failed(error));
         });
     }
 }
