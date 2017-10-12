@@ -15,6 +15,10 @@ class User {
     public function new(id:Int) {
         this.id = id;
     }
+
+    public function toString():String {
+        return 'user ${id}';
+    }
 }
 
 class JWTSession {

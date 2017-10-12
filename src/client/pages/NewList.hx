@@ -8,18 +8,22 @@ import components.form.TextField;
 import components.form.SubmitButton;
 import components.form.DropDown;
 import components.Icon;
+import haxe.ds.StringMap;
+import types.TPrivacy;
 
 using StringTools;
 
 class NewList implements Mithril {
     private var newListName:State<String> = "";
-    private var newListPrivacy:State<String> = "Friends";
+    private var newListPrivacy:State<TPrivacy> = TPrivacy.Friends;
     private var addButtonEnabled:Bool = false;
-    private var privacyTypes:Array<String>;
+    private var privacyTypes:StringMap<Int> = new StringMap<Int>();
     private var loading:Bool = false;
 
     public function new() {
-        privacyTypes = haxe.EnumTools.getConstructors(types.TPrivacy);
+        privacyTypes.set("Private", TPrivacy.Private);
+        privacyTypes.set("Friends Only", TPrivacy.Friends);
+        privacyTypes.set("Public", TPrivacy.Public);
 
         newListName.observe().bind(function(v:String):Void {
             addButtonEnabled = v != null && StringTools.trim(v).length > 0;

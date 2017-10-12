@@ -30,8 +30,6 @@ class ListsStore {
             var response:api.Lists = cast(resp);
             myLists = new StringMap<api.List>();
             for(list in response.lists) {
-                var p:Int = cast(list.privacy);
-                list.privacy = haxe.EnumTools.createByIndex(TPrivacy, p);
                 myLists.set(list.id, list);
             }
             Client.console.info('Downloaded my lists', response);
@@ -46,8 +44,7 @@ class ListsStore {
         return ft.asFuture();
     }
 
-    public function createList(name:String, privacy:String):Future<Noise> {
-        privacy = privacy.toLowerCase();
+    public function createList(name:String, privacy:TPrivacy):Future<Noise> {
         var ft:FutureTrigger<Noise> = new FutureTrigger<Noise>();
 
         Client.console.info('Creating list', {
@@ -69,8 +66,6 @@ class ListsStore {
         })
         .then(function(resp:Dynamic) {
             var response:api.List = cast(resp);
-            var p:Int = cast(response.privacy);
-            response.privacy = haxe.EnumTools.createByIndex(TPrivacy, p);
             myLists.set(response.id, response);
             myListsUpdate.set(Done(Date.now()));
             ft.trigger(null);

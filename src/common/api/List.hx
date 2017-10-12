@@ -13,7 +13,7 @@ class ListObject implements APIResponseObject {
     private function new(list:TList) {
         this.id = list.id;
         this.name = list.name;
-        this.privacy = haxe.EnumTools.createByIndex(TPrivacy, list.privacy);
+        this.privacy = list.privacy;
     }
 }
 
@@ -31,7 +31,7 @@ abstract List(ListObject) from ListObject to ListObject to APIResponse {
         return {
             id: this.id,
             name: this.name,
-            privacy: this.privacy.getIndex()
+            privacy: this.privacy
         };
 
 #if sys
@@ -40,7 +40,7 @@ abstract List(ListObject) from ListObject to ListObject to APIResponse {
         return new List({
             id: Server.listHID.encode(list.id),
             name: list.name,
-            privacy: list.privacy.getIndex()
+            privacy: cast(list.privacy)
         });
 #end
 }

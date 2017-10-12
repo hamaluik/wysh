@@ -11,6 +11,7 @@ class Friends {
         var u:models.User = models.User.manager.get(user.id);
         if(u == null) return new response.NotFound();
         var friends:List<models.Friends> = models.Friends.manager.search($friendA == u);
+        //Log.trace('${user} requested friends list');
         return new response.API<api.Profiles>(friends);
     }
 

@@ -92,7 +92,9 @@ class Server {
                 return ft.asFuture();
             }
         }
-        handler = handler.applyMiddleware(new CORS());
+        handler = handler.applyMiddleware(new middleware.CORS());
+        //handler = handler.applyMiddleware(new tink.http.middleware.Static('public', '/'));
+        handler = handler.applyMiddleware(new middleware.RequestLogger());
 
         #if php
         var container = tink.http.containers.PhpContainer.inst;

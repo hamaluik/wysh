@@ -10,7 +10,7 @@ using StringTools;
 class Lists {
     public function new() {}
 
-    @:post('/') public function newList(body:{name:String, ?privacy:String}, user:JWTSession.User):Response {
+    @:post('/') public function newList(body:{name:String, ?privacy:TPrivacy}, user:JWTSession.User):Response {
         var u:models.User = models.User.manager.get(user.id);
         if(u == null) return new response.NotFound();
 
@@ -21,10 +21,9 @@ class Lists {
         list.user = u;
         list.createdOn = Date.now();
         list.modifiedOn = Date.now();
-        if(body.privacy != null) body.privacy = body.privacy.toLowerCase();
         list.privacy = switch(body.privacy) {
-            case 'public': Public;
-            case 'friends': Friends;
+            case Public: Public;
+            case Friends: Friends;
             case _: Private;
         };
         list.insert();
@@ -33,7 +32,7 @@ class Lists {
         return new response.API<api.List>(list);
     }
 
-    @:patch('/$listHash') public function updateList(listHash:String, body:{?name:String, ?privacy:String}, user:JWTSession.User):Response {
+    @:patch('/$listHash') public function updateList(listHash:String, body:{?name:String, ?privacy:TPrivacy}, user:JWTSession.User):Response {
         var lid:Int = try { Server.extractID(listHash, Server.listHID); } catch(e:Dynamic) return new response.NotFound();
 
         // ensure the list exists
@@ -53,16 +52,8 @@ class Lists {
             list.name = body.name;
             modified = true;
         }
-        if(body.privacy == 'public') {
-            list.privacy = Public;
-            modified = true;
-        }
-        else if(body.privacy == 'friends') {
-            list.privacy = Friends;
-            modified = true;
-        }
-        else if(body.privacy == 'private') {
-            list.privacy = Private;
+        if(body.privacy != null && [Public, Friends, Private].indexOf(body.privacy) != -1) {
+            list.privacy = body.privacy;
             modified = true;
         }
 

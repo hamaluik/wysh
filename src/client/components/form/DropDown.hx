@@ -1,17 +1,18 @@
 package components.form;
 
 import mithril.M;
+import haxe.ds.StringMap;
 import tink.state.State;
 
 class DropDown implements Mithril {
     public static function view(vnode:Vnode<DropDown>):Vnodes {
-        var store:State<String> = vnode.attrs.get('store');
+        var store:State<Int> = vnode.attrs.get('store');
 
-        var types:Array<String> = vnode.attrs.get('types');
-        var options = [for(type in types) {
+        var types:StringMap<Int> = vnode.attrs.get('types');
+        var options = [for(label in types.keys()) {
             m("option", {
-                selected: store.value == type
-            }, type == null ? "" : type);
+                selected: store.value == types.get(label)
+            }, label == null ? "" : label);
         }];
 
         var label:Vnodes = 
@@ -27,7 +28,7 @@ class DropDown implements Mithril {
                         m("select", {
                             oninput: M.withAttr('value', function(value:String):Void {
                                 if(value == "") store.set(null)
-                                else store.set(value);
+                                else store.set(Std.parseInt(value));
                             })
                         }, options)
                     ])
