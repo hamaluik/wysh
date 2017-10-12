@@ -11,7 +11,8 @@ class DropDown implements Mithril {
         var types:StringMap<Int> = vnode.attrs.get('types');
         var options = [for(label in types.keys()) {
             m("option", {
-                selected: store.value == types.get(label)
+                selected: store.value == types.get(label),
+                value: Std.string(types.get(label))
             }, label == null ? "" : label);
         }];
 

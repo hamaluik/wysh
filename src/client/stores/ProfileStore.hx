@@ -7,7 +7,23 @@ import api.Profile;
 
 class ProfileStore {
     @:allow(Store)
-    private function new(){}
+    private function new() {
+        // automatically fetch the profile when we log in
+        Store.auth.token.observe().bind(function(token:String) {
+            if(token != null) {
+                switch(profile.value) {
+                    case Failed(e): if(e == null) {
+                        fetchProfile()
+                        /*.handle(function(noise) {
+                            M.redraw();
+                        })*/;
+                    }
+                    case _: {}
+                }
+            }
+            else profile.set(Failed(null));
+        });
+    }
 
     public var profile:State<Promised<Profile>> = new State<Promised<Profile>>(Failed(null));
 

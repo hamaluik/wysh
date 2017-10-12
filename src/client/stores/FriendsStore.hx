@@ -9,7 +9,50 @@ import api.Profiles;
 
 class FriendsStore {
     @:allow(Store)
-    private function new(){}
+    private function new() {
+        // automatically fetch friends when we log in
+        Store.auth.token.observe().bind(function(token:String) {
+            if(token != null) {
+                switch(friendsUpdate.value) {
+                    case Failed(e): if(e == null) {
+                        fetchFriends();
+                    }
+
+                    case _: {}
+                }
+            }
+            else friendRequestsUpdate.set(Failed(null));
+        });
+
+        // automatically fetch friend requests when we log in
+        Store.auth.token.observe().bind(function(token:String) {
+            if(token != null) {
+                switch(friendRequestsUpdate.value) {
+                    case Failed(e): if(e == null) {
+                        fetchFriendRequests();
+                        fetchPendingRequests();
+                    }
+
+                    case _: {}
+                }
+            }
+            else friendRequestsUpdate.set(Failed(null));
+        });
+
+        // automatically fetch our lists when we log in
+        Store.auth.token.observe().bind(function(token:String) {
+            if(token != null) {
+                switch(Store.lists.myListsUpdate.value) {
+                    case Failed(e): if(e == null) {
+                        Store.lists.fetchMyLists();
+                    }
+
+                    case _: {}
+                }
+            }
+            else friendRequestsUpdate.set(Failed(null));
+        });
+    }
 
     public var friendsUpdate:State<Promised<Date>> = Failed(null);
     public var friends:StringMap<api.Profile> = new StringMap<api.Profile>();
@@ -91,23 +134,28 @@ class FriendsStore {
     }
 
     public function searchForUsers(name:String):Void {
-        userSearch.set(Loading);
-        M.request(WebRequest.endpoint('/user/search'), {
-            method: 'GET',
-            extract: WebRequest.extract,
-            data: {
-                name: name
-            },
-            headers: {
-                Authorization: 'Bearer ' + Store.auth.token.value
-            }
-        })
-        .then(function(response:Profiles) {
-            userSearch.set(Done(response.profiles));
-        })
-        .catchError(function(error) {
-            userSearch.set(Failed(error));
-        });
+        if(name.length < 3) {
+            userSearch.set(Done([]));
+        }
+        else {
+            userSearch.set(Loading);
+            M.request(WebRequest.endpoint('/user/search'), {
+                method: 'GET',
+                extract: WebRequest.extract,
+                data: {
+                    name: name
+                },
+                headers: {
+                    Authorization: 'Bearer ' + Store.auth.token.value
+                }
+            })
+            .then(function(response:Profiles) {
+                userSearch.set(Done(response.profiles));
+            })
+            .catchError(function(error) {
+                userSearch.set(Failed(error));
+            });
+        }
     }
 
     public function requestFriend(user:Profile):Void {

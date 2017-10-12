@@ -10,51 +10,6 @@ class Client implements Mithril {
     }
 
     public function new() {
-        // automatically fetch the profile when we log in
-        Store.auth.token.observe().bind(function(token:String) {
-            if(token != null) {
-                switch(Store.profile.profile.value) {
-                    case Failed(e): if(e == null) {
-                        Store.profile.fetchProfile()
-                        /*.handle(function(noise) {
-                            M.redraw();
-                        })*/;
-                    }
-                    case _: {}
-                }
-            }
-            else Store.profile.profile.set(Failed(null));
-        });
-
-        // automatically fetch friend requests when we log in
-        Store.auth.token.observe().bind(function(token:String) {
-            if(token != null) {
-                switch(Store.friends.friendRequestsUpdate.value) {
-                    case Failed(e): if(e == null) {
-                        Store.friends.fetchFriendRequests();
-                        Store.friends.fetchPendingRequests();
-                    }
-
-                    case _: {}
-                }
-            }
-            else Store.friends.friendRequestsUpdate.set(Failed(null));
-        });
-
-        // automatically fetch our lists when we log in
-        Store.auth.token.observe().bind(function(token:String) {
-            if(token != null) {
-                switch(Store.lists.myListsUpdate.value) {
-                    case Failed(e): if(e == null) {
-                        Store.lists.fetchMyLists();
-                    }
-
-                    case _: {}
-                }
-            }
-            else Store.friends.friendRequestsUpdate.set(Failed(null));
-        });
-        
         Store.auth.checkStoredToken();
         M.route(js.Browser.document.body, '/', {
             '/': this,
@@ -63,10 +18,6 @@ class Client implements Mithril {
             '/lists/self': new pages.MyLists(),
             '/lists/new': new pages.NewList(),
             '/friends': new pages.Friends()
-        });
-
-        Store.auth.token.observe().bind(function(token:String) {
-            console.info('token', token);
         });
     }
 

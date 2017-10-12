@@ -16,8 +16,7 @@ class Friends implements Mithril {
     }
 
     public function render(vnode) {
-        var searchResults:Vnodes = switch(Store.friends.userSearch.value) {
-            case Loading: m(Icon, { name: 'spinner-third', spin: true } );
+        var searchResults:Array<Vnode<Dynamic>> = switch(Store.friends.userSearch.value) {
             case Done(results): [
                 for(user in results) {
                     var addLink:Vnodes =
@@ -44,10 +43,10 @@ class Friends implements Mithril {
                     ]);
                 }
             ];
-            case Failed(error): null;
+            case _: null;
         };
 
-        var friendRequests:Vnodes = [
+        var friendRequests:Array<Vnode<Dynamic>> = [
             for(user in Store.friends.friendRequests.iterator()) {
                 m('article.media', [
                     m('figure.media-left',
@@ -65,7 +64,7 @@ class Friends implements Mithril {
             }
         ];
 
-        var pendingRequests:Vnodes = [
+        var pendingRequests:Array<Vnode<Dynamic>> = [
             for(user in Store.friends.pendingFriendRequests.iterator()) {
                 m('article.media', [
                     m('figure.media-left',
@@ -80,7 +79,7 @@ class Friends implements Mithril {
             }
         ];
 
-        var friendsList:Vnodes = [
+        var friendsList:Array<Vnode<Dynamic>> = [
             for(user in Store.friends.friends.iterator()) {
                 m('article.media', [
                     m('figure.media-left',
@@ -96,30 +95,32 @@ class Friends implements Mithril {
         return [
             m(components.NavBar),
             m('section.section',
-                m('.columns', [
-                    m('.column.is-one-third.content', [
-                        m('h1', 'Search For Users'),
-                        m('form', { onsubmit: search }, [
-                            m(components.form.SearchBar, {
-                                store: searchName,
-                                placeholder: 'Search for people by name',
-                                onclick: search
-                            })
-                        ]),
-                        m('section.section',
-                            m('.container', searchResults)
+                m('.container',
+                    m('.columns', [
+                        m('.column.is-half',
+                            m('.box.content', [
+                                m('h1', 'Friend Requests'),
+                                m('form', { onsubmit: search }, [
+                                    m(components.form.SearchBar, {
+                                        store: searchName,
+                                        placeholder: 'Search for people by name',
+                                        onclick: search,
+                                        loading: Store.friends.userSearch.value.match(Loading)
+                                    })
+                                ]),
+                                searchResults,
+                                friendRequests,
+                                pendingRequests
+                            ])
+                        ),
+                        m('.column.is-half',
+                                m('.box.content', [
+                                m('h1', 'Friends'),
+                                friendsList
+                            ])
                         )
-                    ]),
-                    m('.column.is-one-third.content', [
-                        m('h1', 'Friend Requests'),
-                        friendRequests,
-                        pendingRequests
-                    ]),
-                    m('.column.is-one-third.content', [
-                        m('h1', 'Friends'),
-                        friendsList
                     ])
-                ])
+                )
             )
         ];
     }

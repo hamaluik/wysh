@@ -11,6 +11,9 @@ class SearchBar implements Mithril {
         var store:State<String> = vnode.attrs.get('store');
         vnode.state.value = store.value;
 
+        var loading:Bool = vnode.attrs.exists('loading') && vnode.attrs.get('loading') == true;
+        var isLoading:String = if(loading) '.is-loading'; else '';
+
         var options:Dynamic = {
             className: "input",
             type: 'text',
@@ -32,7 +35,7 @@ class SearchBar implements Mithril {
                     m('input', options)
                 ),
                 m('.control',
-                    m('a.button.is-info', { onclick: function() {
+                    m('button.button.is-primary${isLoading}', { onclick: function() {
                         if(vnode.attrs.exists('onclick')) {
                             clickHandler(null);
                         }

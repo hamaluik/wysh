@@ -7,11 +7,15 @@ class Icon implements Mithril {
         var name:String = vnode.attrs.get('name');
         var spin:String =
             vnode.attrs.exists('spin')
-                ? '.spin'
+                ? '.fa-spin'
+                : '';
+        var pulse:String =
+            vnode.attrs.exists('pulse')
+                ? '.fa-pulse'
                 : '';
         return
             m('span.icon',
-                m('svg.fa.fa-${name}${spin}',
+                m('svg.fa.fa-${name}${spin}${pulse}',
                     m('use[xlink:href=fa.svg#fa-${name}]')
                 )
             );

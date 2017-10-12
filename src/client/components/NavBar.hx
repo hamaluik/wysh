@@ -40,13 +40,13 @@ class NavBar implements Mithril {
         }
 
         return
-            m('nav.navbar.is-dark', [
+            m('nav.navbar.is-primary', [
                 m('.container', [
                     m('.navbar-brand', [
                         m('a.navbar-item', { href: '#!/' },
                             m('img', { src: 'res/wordmark_inverted.svg', width: 138, height: 28, alt: 'wysh' })
                         ),
-                        m('button.button.navbar-burger' + (vnode.state.menuShowing ? '.is-active' : ''), {
+                        m('.navbar-burger' + (vnode.state.menuShowing ? '.is-active' : ''), {
                             onclick: function() {
                                 vnode.state.menuShowing = !vnode.state.menuShowing;
                             }
@@ -56,8 +56,8 @@ class NavBar implements Mithril {
                     ]),
                     m('.navbar-menu' + (vnode.state.menuShowing ? '.is-active' : ''), [
                         m('.navbar-start', [
-                            m('a.navbar-item', { href: '#!/lists/friends' }, [m(Icon, { name: 'list' }), m('span', 'Lists')]),
-                            m('a.navbar-item', { href: '#!/friends' }, [m(Icon, { name: 'users' }), m('span', 'Friends')])
+                            m('a.navbar-item', { href: '#!/lists/friends', onclick: function() { vnode.state.menuShowing = false; } }, [m(Icon, { name: 'list' }), m('span', 'Lists')]),
+                            m('a.navbar-item', { href: '#!/friends', onclick: function() { vnode.state.menuShowing = false; } }, [m(Icon, { name: 'users' }), m('span', 'Friends')]),
                         ]),
                         m('.navbar-end', [
                             m('.navbar-item.has-dropdown.is-hoverable', [
