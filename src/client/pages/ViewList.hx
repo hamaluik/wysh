@@ -1,21 +1,17 @@
 package pages;
 
-import tink.core.Error;
 import types.IDItem;
-import tink.state.Observable;
-import tink.state.State;
 import api.Item;
 import mithril.M;
 import components.Icon;
 import components.ListSelector;
-import types.APIState;
 
 using Lambda;
 
 class ViewList implements Mithril {
     public function new() {}
 
-    private var listID:String = null;
+    /*private var listID:String = null;
     private var downloadState:State<APIState> = Idle;
 
     public function onmatch(params:haxe.DynamicAccess<String>, url:String) {
@@ -106,6 +102,26 @@ class ViewList implements Mithril {
                                 title,
                                 loadingBlocks,
                                 itemBlocks
+                            ])
+                        ]),
+                    ])
+                ])
+            )
+        ];
+    }*/
+    public function onmatch(params:haxe.DynamicAccess<String>, url:String) {
+        return null;
+    }
+
+    public function render(vnode) {
+        return [
+            m(components.NavBar),
+            m('section.section',
+                m('.container', [
+                    m('.columns', [
+                        m(ListSelector, { type: Self }),
+                        m('.column', [
+                            m('box.content', [
                             ])
                         ]),
                     ])

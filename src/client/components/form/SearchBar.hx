@@ -1,6 +1,5 @@
 package components.form;
 
-import tink.state.State;
 import mithril.M;
 
 class SearchBar implements Mithril {
@@ -8,7 +7,7 @@ class SearchBar implements Mithril {
 
     public static function view(vnode:Vnode<SearchBar>):Vnodes {
         var clickHandler:js.html.Event->Void = vnode.attrs.get('onclick');
-        var store:State<String> = vnode.attrs.get('store');
+        var store:Ref<String> = vnode.attrs.get('store');
         vnode.state.value = store.value;
 
         var loading:Bool = vnode.attrs.exists('loading') && vnode.attrs.get('loading') == true;

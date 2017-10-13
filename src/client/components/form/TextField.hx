@@ -1,13 +1,12 @@
 package components.form;
 
-import tink.state.State;
 import mithril.M;
 
 class TextField implements Mithril {
     var value:String = null;
 
     public static function view(vnode:Vnode<TextField>):Vnodes {
-        var store:State<String> = vnode.attrs.get('store');
+        var store:Ref<String> = vnode.attrs.get('store');
         vnode.state.value = store.value;
 
         var options:Dynamic = {

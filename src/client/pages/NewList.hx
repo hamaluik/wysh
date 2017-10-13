@@ -1,7 +1,6 @@
 package pages;
 
 import js.html.Event;
-import tink.state.State;
 import mithril.M;
 import components.ListSelector;
 import components.form.TextField;
@@ -14,8 +13,8 @@ import types.TPrivacy;
 using StringTools;
 
 class NewList implements Mithril {
-    private var newListName:State<String> = "";
-    private var newListPrivacy:State<TPrivacy> = TPrivacy.Friends;
+    private var newListName:Ref<String> = "";
+    private var newListPrivacy:Ref<TPrivacy> = TPrivacy.Friends;
     private var addButtonEnabled:Bool = false;
     private var privacyTypes:StringMap<Int> = new StringMap<Int>();
     private var loading:Bool = false;
@@ -25,14 +24,14 @@ class NewList implements Mithril {
         privacyTypes.set("Friends Only", TPrivacy.Friends);
         privacyTypes.set("Public", TPrivacy.Public);
 
-        newListName.observe().bind(function(v:String):Void {
+        /*newListName.observe().bind(function(v:String):Void {
             addButtonEnabled = v != null && StringTools.trim(v).length > 0;
             M.redraw();
-        });
+        });*/
     }
 
     public function onmatch(params:haxe.DynamicAccess<String>, url:String) {
-        if(Store.token.value == null) M.routeSet('/');
+        //if(Store.token.value == null) M.routeSet('/');
         return null;
     }
 
@@ -62,7 +61,7 @@ class NewList implements Mithril {
 
     function createList(e:Event):Void {
         if(e != null) e.preventDefault();
-        if(newListName.value.trim().length < 1) return;
+        /*if(newListName.value.trim().length < 1) return;
         loading = true;
         M.redraw();
         Actions.list.createList(newListName.value, newListPrivacy.value)

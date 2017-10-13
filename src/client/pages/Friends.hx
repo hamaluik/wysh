@@ -1,9 +1,5 @@
 package pages;
 
-import tink.core.Outcome;
-import tink.core.Error;
-import tink.state.State;
-import tink.state.Promised;
 import mithril.M;
 import api.Profile;
 import components.Icon;
@@ -12,11 +8,11 @@ import components.ProfileBlock;
 class Friends implements Mithril {
     public function new() {}
 
-    private var searchName:State<String> = '';
-    public var searchResults:State<Promised<Array<Profile>>> = Done([]);
+    private var searchName:Ref<String> = '';
+    public var searchResults:Ref<Promised<Array<Profile>>> = Done([]);
 
     public function onmatch(params:haxe.DynamicAccess<String>, url:String) {
-        if(Store.token.value == null) M.routeSet('/');
+        //if(Store.token.value == null) M.routeSet('/');
         return null;
     }
 
@@ -149,14 +145,14 @@ class Friends implements Mithril {
     function search(e:js.html.Event):Void {
         if(e != null) e.preventDefault();
 
-        searchResults.set(Loading);
+        /*searchResults.set(Loading);
         Actions.profile.searchProfiles(searchName.value)
         .handle(function(outcome:Outcome<Array<Profile>, Error>):Void {
             switch(outcome) {
                 case Success(results): searchResults.set(Done(results));
                 case Failure(error): searchResults.set(Failed(error));
             }
-        });
+        });*/
     }
 
     function addFriend(profile:Profile):Void {

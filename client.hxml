@@ -2,8 +2,11 @@
 -cp src/client
 
 -lib mithril
--lib tink_state
 -lib jwt
+-lib redux
+-D redux_global
+
+-D apiroot=http://lvh.me:8080/api
 
 -debug
 -dce full

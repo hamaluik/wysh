@@ -7,9 +7,9 @@ class NavBar implements Mithril {
 
     public static function view(vnode:Vnode<NavBar>):Vnodes {
         var notifications:Int = 0;
-        notifications += Store.incomingFriendRequests.length;
+        notifications += 0;//Store.incomingFriendRequests.length;
 
-        var profileImage:Vnodes = switch(Store.profile.value) {
+        var profileImage:Vnodes = m(Icon, { name: 'spinner-third', spin: true } );/*switch(Store.profile.value) {
             case Uninitialized | Loading: m(Icon, { name: 'spinner-third', spin: true } );
             case Done(profile): [
                 m('img.is-1by1', { style: 'margin-right: 16px', src: Store.profiles.get(profile).picture }),
@@ -21,15 +21,15 @@ class NavBar implements Mithril {
                 }, Store.profiles.get(profile).name)
             ];
             case Failed(error): null;
-        }
+        }*/
 
         var friendRequests:Vnodes = [
-            switch(Store.incomingFriendRequests.length) {
+            /*switch(Store.incomingFriendRequests.length) {
                 case 0: m('span.navbar-item', 'No friend requests');
                 case count: m('a.navbar-item', { href: '#!/friends' }, 'You have ${count} friend request${count == 1 ? '' : 's'}!');
             },
             Store.incomingFriendRequests.state.value.match(Loading) ? m('span.navbar-item.has-text-centered', m(Icon, { name: 'spinner-third', spin: true })) : null,
-            m('hr.navbar-divider')
+            m('hr.navbar-divider')*/
         ];
 
         return
@@ -67,7 +67,7 @@ class NavBar implements Mithril {
     }
 
     static function signout() {
-        Actions.auth.clearStoredToken();
+        //Actions.auth.clearStoredToken();
         M.routeSet('/');
     }
 }

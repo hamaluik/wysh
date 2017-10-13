@@ -22,13 +22,13 @@ class ListSelector implements Mithril {
 
             case Self: {
                 var lists:Array<IDList>
-                    = Store.profileLists.exists(Store.uid.value)
+                    = /*Store.profileLists.exists(Store.uid.value)
                         ? Store.profileLists.get(Store.uid.value).toArray()
-                        : [];
+                        : */[];
                 if(lists.length < 1)
                     m('.panel-block', 'You don\'t have any lists yet!');
                 else [
-                    for(listID in lists) {
+                    /*for(listID in lists) {
                         var list:api.List = Store.lists.get(listID);
                         m('a.panel-block', {
                                 href: '#!/list/${list.id}'
@@ -41,7 +41,7 @@ class ListSelector implements Mithril {
                             } }),
                             m('span', list.name)
                         ]);
-                    }
+                    }*/
                 ];
             }
         }

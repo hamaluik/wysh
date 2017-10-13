@@ -2,11 +2,10 @@ package components.form;
 
 import mithril.M;
 import haxe.ds.StringMap;
-import tink.state.State;
 
 class DropDown implements Mithril {
     public static function view(vnode:Vnode<DropDown>):Vnodes {
-        var store:State<Int> = vnode.attrs.get('store');
+        var store:Ref<Int> = vnode.attrs.get('store');
 
         var types:StringMap<Int> = vnode.attrs.get('types');
         var options = [for(label in types.keys()) {

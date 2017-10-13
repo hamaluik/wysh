@@ -1,11 +1,10 @@
-import tink.core.Promise;
 import mithril.M;
-using tink.core.Future.JsPromiseTools;
+import js.Promise;
 
 class WebRequest {
     public inline static function endpoint(endpoint:String):String {
         // TODO: use a define
-        return 'http://lvh.me:8080/api' + endpoint;
+        return macros.Defines.get('apiroot') + endpoint;
     }
 
     public static function extract(xhr:js.html.XMLHttpRequest, options):Dynamic {
@@ -22,8 +21,8 @@ class WebRequest {
             extract: WebRequest.extract,
             data: data,
             headers: useAuth ? {
-                Authorization: 'Bearer ' + Store.token.value
+                Authorization: 'Bearer ' + ''
             } : {}
-        }).toPromise();
+        });
     }
 }
