@@ -5,7 +5,7 @@
 -lib tink_tcp
 -lib tink_http_middleware
 -lib tink_web
-
+-lib asys
 -lib record-macros
 -lib hashids
 -lib yaml

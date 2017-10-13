@@ -1,25 +1,44 @@
 import Sys;
 
-@:enum abstract LogLevel(String) {
-    var TRACE = "t";
-    var INFO = "i";
-    var WARN = "w";
-    var ERROR = "e";
+enum LogLevel {
+    TRACE;
+    INFO;
+    WARN;
+    ERROR;
 }
 
 class Log {
-    public static function log(level:LogLevel, message:String):Void {
+    public static var level:LogLevel = LogLevel.TRACE;
+    public static function setLevel(l:String):Void {
+        level = switch(l.charAt(0).toLowerCase()) {
+            case 't': TRACE;
+            case 'i': INFO;
+            case 'w': WARN;
+            case 'e': ERROR;
+            case _: throw 'Unknown level ${l}, must be one of: "trace", "info", "warn", or "error"!';
+        };
+    }
+
+    private static function log(logLevel:LogLevel, message:String):Void {
+        if(logLevel.getIndex() < level.getIndex()) return;
+
         var now:String = Date.now().toString();
         
-        var colour:String = switch(level) {
+        var colour:String = switch(logLevel) {
             case TRACE: '\x1B[90m';
             case INFO: '\x1B[1;36m';
             case WARN: '\x1B[1;33m';
             case ERROR: '\x1B[1;91m';
-            case _: "";
         }
 
-        Sys.println('[$now] ($colour$level\x1B[0m) $colour$message\x1B[0m');
+        var prefix:String = switch(logLevel) {
+            case TRACE: 't';
+            case INFO: 'i';
+            case WARN: 'w';
+            case ERROR: 'e';
+        }
+
+        Sys.println('[$now] ($colour$prefix\x1B[0m) $colour$message\x1B[0m');
     }
 
     public static function trace(message:String):Void {

@@ -2,6 +2,13 @@ package;
 
 typedef Config = {
     public var port:Int;
+    public var enableCORS:Bool;
+    public var serveStatic:Bool;
+
+    public var log:{
+        public var level:String;
+        public var requests:Bool;
+    }
 
     public var root:{
         public var client:String;

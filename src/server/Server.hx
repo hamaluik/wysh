@@ -60,6 +60,7 @@ class Server {
         // load the config
         var configFile:String = sys.io.File.getContent("config.json");
         config = haxe.Json.parse(configFile);
+        Log.setLevel(config.log.level);
 
         // prepare the Hashids
         userHID = new Hashids(config.hid.salts.user, config.hid.minlength, config.hid.alphabet);
@@ -92,9 +93,9 @@ class Server {
                 return ft.asFuture();
             }
         }
-        handler = handler.applyMiddleware(new middleware.CORS());
-        //handler = handler.applyMiddleware(new tink.http.middleware.Static('public', '/'));
-        handler = handler.applyMiddleware(new middleware.RequestLogger());
+        if(config.enableCORS) handler = handler.applyMiddleware(new middleware.CORS());
+        if(config.serveStatic) handler = handler.applyMiddleware(new middleware.Static('public', '/'));
+        if(config.log.requests) handler = handler.applyMiddleware(new middleware.RequestLogger());
 
         #if php
         var container = tink.http.containers.PhpContainer.inst;

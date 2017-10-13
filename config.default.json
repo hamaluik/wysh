@@ -1,5 +1,13 @@
 {
     "port": 8080,
+    "enableCORS": false,
+    "serveStatic": false,
+
+    "log": {
+        "level": "info",
+        "requests": false
+    },
+
     "root": {
         "client": "http://lvh.me:8000",
         "api": "http://lvh.me:8080"
