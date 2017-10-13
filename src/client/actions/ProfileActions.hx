@@ -2,6 +2,8 @@ package actions;
 
 import tink.core.Future;
 import tink.core.Noise;
+import tink.core.Promise;
+import tink.core.Outcome;
 import mithril.M;
 import api.Profile;
 
@@ -15,8 +17,7 @@ class ProfileActions {
         });
     }
 
-    // TODO: overhaul to promises
-    public function fetchProfile():Future<Noise> {
+    public function fetchProfile():Promise<Profile> {
         var ft = Future.trigger();
         Store.profile.set(Loading);
         M.request(WebRequest.endpoint('/user/${Store.uid.value}/profile'), {
@@ -30,42 +31,34 @@ class ProfileActions {
             var profile:Profile = cast(data);
             Store.profiles.set(profile.id, profile);
             Store.profile.set(Done(profile.id));
-            ft.trigger(null);
+            ft.trigger(Success(profile));
         })
         .catchError(function(error) {
             Store.profile.set(Failed(error));
-            ft.trigger(null);
+            ft.trigger(Failure(error));
         });
         return ft.asFuture();
+        /*Store.profile.set(Loading);
+        return WebRequest.request('GET', '/user/${Store.uid.value}/profile', true)
+        .next(function(resp:Dynamic):Promise<Profile> {
+            var profile:Profile = cast(resp);
+            Store.profiles.set(profile.id, profile);
+            Store.profile.set(Done(profile.id));
+            return Future.sync(profile);
+        });*/
     }
 
-    // TODO: overhaul to promises
-    public function searchProfiles(query:String):Future<Array<Profile>> {
-        var ft = Future.trigger();
-
+    public function searchProfiles(query:String):Promise<Array<Profile>> {
         if(query.length < 3) {
-            ft.trigger([]);
+            return Future.sync([]);
         }
-        else {
-            M.request(WebRequest.endpoint('/search/users'), {
-                method: 'GET',
-                extract: WebRequest.extract,
-                data: {
-                    name: query
-                },
-                headers: {
-                    Authorization: 'Bearer ' + Store.token.value
-                }
-            })
-            .then(function(resp:Dynamic) {
-                var profiles:api.Profiles = cast(resp);
-                ft.trigger(profiles.profiles);
-            })
-            .catchError(function(error) {
-                ft.trigger([]);
-            });
-        }
-
-        return ft.asFuture();
+        
+        return WebRequest.request('GET', '/search/users', true, {
+            name: query
+        })
+        .next(function(resp:Dynamic):Promise<Array<Profile>> {
+            var profiles:api.Profiles = cast(resp);
+            return Future.sync(profiles.profiles);
+        });
     }
 }

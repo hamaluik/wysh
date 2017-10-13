@@ -1,16 +1,19 @@
 package pages;
 
+import tink.core.Outcome;
+import tink.core.Error;
 import tink.state.State;
+import tink.state.Promised;
 import mithril.M;
 import api.Profile;
 import components.Icon;
-import types.APIArray;
+import components.ProfileBlock;
 
 class Friends implements Mithril {
     public function new() {}
 
     private var searchName:State<String> = '';
-    public var searchResults:APIArray<Profile> = new APIArray<Profile>();
+    public var searchResults:State<Promised<Array<Profile>>> = Done([]);
 
     public function onmatch(params:haxe.DynamicAccess<String>, url:String) {
         if(Store.token.value == null) M.routeSet('/');
@@ -18,7 +21,27 @@ class Friends implements Mithril {
     }
 
     public function render(vnode) {
-        var searchResultsBlock:Array<Vnode<Dynamic>> = [];/*switch(Store.friends.userSearch.value) {
+        var searchResultsBlock:Array<Vnode<Dynamic>> = switch(searchResults.value) {
+            case Done(results): [
+                for(profile in results) {
+                    var addLink:Vnodes =
+                        if(false) // has been sent?
+                            m('span', [
+                                m(Icon, { name: 'check' } ),
+                                ' Friend request sent!'
+                            ]);
+                        else
+                            m('a', { onclick: function() { addFriend(profile); } }, [
+                                m(Icon, { name: 'plus' }),
+                                m('span', 'Add friend')
+                            ]);
+
+                    m(ProfileBlock, { profile: profile }, addLink);
+                }
+            ];
+            case _: [];
+        };
+        /*switch(Store.friends.userSearch.value) {
             case Done(results): [
                 for(user in results) {
                     var addLink:Vnodes =
@@ -99,23 +122,23 @@ class Friends implements Mithril {
             m('section.section',
                 m('.container',
                     m('.columns', [
-                        m('.column.is-half', [
+                        m('.column.is-half.content',[
+                            m('h1', 'Friends'),
+                            //friendsList
+                        ]),
+                        m('.column.is-half.content', [
                             m('h1', 'Friend Requests'),
                             m('form', { onsubmit: search }, [
                                 m(components.form.SearchBar, {
                                     store: searchName,
                                     placeholder: 'Search for people by name',
                                     onclick: search,
-                                    loading: searchResults.state.value.match(Loading)
+                                    loading: searchResults.value.match(Loading)
                                 })
                             ]),
                             searchResultsBlock,
                             /*friendRequests,
                             pendingRequests*/
-                        ]),
-                        m('.column.is-half.content',[
-                            m('h1', 'Friends'),
-                            //friendsList
                         ])
                     ])
                 )
@@ -125,10 +148,14 @@ class Friends implements Mithril {
 
     function search(e:js.html.Event):Void {
         if(e != null) e.preventDefault();
+
+        searchResults.set(Loading);
         Actions.profile.searchProfiles(searchName.value)
-        .handle(function(profiles:Array<Profile>) {
-            searchResults = new APIArray<Profile>(profiles);
-            M.redraw();
+        .handle(function(outcome:Outcome<Array<Profile>, Error>):Void {
+            switch(outcome) {
+                case Success(results): searchResults.set(Done(results));
+                case Failure(error): searchResults.set(Failed(error));
+            }
         });
     }
 

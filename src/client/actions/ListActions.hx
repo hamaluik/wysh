@@ -63,12 +63,12 @@ class ListActions {
         });
     }
 
-    public function createList(name:String, privacy:TPrivacy):Promise<Noise> {
+    public function createList(name:String, privacy:TPrivacy):Promise<api.List> {
         return WebRequest.request('POST', '/list', true, {
             name: name,
             privacy: privacy
         })
-        .next(function(resp:Dynamic):Promise<Noise> {
+        .next(function(resp:Dynamic):Promise<api.List> {
             var list:api.List = cast(resp);
             Store.lists.set(list.id, list);
 
@@ -81,7 +81,9 @@ class ListActions {
                 arr.push(list.id);
             }
 
-            return Future.sync(null);
+            Client.console.info('Created list', list);
+
+            return Future.sync(list);
         });
     }
 }

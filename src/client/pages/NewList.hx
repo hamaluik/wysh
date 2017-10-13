@@ -66,15 +66,16 @@ class NewList implements Mithril {
         loading = true;
         M.redraw();
         Actions.list.createList(newListName.value, newListPrivacy.value)
-        .next(function(_) {
+        .next(function(list:api.List) {
             loading = false;
             M.routeSet('/lists/self');
+            Client.console.info('Done with creating list', list);
             return null;
-        })
+        });/*
         .tryRecover(function(error) {
             Client.console.error('Failed to create list', error);
             loading = false;
             return error;
-        });
+        });*/
     }
 }
