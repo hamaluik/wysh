@@ -1,3 +1,0 @@
-# @install: lix --silent download "haxelib:mithril#1.0.1" into mithril/1.0.1/haxelib
--D mithril=1.0.1
--cp ${HAXESHIM_LIBCACHE}/mithril/1.0.1/haxelib/

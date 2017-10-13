@@ -25,7 +25,7 @@ class RequestLoggerHandler implements HandlerObject {
 
     public function process(req:IncomingRequest):Future<OutgoingResponse> {
         var res = handler.process(req);
-        Log.trace('>' /*+ req.clientIp.lpad(' ', 16)*/ + ' ' + (req.header.method:String).rpad(' ', 8) + req.header.uri.pathWithQuery);
+        Log.trace('> ' + (req.header.method:String).rpad(' ', 8) + req.header.url.pathWithQuery);
         return res;
     }
 }

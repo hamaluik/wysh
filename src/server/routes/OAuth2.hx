@@ -13,6 +13,10 @@ import tink.http.Header.HeaderField;
 import tink.web.routing.*;
 import tink.http.clients.SecureSocketClient;
 import tink.http.Request;
+import tink.Url;
+
+import tink.io.Source;
+import tink.io.Sink;
 
 import jwt.JWT;
 
@@ -59,7 +63,7 @@ class OAuth2 {
 
     @:get public function redirect(query:{code:String, state:String}):Promise<Response> {
         var headers:Array<HeaderField> = new Array<HeaderField>();
-        headers.push(new HeaderField(HeaderName.ContentType, 'application/x-www-form-urlencoded'));
+        headers.push(new HeaderField(HeaderName.CONTENT_TYPE, 'application/x-www-form-urlencoded'));
 
         var redirectURI:String = Server.config.root.api + '/api/oauth2/redirect';
         var host:String = null;
@@ -91,11 +95,17 @@ class OAuth2 {
         body += '&redirect_uri=${redirectURI.urlEncode()}';
         body += '&grant_type=authorization_code';
 
-        headers.push(new HeaderField(HeaderName.ContentLength, body.length));
+        headers.push(new HeaderField(HeaderName.CONTENT_LENGTH, body.length));
 
         var client = new SecureSocketClient();
         var req:Promise<Bytes> = client.request(new OutgoingRequest(
-            new OutgoingRequestHeader(POST, new tink.url.Host(host), uri, headers),
+            //new OutgoingRequestHeader(POST, new tink.url.Host(host), uri, headers),
+            new OutgoingRequestHeader(
+                POST,
+                Url.parse('https://${host}${uri}'),
+                HTTP1_1,
+                []
+            ),
             body
         )).next(function(res:IncomingResponse):Promise<Bytes> {
             return res.body.all();
@@ -151,12 +161,17 @@ class OAuth2 {
                     return client.request(new OutgoingRequest(
                         new OutgoingRequestHeader(
                             GET,
-                            new tink.url.Host('graph.facebook.com'),
-                            '/v2.5/me?fields=id,name,picture&access_token=${accessToken.urlEncode()}'
-                        ), ''
+                            tink.Url.parse('https://graph.facebook.com//v2.5/me?fields=id,name,picture&access_token=${accessToken.urlEncode()}'),
+                            tink.http.Protocol.HTTP1_1,
+                            []
+                        ),
+                        ''
                     ));
                 }).next(function(res:IncomingResponse):Promise<Bytes> {
-                    return res.body.all();
+                    //var sink:Sink<Bytes> = new Sink<Bytes>();
+                    Source.
+
+                    return Future.sync(null);
                 }).next(function(raw:Bytes):Promise<Response> {
                     var result:Dynamic = haxe.Json.parse(raw.toString());
                     var fbID:String = result.id;

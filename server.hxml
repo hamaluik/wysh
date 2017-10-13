@@ -8,7 +8,6 @@
 
 -lib record-macros
 -lib hashids
--lib yaml
 -lib jwt
 
 -main Server

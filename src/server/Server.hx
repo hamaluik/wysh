@@ -5,6 +5,11 @@ import tink.http.Handler;
 import tink.http.Response;
 import tink.web.routing.*;
 
+import tink.core.Promise;
+import tink.core.Future;
+import tink.core.Signal;
+import tink.tcp.OpenPort;
+
 import hashids.Hashids;
 
 import sys.db.Manager;
@@ -92,14 +97,18 @@ class Server {
                 return ft.asFuture();
             }
         }
-        handler = handler.applyMiddleware(new middleware.CORS());
-        //handler = handler.applyMiddleware(new tink.http.middleware.Static('public', '/'));
+        //handler = handler.applyMiddleware(new middleware.CORS());
+        handler = handler.applyMiddleware(new tink.http.middleware.Static('public', '/'));
         handler = handler.applyMiddleware(new middleware.RequestLogger());
 
         #if php
         var container = tink.http.containers.PhpContainer.inst;
         #else
-        var container = new tink.http.containers.TcpContainer(config.port);
+        var container = new tink.http.containers.TcpContainer(function():tink.core.Promise<tink.tcp.OpenPort> {
+            return tink.core.Future.sync(
+                new tink.tcp.OpenPort(null, config.port)
+            );
+        });
         #end
         Log.info('listening on port ${config.port}!');
         container.run(handler);
