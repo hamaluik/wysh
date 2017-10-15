@@ -21,7 +21,7 @@ class WebRequest {
             extract: WebRequest.extract,
             data: data,
             headers: useAuth ? {
-                Authorization: 'Bearer ' + ''
+                Authorization: 'Bearer ' + Client.store.state.auth.token
             } : {}
         });
     }

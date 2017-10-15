@@ -1,6 +1,7 @@
 package components;
 
 import mithril.M;
+import store.factories.AuthFactory;
 
 class NavBar implements Mithril {
     var menuShowing:Bool = false;
@@ -9,19 +10,22 @@ class NavBar implements Mithril {
         var notifications:Int = 0;
         notifications += 0;//Store.incomingFriendRequests.length;
 
-        var profileImage:Vnodes = m(Icon, { name: 'spinner-third', spin: true } );/*switch(Store.profile.value) {
-            case Uninitialized | Loading: m(Icon, { name: 'spinner-third', spin: true } );
-            case Done(profile): [
-                m('img.is-1by1', { style: 'margin-right: 16px', src: Store.profiles.get(profile).picture }),
-                m(BadgeSpan, {
-                    classes: '.has-text-weight-bold',
-                    badge: notifications > 0
-                        ? Std.string(notifications)
-                        : null
-                }, Store.profiles.get(profile).name)
-            ];
+        var profileImage:Vnodes = switch(Client.store.state.profiles.api) {
+            case Loading: m(Icon, { name: 'spinner-third', spin: true } );
+            case Idle(lastUpdated): {
+                var profile:api.Profile = Reflect.field(Client.store.state.profiles, Client.store.state.auth.uid);
+                [
+                    m('img.is-1by1', { style: 'margin-right: 16px', src: profile.picture }),
+                    m(BadgeSpan, {
+                        classes: '.has-text-weight-bold',
+                        badge: notifications > 0
+                            ? Std.string(notifications)
+                            : null
+                    }, profile.name)
+                ];
+            }
             case Failed(error): null;
-        }*/
+        }
 
         var friendRequests:Vnodes = [
             /*switch(Store.incomingFriendRequests.length) {
@@ -67,7 +71,7 @@ class NavBar implements Mithril {
     }
 
     static function signout() {
-        //Actions.auth.clearStoredToken();
+        AuthFactory.signOut();
         M.routeSet('/');
     }
 }

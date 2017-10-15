@@ -2,78 +2,25 @@ import mithril.M;
 import js.html.Console;
 import redux.Redux;
 import redux.Store;
-import redux.IMiddleware;
-import redux.IReducer;
 import redux.StoreBuilder.*;
+import store.AuthReducer;
+import store.ProfilesReducer;
+import store.Actions;
+import store.State;
+import store.factories.AuthFactory;
+import store.factories.ProfilesFactory;
 
-typedef State = {
-    var auth:AuthState;
-    var profile:ProfileState;
-}
-
-typedef AuthState = {
-    @:optional var token:String;
-}
-
-typedef ProfileState = {
-    @:optional var uid:String;
-    @:optional var name:String;
-    @:optional var picture:String;
-}
-
-enum AuthActions {
-    Auth(token:String);
-    SignOut;
-}
-
-enum ProfileActions {
-    Fetch;
-}
-
-class AuthReducer implements IReducer<AuthActions, AuthState> {
-    public function new(){}
-    
-    public var initState:AuthState = {
-        token: null
-    };
-
-    public function reduce(state:AuthState, action:AuthActions):AuthState {
-        return switch(action) {
-            case Auth(token): js.Object.assign({}, state, {
-                token: token
-            });
-            case SignOut: js.Object.assign({}, state, {
-                token: null
-            });
-        }
-    }
-}
-
-class ProfileReducer implements IReducer<ProfileActions, ProfileState> {
-    public function new(){}
-    
-    public var initState:ProfileState = {
-        uid: null,
-        name: null,
-        picture: null,
-    };
-
-    public function reduce(state:ProfileState, action:ProfileActions):ProfileState {
-        return switch(action) {
-            case Fetch: js.Object.assign({
-                uid: null,
-                name: null,
-                picture: null,
-            }, state, {
-                name: 'Kenton'
-            });
-        }
+@:forward
+abstract WyshStore(Store<State>) from Store<State> to Store<State> {
+    public var state(get, never):State;
+    inline private function get_state():State {
+        return this.getState();
     }
 }
 
 class Client implements Mithril {
     public static var console:Console = js.Browser.console;
-    public static var store:Store<State>;
+    public static var store:WyshStore;
 
     public static function main():Void {
         new Client();
@@ -82,19 +29,16 @@ class Client implements Mithril {
     public function new() {
         var rootReducer = Redux.combineReducers({
             auth: mapReducer(AuthActions, new AuthReducer()),
-            profile: mapReducer(ProfileActions, new ProfileReducer())
+            profiles: mapReducer(ProfilesActions, new ProfilesReducer())
         });
         store = createStore(rootReducer);
 
-        console.log(store.getState());
-        store.dispatch(AuthActions.Auth('my login token'));
-        console.log(store.getState());
-        store.dispatch(ProfileActions.Fetch);
-        console.log(store.getState());
-        store.dispatch(AuthActions.SignOut);
-        console.log(store.getState());
+        AuthFactory.authWithStoredToken()
+        .then(function(token:String) {
+            ProfilesFactory.fetchProfile(store.state.auth.uid);
+        })
+        .catchError(function(_) {});
 
-        //Actions.auth.checkStoredToken();
         M.route(js.Browser.document.body, '/', {
             '/': this,
             '/login/:token': new pages.Login(),
@@ -108,7 +52,7 @@ class Client implements Mithril {
 
     public function onmatch(params:haxe.DynamicAccess<String>, url:String) {
         // if logged in, go to lists
-        //if(Store.token.value != null) M.routeSet('/lists/friends');
+        if(store.state.auth.token != null) M.routeSet('/lists/friends');
         return null;
     }
 

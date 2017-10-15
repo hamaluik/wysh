@@ -1,1 +1,27 @@
+-cmd echo "Compiling scripts..."
+--next
+
+-cp src/common
+-cp src/client
+
+-lib mithril
+-lib jwt
+-lib redux
+-D redux_global
+
+-D apiroot=http://lvh.me:8080/api
+
+-dce full
+
+-lib closure
+
+-main Client
+-js public/wysh.js
+
+--next
+
+-cmd echo "Compiling styles..."
 -cmd sass -t compressed --sourcemap=none res/style.scss public/style.min.css
+
+--next
+-cmd echo "Done!"

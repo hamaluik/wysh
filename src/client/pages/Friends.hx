@@ -12,7 +12,7 @@ class Friends implements Mithril {
     public var searchResults:Ref<Promised<Array<Profile>>> = Done([]);
 
     public function onmatch(params:haxe.DynamicAccess<String>, url:String) {
-        //if(Store.token.value == null) M.routeSet('/');
+        if(Client.store.state.auth.token == null) M.routeSet('/');
         return null;
     }
 
