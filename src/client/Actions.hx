@@ -1,6 +1,7 @@
 import State.APIState;
-import js.Error;
 import api.Profile;
+import api.List;
+import api.Item;
 
 enum OfflineActions {
     Load(state:State);
@@ -22,4 +23,12 @@ enum APIActions {
 
 enum ProfilesActions {
     Set(profiles:Array<Profile>);
+}
+
+enum ListsActions {
+    Set(lists:Array<List>);
+}
+
+enum ItemsActions {
+    Set(items:Array<Item>);
 }

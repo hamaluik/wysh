@@ -6,10 +6,12 @@ import redux.Store;
 import redux.StoreBuilder.*;
 import Actions;
 import State;
-import stores.AuthReducer;
-import stores.ProfilesReducer;
 import stores.APIReducer;
 import stores.AuthStore;
+import stores.AuthReducer;
+import stores.ProfilesReducer;
+import stores.ListsReducer;
+import stores.ItemsReducer;
 
 @:forward
 abstract WyshStore(Store<State>) from Store<State> to Store<State> {
@@ -31,7 +33,9 @@ class Client implements Mithril {
         var appReducer = Redux.combineReducers({
             auth: mapReducer(AuthActions, new AuthReducer()),
             apiCalls: mapReducer(APIActions, new APIReducer()),
-            profiles: mapReducer(ProfilesActions, new ProfilesReducer())
+            profiles: mapReducer(ProfilesActions, new ProfilesReducer()),
+            lists: mapReducer(ListsActions, new ListsReducer()),
+            items: mapReducer(ItemsActions, new ItemsReducer())
         });
         var rootReducer = function(state:State, action:Dynamic):State {
             if(action.type == 'OfflineActions.Load') {
