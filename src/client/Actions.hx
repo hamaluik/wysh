@@ -1,7 +1,6 @@
+import State.APIState;
 import js.Error;
 import api.Profile;
-import redux.Redux;
-using haxe.EnumTools.EnumValueTools;
 
 enum OfflineActions {
     Load(state:State);
@@ -13,8 +12,14 @@ enum AuthActions {
     SignOut;
 }
 
+enum APIActions {
+    GetSelfProfile(state:APIState);
+    GetProfiles(state:APIState);
+    GetFriends(state:APIState);
+    GetIncomingRequests(state:APIState);
+    GetSentRequests(state:APIState);
+}
+
 enum ProfilesActions {
-    StartLoading;
-    Loaded(profiles:Array<Profile>);
-    Failed(error:Error);
+    Set(profiles:Array<Profile>);
 }

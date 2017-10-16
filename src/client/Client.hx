@@ -4,12 +4,12 @@ import js.html.Console;
 import redux.Redux;
 import redux.Store;
 import redux.StoreBuilder.*;
-import store.AuthReducer;
-import store.ProfilesReducer;
 import Actions;
 import State;
-import store.factories.AuthFactory;
-import store.factories.ProfilesFactory;
+import stores.AuthReducer;
+import stores.ProfilesReducer;
+import stores.APIReducer;
+import stores.AuthStore;
 
 @:forward
 abstract WyshStore(Store<State>) from Store<State> to Store<State> {
@@ -30,6 +30,7 @@ class Client implements Mithril {
     public function new() {
         var appReducer = Redux.combineReducers({
             auth: mapReducer(AuthActions, new AuthReducer()),
+            apiCalls: mapReducer(APIActions, new APIReducer()),
             profiles: mapReducer(ProfilesActions, new ProfilesReducer())
         });
         var rootReducer = function(state:State, action:Dynamic):State {
@@ -63,9 +64,9 @@ class Client implements Mithril {
             console.warn('Failed to load offline state', error);
         });
 
-        AuthFactory.authWithStoredToken()
+        AuthStore.authWithStoredToken()
         .catchError(function(error) {
-            console.error('Failed to auth with stored token!', error);
+            console.warn('Failed to auth with stored token!', error);
         });
 
         M.route(js.Browser.document.body, '/', {

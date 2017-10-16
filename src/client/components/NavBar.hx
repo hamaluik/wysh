@@ -1,7 +1,7 @@
 package components;
 
 import mithril.M;
-import store.factories.AuthFactory;
+import stores.AuthStore;
 
 class NavBar implements Mithril {
     var menuShowing:Bool = false;
@@ -10,7 +10,7 @@ class NavBar implements Mithril {
         var notifications:Int = 0;
         notifications += 0;//Store.incomingFriendRequests.length;
 
-        var profileImage:Vnodes = switch(Client.store.state.profiles.api) {
+        var profileImage:Vnodes = switch(Client.store.state.apiCalls.getSelfProfile) {
             case Loading: m(Icon, { name: 'spinner-third', spin: true } );
             case Idle(lastUpdated): {
                 var profile:api.Profile = Reflect.field(Client.store.state.profiles, Client.store.state.auth.uid);
@@ -73,7 +73,7 @@ class NavBar implements Mithril {
     }
 
     static function signout() {
-        AuthFactory.signOut();
+        AuthStore.signOut();
         M.routeSet('/');
     }
 }

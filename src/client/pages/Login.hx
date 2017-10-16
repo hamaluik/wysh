@@ -2,16 +2,16 @@ package pages;
 
 import js.Error;
 import mithril.M;
-import store.factories.AuthFactory;
-import store.factories.ProfilesFactory;
+import stores.AuthStore;
+import stores.ProfilesStore;
 
 class Login implements Mithril {
     public function new(){}
 
     public function onmatch(params:haxe.DynamicAccess<String>, url:String) {
-        AuthFactory.authenticate(params.get('token'))
+        AuthStore.authenticate(params.get('token'))
         .then(function(_) {
-            return ProfilesFactory.fetchProfile(Client.store.state.auth.uid);
+            return ProfilesStore.fetchProfile(Client.store.state.auth.uid);
         })
         .catchError(function(error:Error) {
             Client.console.error(error);

@@ -1,9 +1,9 @@
-package store.factories;
+package stores;
 
 import js.Promise;
 import Actions;
 
-class AuthFactory {
+class AuthStore {
     public static function authWithStoredToken():Promise<String> {
         var token:String = js.Browser.getLocalStorage().getItem('token');
         if(token == null || StringTools.trim(token).length == 0)

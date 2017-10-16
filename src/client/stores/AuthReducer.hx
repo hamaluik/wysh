@@ -1,4 +1,4 @@
-package store;
+package stores;
 
 import Actions;
 import State;
