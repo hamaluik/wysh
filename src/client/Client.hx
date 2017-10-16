@@ -14,9 +14,9 @@ import stores.ListsReducer;
 import stores.ItemsReducer;
 
 @:forward
-abstract WyshStore(Store<State>) from Store<State> to Store<State> {
-    public var state(get, never):State;
-    inline private function get_state():State {
+abstract WyshStore(Store<RootState>) from Store<RootState> to Store<RootState> {
+    public var state(get, never):RootState;
+    inline private function get_state():RootState {
         return this.getState();
     }
 }
@@ -37,7 +37,7 @@ class Client implements Mithril {
             lists: mapReducer(ListsActions, new ListsReducer()),
             items: mapReducer(ItemsActions, new ItemsReducer())
         });
-        var rootReducer = function(state:State, action:Dynamic):State {
+        var rootReducer = function(state:RootState, action:Dynamic):RootState {
             if(action.type == 'OfflineActions.Load') {
                 state = js.Object.assign(cast({}), state, {
                     profiles: action.value.profiles
@@ -58,7 +58,7 @@ class Client implements Mithril {
         );
 
         OfflineMiddleware.loadStateFromStorage()
-        .then(function(state:State) {
+        .then(function(state:RootState) {
             store.dispatch(new Action({
                 type: 'OfflineActions.Load',
                 value: state

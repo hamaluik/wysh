@@ -1,10 +1,10 @@
-import State.APIState;
+import State;
 import api.Profile;
 import api.List;
 import api.Item;
 
 enum OfflineActions {
-    Load(state:State);
+    Load(state:RootState);
     Save;
 }
 

@@ -4,7 +4,7 @@ enum APIState {
     Failed(error:js.Error);
 }
 
-typedef State = {
+typedef RootState = {
     var auth:AuthState;
     var apiCalls:APICallsState;
 

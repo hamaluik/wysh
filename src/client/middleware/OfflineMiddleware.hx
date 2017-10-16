@@ -86,15 +86,15 @@ class OfflineMiddleware {
 		return newState;
 	}*/
 
-	public static function loadStateFromStorage():Promise<State> {
+	public static function loadStateFromStorage<T>():Promise<T> {
 		return getFromStore('root')
 		.then(function(stateStr:String) {
-			var state:State = haxe.Json.parse(stateStr);
+			var state:T = haxe.Json.parse(stateStr);
 			return Promise.resolve(state);
 		});
 	}
 
-    public static function createMiddleware() {
+    public static function createMiddleware<T>() {
 		debounceTimer = new Timer(2000);
 		debounceTimer.run = function() {
 			if(pendingSave != null) {
@@ -103,7 +103,7 @@ class OfflineMiddleware {
 			}
 		};
 
-		return function (store:StoreMethods<State>) {
+		return function(store:StoreMethods<T>) {
 			return function (next:Dispatch):Dynamic {
 				return function (action:Action):Dynamic {
 					var result = next(action);
