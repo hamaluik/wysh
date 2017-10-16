@@ -1,3 +1,4 @@
+import middleware.OfflineMiddleware;
 import mithril.M;
 import js.html.Console;
 import redux.Redux;
@@ -5,8 +6,8 @@ import redux.Store;
 import redux.StoreBuilder.*;
 import store.AuthReducer;
 import store.ProfilesReducer;
-import store.Actions;
-import store.State;
+import Actions;
+import State;
 import store.factories.AuthFactory;
 import store.factories.ProfilesFactory;
 
@@ -27,17 +28,45 @@ class Client implements Mithril {
     }
 
     public function new() {
-        var rootReducer = Redux.combineReducers({
+        var appReducer = Redux.combineReducers({
             auth: mapReducer(AuthActions, new AuthReducer()),
             profiles: mapReducer(ProfilesActions, new ProfilesReducer())
         });
-        store = createStore(rootReducer);
+        var rootReducer = function(state:State, action:Dynamic):State {
+            if(action.type == 'OfflineActions.Load') {
+                state = js.Object.assign(cast({}), state, {
+                    profiles: action.value.profiles
+                });
+                js.Browser.window.requestAnimationFrame(function(_):Void {
+                    M.redraw();
+                });
+            }
+
+            return appReducer(state, action);
+        };
+        store = createStore(
+            rootReducer,
+            null,
+            Redux.applyMiddleware(
+                OfflineMiddleware.createMiddleware()
+            )
+        );
+
+        OfflineMiddleware.loadStateFromStorage()
+        .then(function(state:State) {
+            store.dispatch(new Action({
+                type: 'OfflineActions.Load',
+                value: state
+            }));
+        })
+        .catchError(function(error) {
+            console.warn('Failed to load offline state', error);
+        });
 
         AuthFactory.authWithStoredToken()
-        .then(function(token:String) {
-            ProfilesFactory.fetchProfile(store.state.auth.uid);
-        })
-        .catchError(function(_) {});
+        .catchError(function(error) {
+            console.error('Failed to auth with stored token!', error);
+        });
 
         M.route(js.Browser.document.body, '/', {
             '/': this,

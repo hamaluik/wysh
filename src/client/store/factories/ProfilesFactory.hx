@@ -2,7 +2,7 @@ package store.factories;
 
 import js.Promise;
 import js.Error;
-import store.Actions.ProfilesActions;
+import Actions.ProfilesActions;
 import api.Profile;
 
 class ProfilesFactory {

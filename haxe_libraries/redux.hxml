@@ -1,3 +1,0 @@
-# @install: lix --silent download "haxelib:redux#0.5.1" into redux/0.5.1/haxelib
--D redux=0.5.1
--cp ${HAXESHIM_LIBCACHE}/redux/0.5.1/haxelib/

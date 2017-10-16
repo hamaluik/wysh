@@ -1,7 +1,12 @@
-package store;
-
 import js.Error;
 import api.Profile;
+import redux.Redux;
+using haxe.EnumTools.EnumValueTools;
+
+enum OfflineActions {
+    Load(state:State);
+    Save;
+}
 
 enum AuthActions {
     Auth(token:String);

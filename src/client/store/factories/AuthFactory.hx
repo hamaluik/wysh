@@ -1,7 +1,7 @@
 package store.factories;
 
 import js.Promise;
-import store.Actions;
+import Actions;
 
 class AuthFactory {
     public static function authWithStoredToken():Promise<String> {

@@ -1,14 +1,15 @@
 package store;
 
-import store.State;
-import store.Actions;
+import Actions;
+import State;
 import redux.IReducer;
 
 class AuthReducer implements IReducer<AuthActions, AuthState> {
     public function new(){}
     
     public var initState:AuthState = {
-        token: null
+        token: null,
+        uid: null
     };
 
     public function reduce(state:AuthState, action:AuthActions):AuthState {

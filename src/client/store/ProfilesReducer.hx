@@ -1,8 +1,8 @@
 package store;
 
 import js.Object;
-import store.State;
-import store.Actions;
+import Actions;
+import State;
 import redux.IReducer;
 
 class ProfilesReducer implements IReducer<ProfilesActions, ProfilesState> {
@@ -19,7 +19,7 @@ class ProfilesReducer implements IReducer<ProfilesActions, ProfilesState> {
             });
 
             case Loaded(profiles): {
-                var newState:store.State.ProfilesState = {
+                var newState:State.ProfilesState = {
                     api: Idle(Date.now())
                 };
                 for(profile in profiles) {

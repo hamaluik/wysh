@@ -1,5 +1,3 @@
-package store;
-
 enum APIState {
     Idle(lastUpdated:Date);
     Loading;

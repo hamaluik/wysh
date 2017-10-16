@@ -14,15 +14,17 @@ class NavBar implements Mithril {
             case Loading: m(Icon, { name: 'spinner-third', spin: true } );
             case Idle(lastUpdated): {
                 var profile:api.Profile = Reflect.field(Client.store.state.profiles, Client.store.state.auth.uid);
-                [
+                if(profile == null)
+                    m(Icon, { name: 'user' });
+                else [
                     m('img.is-1by1', { style: 'margin-right: 16px', src: profile.picture }),
-                    m(BadgeSpan, {
-                        classes: '.has-text-weight-bold',
-                        badge: notifications > 0
-                            ? Std.string(notifications)
-                            : null
-                    }, profile.name)
-                ];
+                        m(BadgeSpan, {
+                            classes: '.has-text-weight-bold',
+                            badge: notifications > 0
+                                ? Std.string(notifications)
+                                : null
+                        }, profile.name)
+                    ];
             }
             case Failed(error): null;
         }
