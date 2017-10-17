@@ -47,3 +47,11 @@ body {
   50% { margin-left: 25%; margin-right: 0%; }
   100% { margin-left: 100%; margin-right: 0; }
 }
+
+.modal-warning-band {
+  margin-left: $box-padding * -1;
+  margin-right: $box-padding * -1;
+  padding: $box-padding;
+  background: $warning;
+  color: $warning-invert;
+}
