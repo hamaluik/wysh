@@ -15,7 +15,7 @@ class ListSelector implements Mithril {
 
         var listItems:Vnodes = switch(type) {
             case Friends: {
-                var friendLists:Array<FriendLists> = ListSelectors.getFriendLists(Client.store.state);
+                var friendLists:Array<FriendLists> = ListSelectors.getFriendLists(Store.state);
                 var friendsListCount:Int = 0;
                 for(friendList in friendLists) friendsListCount += friendList.lists.length;
                 if(friendsListCount < 1)
@@ -45,7 +45,7 @@ class ListSelector implements Mithril {
             };
 
             case Self: {
-                var lists:Array<List> = ListSelectors.getMyLists(Client.store.state);
+                var lists:Array<List> = ListSelectors.getMyLists(Store.state);
                 if(lists.length < 1)
                     m('.panel-block', 'You don\'t have any lists yet!');
                 else [

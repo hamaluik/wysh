@@ -8,19 +8,19 @@ import js.Error;
 import api.Item;
 import api.Items;
 
-class ListsStore {
+class ItemsStore {
     public static function fetchItems(listid:String):Promise<Array<Item>> {
-        Client.store.dispatch(APIActions.GetItems(Loading));
-        return WebRequest.request(GET, '/list/${userid}/items', true)
+        Store.dispatch(APIActions.GetItems(Loading));
+        return WebRequest.request(GET, '/list/${listid}/items', true)
         .then(function(items:Items):Promise<Array<Item>> {
-            Client.store.dispatch(APIActions.GetItems(Idle(Date.now())));
-            Client.store.dispatch(ItemsActions.Set(items.items));
-            Client.store.dispatch(RelationsActions.RelateListItems(listid, items.items));
+            Store.dispatch(APIActions.GetItems(Idle(Date.now())));
+            Store.dispatch(ItemsActions.Set(items.items));
+            Store.dispatch(RelationsActions.RelateListItems(listid, items.items));
             return Promise.resolve(items.items);
         })
-        .catchError(function(error:Error):Promise<Array<List>> {
+        .catchError(function(error:Error):Promise<Array<Item>> {
             Client.console.error('Failed to request items', error);
-            Client.store.dispatch(APIActions.GetItems(Failed(error)));
+            Store.dispatch(APIActions.GetItems(Failed(error)));
             return Promise.reject(error);
         });
     }

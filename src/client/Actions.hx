@@ -50,5 +50,5 @@ enum ItemsActions {
 
 enum RelationsActions {
     RelateProfileLists(ownerid:String, lists:Array<List>);
-    RelateListItems(listid:String, items:Array<List>);
+    RelateListItems(listid:String, items:Array<Item>);
 }

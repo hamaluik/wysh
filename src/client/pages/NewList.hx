@@ -26,7 +26,7 @@ class NewList implements Mithril {
     }
 
     public function onmatch(params:haxe.DynamicAccess<String>, url:String) {
-        if(Client.store.state.auth.token == null) M.routeSet('/');
+        if(Store.state.auth.token == null) M.routeSet('/');
         return null;
     }
 
@@ -42,7 +42,7 @@ class NewList implements Mithril {
                             m('form', { onsubmit: createList }, [
                                 m(TextField, { label: 'List Name', placeholder: 'Christmas List', store: newListName }),
                                 m(DropDown, { label: 'Privacy', store: newListPrivacy, types: privacyTypes }),
-                                m(SubmitButton, { disabled: StringTools.trim(newListName.value).length < 1, loading: Client.store.state.apiCalls.createList.match(Loading) }, [
+                                m(SubmitButton, { disabled: StringTools.trim(newListName.value).length < 1, loading: Store.state.apiCalls.createList.match(Loading) }, [
                                     m(Icon, { name: 'plus' }),
                                     m('span', 'Create List')
                                 ])

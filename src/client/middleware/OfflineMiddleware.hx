@@ -117,7 +117,7 @@ class OfflineMiddleware {
 							var state:String = haxe.Json.stringify(store.getState());
 							setInStore('root', state)
 							.then(function(_) {
-								Client.store.dispatch(OfflineActions.Save);
+								store.dispatch(OfflineActions.Save);
 							})
 							.catchError(function(error) {
 								Client.console.error('Error storing state for offline!', error);

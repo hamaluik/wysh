@@ -19,19 +19,19 @@ class AuthStore {
             });
         }
 
-        Client.store.dispatch(AuthActions.Auth(token));
+        Store.dispatch(AuthActions.Auth(token));
         return Promise.resolve(token);
     }
 
     public static function authenticate(token:String):Promise<String> {
         js.Browser.getLocalStorage().setItem('token', token);
-        Client.store.dispatch(AuthActions.Auth(token));
+        Store.dispatch(AuthActions.Auth(token));
         return Promise.resolve(token);
     }
 
     public static function signOut():Promise<Any> {
         js.Browser.getLocalStorage().removeItem('token');
-        Client.store.dispatch(AuthActions.SignOut);
+        Store.dispatch(AuthActions.SignOut);
         return Promise.resolve(null);
     }
 }

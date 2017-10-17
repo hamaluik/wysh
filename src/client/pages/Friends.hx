@@ -12,13 +12,13 @@ class Friends implements Mithril {
     private var searchName:Ref<String> = '';
 
     public function onmatch(params:haxe.DynamicAccess<String>, url:String) {
-        if(Client.store.state.auth.token == null) M.routeSet('/');
+        if(Store.state.auth.token == null) M.routeSet('/');
         return null;
     }
 
     public function render(vnode) {
         var searchResultsBlock:Array<Vnode<Dynamic>> = [
-            for(profile in FriendsSelectors.getSearchResults(Client.store.state)) {
+            for(profile in FriendsSelectors.getSearchResults(Store.state)) {
                 var addLink:Vnodes =
                     if(false) // has been sent?
                         m('span', [
@@ -36,7 +36,7 @@ class Friends implements Mithril {
         ];
 
         var friendRequests:Array<Vnode<Dynamic>> = [
-            for(user in FriendsSelectors.getIncomingRequestsProfiles(Client.store.state)) {
+            for(user in FriendsSelectors.getIncomingRequestsProfiles(Store.state)) {
                 m('article.media', [
                     m('figure.media-left',
                         m('p.image.is-64x64', m('img', { src: user.picture }))
@@ -54,7 +54,7 @@ class Friends implements Mithril {
         ];
 
         var pendingRequests:Array<Vnode<Dynamic>> = [
-            for(user in FriendsSelectors.getSentRequestsProfiles(Client.store.state)) {
+            for(user in FriendsSelectors.getSentRequestsProfiles(Store.state)) {
                 m('article.media', [
                     m('figure.media-left',
                         m('p.image.is-64x64', m('img', { src: user.picture }))
@@ -69,7 +69,7 @@ class Friends implements Mithril {
         ];
 
         var friendsList:Array<Vnode<Dynamic>> = [
-            for(profile in FriendsSelectors.getFriendProfiles(Client.store.state)) {
+            for(profile in FriendsSelectors.getFriendProfiles(Store.state)) {
                 m('article.media', [
                     m('figure.media-left',
                         m('p.image.is-64x64', m('img', { src: profile.picture }))
@@ -97,7 +97,7 @@ class Friends implements Mithril {
                                     store: searchName,
                                     placeholder: 'Search for people by name',
                                     onclick: search,
-                                    loading: Client.store.state.apiCalls.searchFriends.match(Loading)
+                                    loading: Store.state.apiCalls.searchFriends.match(Loading)
                                 })
                             ]),
                             searchResultsBlock,

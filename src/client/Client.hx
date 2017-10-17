@@ -29,7 +29,8 @@ abstract WyshStore(Store<RootState>) from Store<RootState> to Store<RootState> {
 
 class Client implements Mithril {
     public static var console:Console = js.Browser.console;
-    public static var store:WyshStore;
+    @:allow(Store)
+    private static var store:WyshStore;
 
     public static function main():Void {
         new Client();
