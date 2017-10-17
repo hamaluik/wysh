@@ -59,7 +59,7 @@ class FriendRoutes {
         if(u == null) return new response.NotFound();
 
         var requests:List<models.FriendRequests> = models.FriendRequests.manager.search($requestee == u && $status == models.FriendRequestStatus.Pending, { orderBy: -createdOn });
-        return new response.API<api.Profiles>(requests);
+        return new response.API<api.Profiles>([for(request in requests) request.requester]);
     }
 
     @:get('/sentrequests') public function getSentRequests(user:JWTSession.User):Response {
@@ -67,7 +67,7 @@ class FriendRoutes {
         if(u == null) return new response.NotFound();
 
         var requests:List<models.FriendRequests> = models.FriendRequests.manager.search($requester == u && $status == models.FriendRequestStatus.Pending, { orderBy: -createdOn });
-        return new response.API<api.Profiles>(requests);
+        return new response.API<api.Profiles>([for(request in requests) request.requestee]);
     }
 
     @:post('/accept') public function acceptRequest(body:{id:String}, user:JWTSession.User):Response {

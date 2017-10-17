@@ -34,9 +34,6 @@ class Friends implements Mithril {
                 m(ProfileBlock, { profile: profile }, addLink);
             }
         ];
-        if(Client.store.state.apiCalls.searchFriends.match(Loading)) {
-            searchResultsBlock.insert(0, m('.loading-bar'));
-        }
 
         var friendRequests:Array<Vnode<Dynamic>> = [
             for(user in FriendsSelectors.getIncomingRequestsProfiles(Client.store.state)) {
