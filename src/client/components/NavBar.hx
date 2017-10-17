@@ -8,7 +8,7 @@ class NavBar implements Mithril {
 
     public static function view(vnode:Vnode<NavBar>):Vnodes {
         var notifications:Int = 0;
-        notifications += 0;//Store.incomingFriendRequests.length;
+        notifications += Client.store.state.friends.incomingRequests.length;
 
         var profileImage:Vnodes = switch(Client.store.state.apiCalls.getSelfProfile) {
             case Loading: m(Icon, { name: 'spinner-third', spin: true } );
@@ -29,12 +29,14 @@ class NavBar implements Mithril {
         }
 
         var friendRequests:Vnodes = [
-            /*switch(Store.incomingFriendRequests.length) {
+            switch(Client.store.state.friends.incomingRequests.length) {
                 case 0: m('span.navbar-item', 'No friend requests');
                 case count: m('a.navbar-item', { href: '#!/friends' }, 'You have ${count} friend request${count == 1 ? '' : 's'}!');
             },
-            Store.incomingFriendRequests.state.value.match(Loading) ? m('span.navbar-item.has-text-centered', m(Icon, { name: 'spinner-third', spin: true })) : null,
-            m('hr.navbar-divider')*/
+            Client.store.state.apiCalls.getIncomingRequests.match(Loading)
+                ? m('span.navbar-item.has-text-centered', m(Icon, { name: 'spinner-third', spin: true }))
+                : null,
+            m('hr.navbar-divider')
         ];
 
         return
