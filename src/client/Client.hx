@@ -43,6 +43,8 @@ class Client implements Mithril {
     }
 
     public function new() {
+        OfflineMiddleware.paused = true;
+
         var appReducer = Redux.combineReducers({
             auth: mapReducer(AuthActions, new AuthReducer()),
             apiCalls: mapReducer(APIActions, new APIReducer()),
@@ -53,7 +55,7 @@ class Client implements Mithril {
         });
         var rootReducer = function(state:RootState, action:Dynamic):RootState {
             if(action.type == 'OfflineActions.Load') {
-                state = js.Object.assign(cast({}), state, {
+                var newState:RootState = js.Object.assign(cast({}), state, {
                     profiles: action.value.profiles,
                     friends: action.value.friends,
                     lists: action.value.lists,
@@ -62,6 +64,7 @@ class Client implements Mithril {
                 js.Browser.window.requestAnimationFrame(function(_):Void {
                     M.redraw();
                 });
+                return newState;
             }
 
             return appReducer(state, action);
@@ -73,41 +76,38 @@ class Client implements Mithril {
                 OfflineMiddleware.createMiddleware()
             )
         );
-
-        // TODO: load state from storage only if
-        // our request for initial data fails to load
-        /*OfflineMiddleware.loadStateFromStorage()
-        .then(function(state:RootState) {
-            store.dispatch(new Action({
-                type: 'OfflineActions.Load',
-                value: state
-            }));
-        })
-        .catchError(function(error) {
-            console.warn('Failed to load offline state', error);
-        });*/
-
-        // TODO: this is getting called even when we're on the /login/:token
-        // page, which messes things up!
+        
+        // if we have a stored token, use that
+        // otherwise, go to the auth page
         AuthStore.authWithStoredToken()
         .then(function(_) {
-            return initialLoad();
+            return initialLoad()
+            .then(function(_) {
+                OfflineMiddleware.paused = false;
+                store.dispatch(OfflineActions.ForceSave);
+            })
+            .catchError(function(error) {
+                console.warn('Server not available!');
+                // load state from storage only if
+                // our request for initial data fails to load
+                OfflineMiddleware.loadStateFromStorage()
+                .then(function(state:RootState) {
+                    console.warn('Loaded state from offline storage, may be out of date!');
+                    store.dispatch(new Action({
+                        type: 'OfflineActions.Load',
+                        value: state
+                    }));
+                    OfflineMiddleware.paused = false;
+                })
+                .catchError(function(error) {
+                    console.error('Failed to load offline storage!', error);
+                    OfflineMiddleware.paused = false;
+                });
+            });
         })
         .catchError(function(error) {
             console.warn('Failed to auth with stored token!', error);
-
-            // load state from storage only if
-            // our request for initial data fails to load
-            OfflineMiddleware.loadStateFromStorage()
-            .then(function(state:RootState) {
-                store.dispatch(new Action({
-                    type: 'OfflineActions.Load',
-                    value: state
-                }));
-            })
-            .catchError(function(error) {
-                console.error('Failed to load offline state', error);
-            });
+            OfflineMiddleware.paused = false;
         });
 
         M.route(js.Browser.document.body, '/', {

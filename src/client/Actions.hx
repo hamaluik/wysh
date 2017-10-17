@@ -6,6 +6,7 @@ import api.Item;
 enum OfflineActions {
     Load(state:RootState);
     Save;
+    ForceSave;
 }
 
 enum AuthActions {

@@ -12,7 +12,7 @@ class NavBar implements Mithril {
 
         var profileImage:Vnodes = switch(Client.store.state.apiCalls.getSelfProfile) {
             case Loading: m(Icon, { name: 'spinner-third', spin: true } );
-            case Idle(lastUpdated): {
+            case Idle(_) | Failed(_): {
                 var profile:api.Profile = Reflect.field(Client.store.state.profiles, Client.store.state.auth.uid);
                 if(profile == null)
                     m(Icon, { name: 'user' });
@@ -26,7 +26,6 @@ class NavBar implements Mithril {
                         }, profile.name)
                     ];
             }
-            case Failed(error): null;
         }
 
         var friendRequests:Vnodes = [

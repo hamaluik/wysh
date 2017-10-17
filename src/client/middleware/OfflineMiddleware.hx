@@ -12,6 +12,8 @@ import redux.StoreMethods;
 import redux.Redux;
 
 class OfflineMiddleware {
+	public static var paused:Bool = true;
+
 	private static var debounceTimer:Timer;
 	private static var pendingSave:Null<Void->Void> = null;
 
@@ -109,10 +111,10 @@ class OfflineMiddleware {
 					var result = next(action);
 
 					// debounce
-					if(!StringTools.startsWith(action.type, 'OfflineActions.')) {
+					if(action.type == 'OfflineActions.ForceSave' || (!StringTools.startsWith(action.type, 'OfflineActions.') && !paused)) {
 						pendingSave = function():Void {
 							// store it!
-							var state:Dynamic = haxe.Json.stringify(store.getState());
+							var state:String = haxe.Json.stringify(store.getState());
 							setInStore('root', state)
 							.then(function(_) {
 								Client.store.dispatch(OfflineActions.Save);
