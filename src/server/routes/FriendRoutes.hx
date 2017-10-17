@@ -12,7 +12,7 @@ class FriendRoutes {
         if(u == null) return new response.NotFound();
         var friends:List<models.Friends> = models.Friends.manager.search($friendA == u);
         //Log.trace('${user} requested friends list');
-        return new response.API<api.Profiles>(friends);
+        return new response.API<api.Profiles>([for(friend in friends) friend.friendB]);
     }
 
     @:post('/request') public function requestFriendship(body:{id:String}, user:JWTSession.User):Response {
