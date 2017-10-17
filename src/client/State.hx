@@ -15,18 +15,24 @@ typedef RootState = {
 }
 
 typedef AuthState = {
-    @:optional var token:String;
-    @:optional var uid:String;
+    var token:String;
+    var uid:String;
 }
 
 typedef APICallsState = {
-    @:optional var getSelfProfile:APIState;
+    var getSelfProfile:APIState;
 
-    @:optional var getProfiles:APIState;
+    var getProfiles:APIState;
 
-    @:optional var getFriends:APIState;
-    @:optional var getIncomingRequests:APIState;
-    @:optional var getSentRequests:APIState;
+    var searchFriends:APIState;
+    var getFriends:APIState;
+    var getIncomingRequests:APIState;
+    var getSentRequests:APIState;
+    var requestFriend:APIState;
+    var acceptFriendRequest:APIState;
+
+    var getLists:APIState;
+    var getItems:APIState;
 }
 
 typedef ProfilesState = {
@@ -34,9 +40,10 @@ typedef ProfilesState = {
 }
 
 typedef FriendsState = {
-    @:optional var friends:Dynamic;
-    @:optional var incomingRequests:Dynamic;
-    @:optional var sentRequests:Dynamic;
+    var searchResults:Array<String>;
+    var friends:Array<String>;
+    var incomingRequests:Array<String>;
+    var sentRequests:Array<String>;
 }
 
 typedef ListsState = {

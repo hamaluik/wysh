@@ -19,12 +19,12 @@ class AuthReducer implements IReducer<AuthActions, AuthState> {
                 var payloadEncoded:String = token.split(".")[1];
                 var payload:Dynamic = haxe.Json.parse(haxe.crypto.Base64.decode(payloadEncoded).toString());
 
-                js.Object.assign({}, state, {
+                js.Object.assign(cast({}), state, {
                     uid: payload.sub,
                     token: token
                 });
             }
-            case SignOut: js.Object.assign({}, state, {
+            case SignOut: js.Object.assign(cast({}), state, {
                 token: null
             });
         }

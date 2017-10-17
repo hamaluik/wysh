@@ -4,12 +4,12 @@ import mithril.M;
 import api.Profile;
 import components.Icon;
 import components.ProfileBlock;
+import selectors.FriendsSelectors;
 
 class Friends implements Mithril {
     public function new() {}
 
     private var searchName:Ref<String> = '';
-    public var searchResults:Ref<Promised<Array<Profile>>> = Done([]);
 
     public function onmatch(params:haxe.DynamicAccess<String>, url:String) {
         if(Client.store.state.auth.token == null) M.routeSet('/');
@@ -17,58 +17,29 @@ class Friends implements Mithril {
     }
 
     public function render(vnode) {
-        var searchResultsBlock:Array<Vnode<Dynamic>> = switch(searchResults.value) {
-            case Done(results): [
-                for(profile in results) {
-                    var addLink:Vnodes =
-                        if(false) // has been sent?
-                            m('span', [
-                                m(Icon, { name: 'check' } ),
-                                ' Friend request sent!'
-                            ]);
-                        else
-                            m('a', { onclick: function() { addFriend(profile); } }, [
-                                m(Icon, { name: 'plus' }),
-                                m('span', 'Add friend')
-                            ]);
+        var searchResultsBlock:Array<Vnode<Dynamic>> = [
+            for(profile in FriendsSelectors.getSearchResults(Client.store.state)) {
+                var addLink:Vnodes =
+                    if(false) // has been sent?
+                        m('span', [
+                            m(Icon, { name: 'check' } ),
+                            ' Friend request sent!'
+                        ]);
+                    else
+                        m('a', { onclick: function() { addFriend(profile); } }, [
+                            m(Icon, { name: 'plus' }),
+                            m('span', 'Add friend')
+                        ]);
 
-                    m(ProfileBlock, { profile: profile }, addLink);
-                }
-            ];
-            case _: [];
-        };
-        /*switch(Store.friends.userSearch.value) {
-            case Done(results): [
-                for(user in results) {
-                    var addLink:Vnodes =
-                        if(Store.friends.pendingFriendRequests.exists(user.id))
-                            m('span', [
-                                m(Icon, { name: 'check' } ),
-                                ' Friend request sent!'
-                            ]);
-                        else
-                            m('a', { onclick: function() { addFriend(user); } }, [
-                                m(Icon, { name: 'plus' }),
-                                m('span', 'Add friend')
-                            ]);
+                m(ProfileBlock, { profile: profile }, addLink);
+            }
+        ];
+        if(Client.store.state.apiCalls.searchFriends.match(Loading)) {
+            searchResultsBlock.insert(0, m('.loading-bar'));
+        }
 
-                    m('article.media', [
-                        m('figure.media-left',
-                            m('p.image.is-64x64', m('img', { src: user.picture }))
-                        ),
-                        m('.media-content', m('.content', m('p', [
-                            m('strong', user.name),
-                            m('br'),
-                            addLink
-                        ])))
-                    ]);
-                }
-            ];
-            case _: null;
-        };*/
-
-        /*var friendRequests:Array<Vnode<Dynamic>> = [
-            for(user in Store.friends.friendRequests.iterator()) {
+        var friendRequests:Array<Vnode<Dynamic>> = [
+            for(user in FriendsSelectors.getIncomingRequestsProfiles(Client.store.state)) {
                 m('article.media', [
                     m('figure.media-left',
                         m('p.image.is-64x64', m('img', { src: user.picture }))
@@ -86,7 +57,7 @@ class Friends implements Mithril {
         ];
 
         var pendingRequests:Array<Vnode<Dynamic>> = [
-            for(user in Store.friends.pendingFriendRequests.iterator()) {
+            for(user in FriendsSelectors.getSentRequestsProfiles(Client.store.state)) {
                 m('article.media', [
                     m('figure.media-left',
                         m('p.image.is-64x64', m('img', { src: user.picture }))
@@ -101,17 +72,17 @@ class Friends implements Mithril {
         ];
 
         var friendsList:Array<Vnode<Dynamic>> = [
-            for(user in Store.friends.friends.iterator()) {
+            for(profile in FriendsSelectors.getFriendProfiles(Client.store.state)) {
                 m('article.media', [
                     m('figure.media-left',
-                        m('p.image.is-64x64', m('img', { src: user.picture }))
+                        m('p.image.is-64x64', m('img', { src: profile.picture }))
                     ),
                     m('.media-content', m('.content', m('p', [
-                        m('strong', user.name)
+                        m('strong', profile.name)
                     ])))
                 ]);
             }
-        ];*/
+        ];
 
         return [
             m(components.NavBar),
@@ -120,7 +91,7 @@ class Friends implements Mithril {
                     m('.columns', [
                         m('.column.is-half.content',[
                             m('h1', 'Friends'),
-                            //friendsList
+                            friendsList
                         ]),
                         m('.column.is-half.content', [
                             m('h1', 'Friend Requests'),
@@ -129,12 +100,12 @@ class Friends implements Mithril {
                                     store: searchName,
                                     placeholder: 'Search for people by name',
                                     onclick: search,
-                                    loading: searchResults.value.match(Loading)
+                                    loading: Client.store.state.apiCalls.searchFriends.match(Loading)
                                 })
                             ]),
                             searchResultsBlock,
-                            /*friendRequests,
-                            pendingRequests*/
+                            friendRequests,
+                            pendingRequests
                         ])
                     ])
                 )
@@ -144,24 +115,16 @@ class Friends implements Mithril {
 
     function search(e:js.html.Event):Void {
         if(e != null) e.preventDefault();
-
-        /*searchResults.set(Loading);
-        Actions.profile.searchProfiles(searchName.value)
-        .handle(function(outcome:Outcome<Array<Profile>, Error>):Void {
-            switch(outcome) {
-                case Success(results): searchResults.set(Done(results));
-                case Failure(error): searchResults.set(Failed(error));
-            }
-        });*/
+        stores.FriendsStore.search(searchName.value);
     }
 
     function addFriend(profile:Profile):Void {
         // TODO: display loading status
-        //Store.friends.requestFriend(profile);
+        stores.FriendsStore.requestFriend(profile);
     }
 
     function acceptRequest(profile:Profile):Void {
         // TODO: display loading status
-        //Store.friends.acceptRequest(profile);
+        stores.FriendsStore.acceptFriendRequest(profile);
     }
 }

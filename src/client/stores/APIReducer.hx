@@ -11,27 +11,47 @@ class APIReducer implements IReducer<APIActions, APICallsState> {
     public var initState:APICallsState = {
         getSelfProfile: Idle(null),
         getProfiles: Idle(null),
+        searchFriends: Idle(null),
         getFriends: Idle(null),
         getIncomingRequests: Idle(null),
         getSentRequests: Idle(null),
+        requestFriend: Idle(null),
+        acceptFriendRequest: Idle(null),
+        getLists: Idle(null),
+        getItems: Idle(null)
     };
 
     public function reduce(state:APICallsState, action:APIActions):APICallsState {
         return switch(action) {
-            case GetSelfProfile(apiState): Object.assign({}, state, {
+            case GetSelfProfile(apiState): Object.assign(cast({}), state, {
                 getSelfProfile: apiState
             });
-            case GetProfiles(apiState):  Object.assign({}, state, {
+            case GetProfiles(apiState): Object.assign(cast({}), state, {
                 getProfiles: apiState
             });
-            case GetFriends(apiState):  Object.assign({}, state, {
+            case SearchFriends(apiState): Object.assign(cast({}), state, {
+                searchFriends: apiState
+            });
+            case GetFriends(apiState): Object.assign(cast({}), state, {
                 getFriends: apiState
             });
-            case GetIncomingRequests(apiState):  Object.assign({}, state, {
+            case GetIncomingRequests(apiState): Object.assign(cast({}), state, {
                 getIncomingRequests: apiState
             });
-            case GetSentRequests(apiState):  Object.assign({}, state, {
+            case GetSentRequests(apiState): Object.assign(cast({}), state, {
                 getSentRequests: apiState
+            });
+            case RequestFriend(apiState): Object.assign(cast({}), state, {
+                requestFriend: apiState
+            });
+            case AcceptFriendRequest(apiState): Object.assign(cast({}), state, {
+                acceptFriendRequest: apiState
+            });
+            case GetLists(apiState): Object.assign(cast({}), state, {
+                getLists: apiState
+            });
+            case GetItems(apiState): Object.assign(cast({}), state, {
+                getItems: apiState
             });
         }
     }

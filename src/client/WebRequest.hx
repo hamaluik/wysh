@@ -1,6 +1,13 @@
 import mithril.M;
 import js.Promise;
 
+@:enum abstract RequestMethod(String) to String {
+    var GET = "GET";
+    var POST = "POST";
+    var PATCH = "PATCH";
+    var DELETE = "DELETE";
+}
+
 class WebRequest {
     public inline static function endpoint(endpoint:String):String {
         // TODO: use a define
@@ -15,7 +22,7 @@ class WebRequest {
         };
     }
 
-    public static function request<T>(method:String, endpoint:String, useAuth:Bool=true, ?data:Dynamic):Promise<T> {
+    public static function request<T>(method:RequestMethod, endpoint:String, useAuth:Bool=true, ?data:Dynamic):Promise<T> {
         return M.request(WebRequest.endpoint(endpoint), {
             method: method,
             extract: WebRequest.extract,

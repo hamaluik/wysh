@@ -1,3 +1,6 @@
+import stores.FriendsStore;
+import stores.ProfilesStore;
+import js.Promise;
 import middleware.OfflineMiddleware;
 import mithril.M;
 import js.html.Console;
@@ -10,6 +13,7 @@ import stores.APIReducer;
 import stores.AuthStore;
 import stores.AuthReducer;
 import stores.ProfilesReducer;
+import stores.FriendsReducer;
 import stores.ListsReducer;
 import stores.ItemsReducer;
 
@@ -29,18 +33,31 @@ class Client implements Mithril {
         new Client();
     }
 
+    public static function initialLoad():Promise<Dynamic> {
+        return Promise.all([
+            ProfilesStore.fetchProfile(store.state.auth.uid),
+            FriendsStore.fetchFriends(),
+            FriendsStore.fetchIncomingFriendRequests(),
+            FriendsStore.fetchSentFriendRequests()
+        ]);
+    }
+
     public function new() {
         var appReducer = Redux.combineReducers({
             auth: mapReducer(AuthActions, new AuthReducer()),
             apiCalls: mapReducer(APIActions, new APIReducer()),
             profiles: mapReducer(ProfilesActions, new ProfilesReducer()),
+            friends: mapReducer(FriendsActions, new FriendsReducer()),
             lists: mapReducer(ListsActions, new ListsReducer()),
             items: mapReducer(ItemsActions, new ItemsReducer())
         });
         var rootReducer = function(state:RootState, action:Dynamic):RootState {
             if(action.type == 'OfflineActions.Load') {
                 state = js.Object.assign(cast({}), state, {
-                    profiles: action.value.profiles
+                    profiles: action.value.profiles,
+                    friends: action.value.friends,
+                    lists: action.value.lists,
+                    items: action.value.items
                 });
                 js.Browser.window.requestAnimationFrame(function(_):Void {
                     M.redraw();
@@ -57,7 +74,9 @@ class Client implements Mithril {
             )
         );
 
-        OfflineMiddleware.loadStateFromStorage()
+        // TODO: load state from storage only if
+        // our request for initial data fails to load
+        /*OfflineMiddleware.loadStateFromStorage()
         .then(function(state:RootState) {
             store.dispatch(new Action({
                 type: 'OfflineActions.Load',
@@ -66,11 +85,29 @@ class Client implements Mithril {
         })
         .catchError(function(error) {
             console.warn('Failed to load offline state', error);
-        });
+        });*/
 
+        // TODO: this is getting called even when we're on the /login/:token
+        // page, which messes things up!
         AuthStore.authWithStoredToken()
+        .then(function(_) {
+            return initialLoad();
+        })
         .catchError(function(error) {
             console.warn('Failed to auth with stored token!', error);
+
+            // load state from storage only if
+            // our request for initial data fails to load
+            OfflineMiddleware.loadStateFromStorage()
+            .then(function(state:RootState) {
+                store.dispatch(new Action({
+                    type: 'OfflineActions.Load',
+                    value: state
+                }));
+            })
+            .catchError(function(error) {
+                console.error('Failed to load offline state', error);
+            });
         });
 
         M.route(js.Browser.document.body, '/', {

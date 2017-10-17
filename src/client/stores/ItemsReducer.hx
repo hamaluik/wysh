@@ -18,7 +18,7 @@ class ItemsReducer implements IReducer<ItemsActions, ItemsState> {
                     Reflect.setField(newState, item.id, item);
                 }
 
-                Object.assign({}, state, newState);
+                Object.assign(cast({}), state, newState);
             };
         }
     }

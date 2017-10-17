@@ -18,7 +18,7 @@ class ProfilesReducer implements IReducer<ProfilesActions, ProfilesState> {
                     Reflect.setField(newState, profile.id, profile);
                 }
 
-                Object.assign({}, state, newState);
+                Object.assign(cast({}), state, newState);
             };
         }
     }
