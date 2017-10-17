@@ -16,6 +16,8 @@ import stores.ProfilesReducer;
 import stores.FriendsReducer;
 import stores.ListsReducer;
 import stores.ItemsReducer;
+import stores.ListsStore;
+import stores.RelationsReducer;
 
 @:forward
 abstract WyshStore(Store<RootState>) from Store<RootState> to Store<RootState> {
@@ -38,7 +40,8 @@ class Client implements Mithril {
             ProfilesStore.fetchProfile(store.state.auth.uid),
             FriendsStore.fetchFriends(),
             FriendsStore.fetchIncomingFriendRequests(),
-            FriendsStore.fetchSentFriendRequests()
+            FriendsStore.fetchSentFriendRequests(),
+            ListsStore.fetchLists(store.state.auth.uid)
         ]);
     }
 
@@ -51,7 +54,8 @@ class Client implements Mithril {
             profiles: mapReducer(ProfilesActions, new ProfilesReducer()),
             friends: mapReducer(FriendsActions, new FriendsReducer()),
             lists: mapReducer(ListsActions, new ListsReducer()),
-            items: mapReducer(ItemsActions, new ItemsReducer())
+            items: mapReducer(ItemsActions, new ItemsReducer()),
+            relations: mapReducer(RelationsActions, new RelationsReducer())
         });
         var rootReducer = function(state:RootState, action:Dynamic):RootState {
             if(action.type == 'OfflineActions.Load') {
@@ -59,7 +63,8 @@ class Client implements Mithril {
                     profiles: action.value.profiles,
                     friends: action.value.friends,
                     lists: action.value.lists,
-                    items: action.value.items
+                    items: action.value.items,
+                    relations: action.value.relations
                 });
                 js.Browser.window.requestAnimationFrame(function(_):Void {
                     M.redraw();

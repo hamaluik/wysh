@@ -12,6 +12,8 @@ typedef RootState = {
     var friends:FriendsState;
     var lists:ListsState;
     var items:ItemsState;
+
+    var relations:RelationsState;
 }
 
 typedef AuthState = {
@@ -32,6 +34,8 @@ typedef APICallsState = {
     var acceptFriendRequest:APIState;
 
     var getLists:APIState;
+    var createList:APIState;
+
     var getItems:APIState;
 }
 
@@ -52,4 +56,17 @@ typedef ListsState = {
 
 typedef ItemsState = {
 
+}
+
+typedef ProfileListsState = {
+
+}
+
+typedef ListItemsState = {
+
+}
+
+typedef RelationsState = {
+    var profileLists:ProfileListsState;
+    var listItems:ListItemsState;
 }

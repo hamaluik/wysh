@@ -24,6 +24,7 @@ enum APIActions {
     RequestFriend(state:APIState);
     AcceptFriendRequest(state:APIState);
     GetLists(state:APIState);
+    CreateList(state:APIState);
     GetItems(state:APIState);
 }
 
@@ -45,4 +46,9 @@ enum ListsActions {
 
 enum ItemsActions {
     Set(items:Array<Item>);
+}
+
+enum RelationsActions {
+    RelateProfileLists(ownerid:String, lists:Array<List>);
+    RelateListItems(listid:String, items:Array<List>);
 }

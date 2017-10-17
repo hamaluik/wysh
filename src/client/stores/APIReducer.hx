@@ -18,6 +18,7 @@ class APIReducer implements IReducer<APIActions, APICallsState> {
         requestFriend: Idle(null),
         acceptFriendRequest: Idle(null),
         getLists: Idle(null),
+        createList: Idle(null),
         getItems: Idle(null)
     };
 
@@ -49,6 +50,9 @@ class APIReducer implements IReducer<APIActions, APICallsState> {
             });
             case GetLists(apiState): Object.assign(cast({}), state, {
                 getLists: apiState
+            });
+            case CreateList(apiState): Object.assign(cast({}), state, {
+                createList: apiState
             });
             case GetItems(apiState): Object.assign(cast({}), state, {
                 getItems: apiState

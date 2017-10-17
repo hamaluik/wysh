@@ -1,7 +1,8 @@
 package components;
 
-import types.IDList;
+import api.List;
 import mithril.M;
+import selectors.ListSelectors;
 
 enum TListType {
     Friends;
@@ -13,23 +14,42 @@ class ListSelector implements Mithril {
         var type:TListType = vnode.attrs.get('type');
 
         var listItems:Vnodes = switch(type) {
-            case Friends: [
-                m('a.panel-block', [
-                    m('span.has-text-weight-bold', 'Dennie'),
-                    m('span[style="white-space:pre"]', ' / Christmas List')
-                ])
-            ];
+            case Friends: {
+                var friendLists:Array<FriendLists> = ListSelectors.getFriendLists(Client.store.state);
+                var friendsListCount:Int = 0;
+                for(friendList in friendLists) friendsListCount += friendList.lists.length;
+                if(friendsListCount < 1)
+                    m('.panel-block', 'Your friends don\'t have any lists yet!');
+                else {
+                    var blocks:Array<Vnode<Dynamic>> = [];
+                    for(friendList in friendLists) {
+                        for(list in friendList.lists) {
+                            blocks.push(
+                                m('a.panel-block', {
+                                        href: '#!/list/${list.id}'
+                                    }, [
+                                    m(Icon, { name: switch(list.privacy) {
+                                        case Public: 'globe';
+                                        case Friends: 'users';
+                                        case Private: 'lock';
+                                        case _: 'question';
+                                    } }),
+                                    m('span.has-text-weight-bold', friendList.profile.name),
+                                    m('span[style="white-space:pre"]', ' / ${list.name}')
+                                ])
+                            );
+                        }
+                    }
+                    blocks;
+                };
+            };
 
             case Self: {
-                var lists:Array<IDList>
-                    = /*Store.profileLists.exists(Store.uid.value)
-                        ? Store.profileLists.get(Store.uid.value).toArray()
-                        : */[];
+                var lists:Array<List> = ListSelectors.getMyLists(Client.store.state);
                 if(lists.length < 1)
                     m('.panel-block', 'You don\'t have any lists yet!');
                 else [
-                    /*for(listID in lists) {
-                        var list:api.List = Store.lists.get(listID);
+                    for(list in lists) {
                         m('a.panel-block', {
                                 href: '#!/list/${list.id}'
                             }, [
@@ -41,7 +61,7 @@ class ListSelector implements Mithril {
                             } }),
                             m('span', list.name)
                         ]);
-                    }*/
+                    }
                 ];
             }
         }
