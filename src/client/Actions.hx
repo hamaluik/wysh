@@ -17,14 +17,19 @@ enum AuthActions {
 enum APIActions {
     GetSelfProfile(state:APIState);
     GetProfiles(state:APIState);
+
     SearchFriends(state:APIState);
     GetFriends(state:APIState);
     GetIncomingRequests(state:APIState);
     GetSentRequests(state:APIState);
     RequestFriend(state:APIState);
     AcceptFriendRequest(state:APIState);
+
     GetLists(state:APIState);
     CreateList(state:APIState);
+    EditList(state:APIState);
+    DeleteList(state:APIState);
+
     GetItems(state:APIState);
 }
 
@@ -42,13 +47,22 @@ enum FriendsActions {
 
 enum ListsActions {
     Set(lists:Array<List>);
+    Delete(listid:String);
 }
 
 enum ItemsActions {
     Set(items:Array<Item>);
+    Delete(itemid:String);
 }
 
-enum RelationsActions {
-    RelateProfileLists(ownerid:String, lists:Array<List>);
-    RelateListItems(listid:String, items:Array<Item>);
+enum ProfileListsActions {
+    Relate(profileid:String, lists:Array<List>);
+    DeleteProfile(profileid:String);
+    DeleteList(listid:String);
+}
+
+enum ListItemsActions {
+    Relate(listid:String, items:Array<Item>);
+    DeleteList(listid:String);
+    DeleteItem(itemid:String);
 }

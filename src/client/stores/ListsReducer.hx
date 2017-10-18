@@ -20,6 +20,15 @@ class ListsReducer implements IReducer<ListsActions, ListsState> {
 
                 Object.assign(cast({}), state, newState);
             };
+
+            case Delete(listid): {
+                var newState = Object.assign(cast({}), state);
+                if(Reflect.hasField(newState, listid)) {
+                    Reflect.deleteField(newState, listid);
+                }
+
+                newState;
+            }
         }
     }
 }

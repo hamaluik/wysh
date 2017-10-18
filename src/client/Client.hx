@@ -17,7 +17,8 @@ import stores.FriendsReducer;
 import stores.ListsReducer;
 import stores.ItemsReducer;
 import stores.ListsStore;
-import stores.RelationsReducer;
+import stores.ProfileListsReducer;
+import stores.ListItemsReducer;
 
 @:forward
 abstract WyshStore(Store<RootState>) from Store<RootState> to Store<RootState> {
@@ -43,7 +44,14 @@ class Client implements Mithril {
             FriendsStore.fetchIncomingFriendRequests(),
             FriendsStore.fetchSentFriendRequests(),
             ListsStore.fetchLists(store.state.auth.uid)
-        ]);
+        ])
+        .then(function(results:Array<Dynamic>):Promise<Dynamic> {
+            var friendsResult:Array<api.Profile> = results[1];
+            var fetchFriendLists:Array<Promise<Dynamic>> = [
+                for(friend in friendsResult) ListsStore.fetchLists(friend.id)
+            ];
+            return Promise.all(fetchFriendLists);
+        });
     }
 
     public function new() {
@@ -56,7 +64,8 @@ class Client implements Mithril {
             friends: mapReducer(FriendsActions, new FriendsReducer()),
             lists: mapReducer(ListsActions, new ListsReducer()),
             items: mapReducer(ItemsActions, new ItemsReducer()),
-            relations: mapReducer(RelationsActions, new RelationsReducer())
+            profileLists: mapReducer(ProfileListsActions, new ProfileListsReducer()),
+            listItems: mapReducer(ListItemsActions, new ListItemsReducer())
         });
         var rootReducer = function(state:RootState, action:Dynamic):RootState {
             if(action.type == 'OfflineActions.Load') {
@@ -65,7 +74,8 @@ class Client implements Mithril {
                     friends: action.value.friends,
                     lists: action.value.lists,
                     items: action.value.items,
-                    relations: action.value.relations
+                    profileLists: action.value.profileLists,
+                    listItems: action.value.listItems
                 });
                 js.Browser.window.requestAnimationFrame(function(_):Void {
                     M.redraw();

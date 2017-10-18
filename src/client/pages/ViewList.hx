@@ -3,10 +3,12 @@ package pages;
 import types.IDItem;
 import api.Item;
 import api.List;
+import api.Profile;
 import mithril.M;
 import components.Icon;
 import components.ListSelector;
 import components.form.TextField;
+import stores.ListsStore;
 import stores.ItemsStore;
 import selectors.ListSelectors;
 import selectors.ItemSelectors;
@@ -24,7 +26,7 @@ class ViewList implements Mithril {
     public function onmatch(params:haxe.DynamicAccess<String>, url:String) {
         if(Store.state.auth.token == null) M.routeSet('/');
         listID = params.get('listid');
-        if(!Reflect.hasField(Store.state.relations.listItems, listID)) {
+        if(!Reflect.hasField(Store.state.listItems, listID)) {
             ItemsStore.fetchItems(listID);
         }
         return null;
@@ -32,13 +34,16 @@ class ViewList implements Mithril {
 
     public function render(vnode) {
         var listSelector:RootState->List = ListSelectors.getListSelector(listID);
+        var listOwnerSelector:RootState->Profile = ListSelectors.getListOwnerSelector(listID);
         var list:List = listSelector(Store.state);
 
         var page:Vnodes = m('.loading-bar');
         var selfOwned:Bool = true;
         if(list != null) {
-            var myLists:Array<List> = ListSelectors.getMyLists(Store.state);
-            selfOwned = myLists.exists(function(l) { return l.id == list.id; });
+            /*var myLists:Array<List> = ListSelectors.getMyLists(Store.state);
+            selfOwned = myLists.exists(function(l) { return l.id == list.id; });*/
+            var listOwner:Profile = listOwnerSelector(Store.state);
+            if(listOwner != null) selfOwned = listOwner.id == Store.state.auth.uid;
 
             var title:Vnodes =
                 if(list == null) m('h1.title', m(Icon, { name: 'spinner-third', spin: true }));
@@ -50,8 +55,12 @@ class ViewList implements Mithril {
                                 /*m('button.button.is-text.is-large', {}, m(Icon, { name: 'edit' })),*/
                                 m('button.button.is-text.is-large', { onclick: function() { showDelete = true; deleteName.set(""); } }, m(Icon, { name: 'trash' }))
                             ])
-                        ])
-                    else m('h1.title', list.name);
+                        ]);
+                    else
+                        m('h1.title', listOwner != null
+                            ? '${listOwner.name} / ${list.name}'
+                            : list.name
+                        );
                 }
 
             var items:Array<Item> = ItemSelectors.getItemsSelector(list.id)(Store.state);
@@ -88,6 +97,10 @@ class ViewList implements Mithril {
                     }
                 ];
             
+            var deleteButtonLoading:String =
+                Store.state.apiCalls.deleteList.match(Loading)
+                    ? '.is-loading'
+                    : '';
             var deleteModal:Vnodes =
                 if(showDelete)
                     m('.modal.is-active', [
@@ -105,7 +118,7 @@ class ViewList implements Mithril {
                             m('p', 'Please type in the name of the list to confirm:'),
                             m('form', { onsubmit: deleteList(list) }, [
                                 m(TextField, { placeholder: list.name, store: deleteName }),
-                                m('submit.button.is-outlined.is-danger.is-fullwidth', {
+                                m('submit.button.is-outlined.is-danger.is-fullwidth${deleteButtonLoading}', {
                                     disabled: deleteName.value != list.name,
                                     onclick: deleteList(list)
                                 }, 'I understand the consequences, delete this list')
@@ -141,7 +154,10 @@ class ViewList implements Mithril {
         return function(e:js.html.Event):Void {
             if(e != null) e.preventDefault();
             if(deleteName.value != list.name) return;
-            Client.console.info('Deleting list', list.name);
+            ListsStore.deleteList(list)
+            .then(function(_) {
+                M.routeSet('/lists/self');
+            });
         }
     }
 }

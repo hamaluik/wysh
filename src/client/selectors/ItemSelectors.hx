@@ -6,7 +6,7 @@ import api.Item;
 import haxe.ds.StringMap;
 
 class ItemSelectors {
-    public static var listItemsSelector = function(s:RootState):ListItemsState { return s.relations.listItems; };
+    public static var listItemsSelector = function(s:RootState):ListItemsState { return s.listItems; };
     public static var itemsSelector = function(s:RootState):ItemsState { return s.items; }
 
     private static var cachedItemsSelectors:StringMap<RootState->Array<Item>> = new StringMap<RootState->Array<Item>>();

@@ -12,6 +12,7 @@ typedef FriendLists = {
 
 class ListSelectors {
     public static var listsSelector = function(s:RootState):ListsState { return s.lists; };
+    public static var profileListsSelector = function(s:RootState):ProfileListsState { return s.profileLists; };
 
     private static var cachedListSelectors:StringMap<RootState->List> = new StringMap<RootState->List>();
     public static function getListSelector(listid:String):RootState->List {
@@ -23,10 +24,27 @@ class ListSelectors {
         return cachedListSelectors.get(listid);
     }
 
+    private static var cachedListOwnerSelectors:StringMap<RootState->Profile> = new StringMap<RootState->Profile>();
+    public static function getListOwnerSelector(listid:String):RootState->Profile {
+        if(!cachedListOwnerSelectors.exists(listid)) {
+            cachedListOwnerSelectors.set(listid,
+                Selectors.create2(ProfileSelectors.profilesSelector, profileListsSelector, function(profiles:ProfilesState, profileLists:ProfileListsState):Profile {
+                    var profileIDs:Array<String> = Reflect.fields(profileLists);
+                    for(id in profileIDs) {
+                        var listIDs:Array<String> = Reflect.field(profileLists, id);
+                        if(listIDs.indexOf(listid) != -1) {
+                            return Reflect.field(profiles, id);
+                        }
+                    }
+                    return null;
+                })
+            );
+        }
+        return cachedListOwnerSelectors.get(listid);
+    }
+
     public static var getMyLists:RootState->Array<List> = {
-        var uidSelector = function(s:RootState):String { return s.auth.uid; };
-        var profileListsSelector = function(s:RootState):ProfileListsState { return s.relations.profileLists; };
-        Selectors.create3(uidSelector, profileListsSelector, listsSelector, function(uid:String, profileLists:ProfileListsState, lists:ListsState):Array<List> {
+        Selectors.create3(ProfileSelectors.uidSelector, profileListsSelector, listsSelector, function(uid:String, profileLists:ProfileListsState, lists:ListsState):Array<List> {
             var listIDs:Array<String> = Reflect.field(profileLists, uid);
             if(listIDs == null) listIDs = [];
             var ret:Array<List> = [];
@@ -38,9 +56,7 @@ class ListSelectors {
     };
 
     public static var getFriendLists:RootState->Array<FriendLists> = {
-        var friendsSelector = FriendsSelectors.getFriendProfiles;
-        var profileListsSelector = function(s:RootState):ProfileListsState { return s.relations.profileLists; };
-        Selectors.create3(friendsSelector, profileListsSelector, listsSelector, function(friends:Array<Profile>, profileLists:ProfileListsState, lists:ListsState):Array<FriendLists> {
+        Selectors.create3(FriendsSelectors.getFriendProfiles, profileListsSelector, listsSelector, function(friends:Array<Profile>, profileLists:ProfileListsState, lists:ListsState):Array<FriendLists> {
             var ret:Array<FriendLists> = [];
             for(friend in friends) {
                 var listIDs:Array<String> = Reflect.field(profileLists, friend.id);

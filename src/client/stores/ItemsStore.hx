@@ -15,7 +15,7 @@ class ItemsStore {
         .then(function(items:Items):Promise<Array<Item>> {
             Store.dispatch(APIActions.GetItems(Idle(Date.now())));
             Store.dispatch(ItemsActions.Set(items.items));
-            Store.dispatch(RelationsActions.RelateListItems(listid, items.items));
+            Store.dispatch(ListItemsActions.Relate(listid, items.items));
             return Promise.resolve(items.items);
         })
         .catchError(function(error:Error):Promise<Array<Item>> {

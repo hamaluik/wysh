@@ -13,7 +13,8 @@ typedef RootState = {
     var lists:ListsState;
     var items:ItemsState;
 
-    var relations:RelationsState;
+    var profileLists:ProfileListsState;
+    var listItems:ListItemsState;
 }
 
 typedef AuthState = {
@@ -35,6 +36,8 @@ typedef APICallsState = {
 
     var getLists:APIState;
     var createList:APIState;
+    var editList:APIState;
+    var deleteList:APIState;
 
     var getItems:APIState;
 }
@@ -64,9 +67,4 @@ typedef ProfileListsState = {
 
 typedef ListItemsState = {
 
-}
-
-typedef RelationsState = {
-    var profileLists:ProfileListsState;
-    var listItems:ListItemsState;
 }
