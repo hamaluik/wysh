@@ -1,10 +1,10 @@
 package stores;
 
-import types.TPrivacy;
-import State.APIState;
+import js.html.FormData;
 import Actions;
 import js.Promise;
 import js.Error;
+import js.html.File;
 import api.Item;
 import api.Items;
 
@@ -21,6 +21,30 @@ class ItemsStore {
         .catchError(function(error:Error):Promise<Array<Item>> {
             Client.console.error('Failed to request items', error);
             Store.dispatch(APIActions.GetItems(Failed(error)));
+            return Promise.reject(error);
+        });
+    }
+
+    public static function newItem(listid:String, name:String, ?picture:File, ?url:String, ?comments:String, reservable:Bool):Promise<Item> {
+        Store.dispatch(APIActions.CreateItem(Loading));
+
+        var formData:FormData = new FormData();
+        formData.append('name', name);
+        if(url != null) formData.append('url', url);
+        if(comments != null) formData.append('comments', comments);
+        formData.append('reservable', Std.string(reservable));
+        if(picture != null) formData.append('picture', picture, picture.name);
+
+        return WebRequest.request(POST, '/list/${listid}', true, formData)
+        .then(function(item:Item):Promise<Item> {
+            Store.dispatch(APIActions.CreateItem(Idle(Date.now())));
+            Store.dispatch(ItemsActions.Set([ item ]));
+            Store.dispatch(ListItemsActions.Relate(listid, [ item ]));
+            return Promise.resolve(item);
+        })
+        .catchError(function(error:Error):Promise<Item> {
+            Client.console.error('Failed to create item!');
+            Store.dispatch(APIActions.CreateItem(Failed(error)));
             return Promise.reject(error);
         });
     }

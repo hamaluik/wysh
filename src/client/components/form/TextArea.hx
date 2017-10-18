@@ -2,15 +2,21 @@ package components.form;
 
 import mithril.M;
 
-class TextField implements Mithril {
+class TextArea implements Mithril {
     var value:String = null;
 
-    public static function view(vnode:Vnode<TextField>):Vnodes {
+    public static function view(vnode:Vnode<TextArea>):Vnodes {
         var store:Ref<String> = vnode.attrs.get('store');
         vnode.state.value = store.value;
 
+        var required:Bool = vnode.attrs.exists('required');
+        var requiredText:String = vnode.attrs.get('required');
+        var showRequired:Bool = required && StringTools.trim(vnode.state.value).length < 1;
+        var requiredHelper:Vnodes =
+            if(showRequired) m('p.help.is-danger', requiredText);
+            else null;
+
         var options:Dynamic = {
-            className: "input",
             type: vnode.attrs.exists('type') ? vnode.attrs.get('type') : 'text',
             placeholder: (vnode.attrs.exists('placeholder') && vnode.attrs.get('placeholder') != null) ? vnode.attrs.get('placeholder') : '',
             oninput: M.withAttr("value", function(value:String):Void {
@@ -26,26 +32,24 @@ class TextField implements Mithril {
             options.step = 'any';
         }
 
-        var hasIcon:Bool = vnode.attrs.exists('icon');
         var isHorizontal:Bool = vnode.attrs.exists('horizontal') && cast(vnode.attrs.get('horizontal'), Bool);
 
         var label:Vnodes = vnode.attrs.exists('label') ? m("label.label", vnode.attrs.get('label')) : null;
         var body:Vnodes =
             m(".field", [
                 (!isHorizontal ? label : null),
-                m("p.control" + (hasIcon ? ".has-icons-left" : ""), [
-                    m("input", options),
-                    hasIcon
-                        ? m(Icon, { name: vnode.attrs.get('icon') })
-                        : null
-                ])
+                m(".control", [
+                    m("textarea.textarea", options)
+                ]),
+                requiredHelper
             ]);
 
         return
             if(isHorizontal) {
                 m(".field.is-horizontal", [
                     m(".field-label.is-normal", label),
-                    m(".field-body", body)
+                    m(".field-body", body),
+                    requiredHelper
                 ]);
             }
             else body;

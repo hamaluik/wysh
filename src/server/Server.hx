@@ -24,6 +24,7 @@ class Server {
     public static var userHID:Hashids;
     public static var listHID:Hashids;
     public static var itemHID:Hashids;
+    public static var uploadsHID:Hashids;
     public static var config:Config;
 
     public static function extractID(hash:String, hid:Hashids):Int {
@@ -66,6 +67,7 @@ class Server {
         userHID = new Hashids(config.hid.salts.user, config.hid.minlength, config.hid.alphabet);
         listHID = new Hashids(config.hid.salts.list, config.hid.minlength, config.hid.alphabet);
         itemHID = new Hashids(config.hid.salts.item, config.hid.minlength, config.hid.alphabet);
+        uploadsHID = new Hashids(config.hid.salts.uploads, 12, config.hid.alphabet);
 
         // prepare the database
         Log.info('initializing database');

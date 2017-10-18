@@ -1,11 +1,13 @@
 package routes;
 
+import tink.web.forms.FormFile;
 import tink.web.routing.*;
 
 import types.TPrivacy;
 
 using Lambda;
 using StringTools;
+using haxe.io.Path;
 
 class ListRoutes {
     public function new() {}
@@ -61,7 +63,7 @@ class ListRoutes {
         return new response.API<api.List>(list);
     }
 
-    @:post('/$listHash') public function newItem(listHash:String, body:{name:String, ?url:String, ?comments:String, ?image_path:String, ?reservable:Bool}, user:JWTSession.User):Response {
+    @:post('/$listHash') public function newItem(listHash:String, body:{name:String, ?url:String, ?comments:String, ?picture:FormFile, ?reservable:Bool}, user:JWTSession.User):Response {
         var id:Int = try { Server.extractID(listHash, Server.listHID); } catch(e:Dynamic) return new response.NotFound();
 
         // ensure the list exists
@@ -80,7 +82,6 @@ class ListRoutes {
         item.name = body.name;
         item.url = body.url;
         item.comments = body.comments;
-        item.image_path = body.image_path;
         item.reservable = switch(body.reservable) {
             case false: false;
             case _: true;
@@ -88,6 +89,25 @@ class ListRoutes {
         item.createdOn = Date.now();
         item.modifiedOn = Date.now();
         item.insert();
+        
+        if(body.picture != null) {
+            var extension:String = body.picture.fileName.extension().toLowerCase();
+            var fileName:String = Server.uploadsHID.encode(item.id) + '.' + extension;
+
+            var saveName:String = (Server.config.uploads.savePath + '/' + fileName).normalize();
+            var publicName:String = (Server.config.uploads.pathPrefix + '/' + fileName).normalize();
+
+            item.image_path = publicName;
+            item.update();
+
+            body.picture.saveTo(saveName)
+            .handle(function(outcome) {
+                switch(outcome) {
+                    case Success(_): Log.info('Saved uploaded file to: ' + saveName);
+                    case Failure(error): Log.warn('Failed to upload file to: ' + saveName);
+                }
+            });
+        }
 
         Log.info('Added item "${item.name}" to user ${user.id}\'s list "${list.name}" (${list.id})!');
         return new response.API<api.Item>(item);

@@ -15,6 +15,8 @@ class FriendsStore {
         }
 
         Store.dispatch(APIActions.SearchFriends(Loading));
+        // TODO: abort existing requests
+        // https://mithril.js.org/request.html#aborting-requests
         return WebRequest.request(GET, '/search/users', true, {
             name: query
         })

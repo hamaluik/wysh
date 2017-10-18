@@ -3,8 +3,8 @@ package pages;
 import js.html.Event;
 import mithril.M;
 import components.ListSelector;
-import components.form.TextField;
-import components.form.SubmitButton;
+import components.form.Input;
+import components.form.Submit;
 import components.form.DropDown;
 import components.Icon;
 import haxe.ds.StringMap;
@@ -40,9 +40,9 @@ class NewList implements Mithril {
                         m('.column.content', [
                             m('h1.title', 'New List'),
                             m('form', { onsubmit: createList }, [
-                                m(TextField, { label: 'List Name', placeholder: 'Christmas List', store: newListName }),
+                                m(Input, { label: 'List Name', placeholder: 'Christmas List', store: newListName }),
                                 m(DropDown, { label: 'Privacy', store: newListPrivacy, types: privacyTypes }),
-                                m(SubmitButton, { disabled: StringTools.trim(newListName.value).length < 1, loading: Store.state.apiCalls.createList.match(Loading) }, [
+                                m(Submit, { disabled: StringTools.trim(newListName.value).length < 1, loading: Store.state.apiCalls.createList.match(Loading) }, [
                                     m(Icon, { name: 'plus' }),
                                     m('span', 'Create List')
                                 ])

@@ -1,27 +1,40 @@
 package pages;
 
-import types.IDItem;
+import js.html.Event;
 import api.Item;
 import api.List;
 import api.Profile;
 import mithril.M;
 import components.Icon;
 import components.ListSelector;
-import components.form.TextField;
+import components.form.Input;
+import components.form.TextArea;
+import components.form.Submit;
+import components.form.ImageUpload;
+import components.form.CheckBox;
 import stores.ListsStore;
 import stores.ItemsStore;
 import selectors.ListSelectors;
 import selectors.ItemSelectors;
+import js.html.File;
 import State;
 
-using Lambda;
+using StringTools;
 
 class ViewList implements Mithril {
     public function new() {}
 
     private var listID:String = null;
+
     private var showDelete:Bool = false;
     private var deleteName:Ref<String> = "";
+
+    private var newItemName:Ref<String> = "";
+    private var newItemFile:Ref<File> = new Ref<File>(null);
+    private var maxImageSize:Int = 1024 * 1024 * 2;
+    private var newItemLink:Ref<String> = "";
+    private var newItemComments:Ref<String> = "";
+    private var newItemReservable:Ref<Bool> = true;
 
     public function onmatch(params:haxe.DynamicAccess<String>, url:String) {
         if(Store.state.auth.token == null) M.routeSet('/');
@@ -40,8 +53,6 @@ class ViewList implements Mithril {
         var page:Vnodes = m('.loading-bar');
         var selfOwned:Bool = true;
         if(list != null) {
-            /*var myLists:Array<List> = ListSelectors.getMyLists(Store.state);
-            selfOwned = myLists.exists(function(l) { return l.id == list.id; });*/
             var listOwner:Profile = listOwnerSelector(Store.state);
             if(listOwner != null) selfOwned = listOwner.id == Store.state.auth.uid;
 
@@ -85,7 +96,7 @@ class ViewList implements Mithril {
                             else null;
                         m('article.media', [
                             m('figure.media-left',
-                                m('p.image.is-64x64', m('img', { src: item.image_path }))
+                                item.image_path == null ? null : m('p.image.is-64x64', m('img', { src: item.image_path }))
                             ),
                             m('.media-content',
                                 m('.content', [
@@ -96,6 +107,26 @@ class ViewList implements Mithril {
                         ]);
                     }
                 ];
+
+            var addItem:Vnodes = null;
+            if(selfOwned) {
+                addItem =
+                    m('.box', [
+                        m('h2.is-size-4', 'Add New Item'),
+                        m('form', { onsubmit: createItem }, [
+                            m(Input, { label: 'Name', placeholder: 'A New Sweater', store: newItemName, required: 'This field is required!' }),
+                            m(ImageUpload, { label: 'Upload Picture', accept: 'image/*', store: newItemFile, maxSize: maxImageSize }),
+                            m(Input, { label: 'Link', placeholder: 'https://www.amazon.ca/', store: newItemLink }),
+                            m(TextArea, { label: 'Comments', placeholder: 'Size: XL', store: newItemComments }),
+                            m(CheckBox, { store: newItemReservable }, ' Allow friends to reserve this item?'),
+                            m(Submit, { disabled: !canSubmitNewItem() },
+                            [
+                                m(Icon, { name: 'plus' }),
+                                m('span', 'Add Item')
+                            ])
+                        ])
+                    ]);
+            }
             
             var deleteButtonLoading:String =
                 Store.state.apiCalls.deleteList.match(Loading)
@@ -117,7 +148,7 @@ class ViewList implements Mithril {
                             ]),
                             m('p', 'Please type in the name of the list to confirm:'),
                             m('form', { onsubmit: deleteList(list) }, [
-                                m(TextField, { placeholder: list.name, store: deleteName }),
+                                m(Input, { placeholder: list.name, store: deleteName }),
                                 m('submit.button.is-outlined.is-danger.is-fullwidth${deleteButtonLoading}', {
                                     disabled: deleteName.value != list.name,
                                     onclick: deleteList(list)
@@ -130,7 +161,8 @@ class ViewList implements Mithril {
 
             page = [
                 title,
-                itemBlocks,
+                m('section.section', itemBlocks),
+                addItem,
                 deleteModal
             ];
         }
@@ -151,7 +183,7 @@ class ViewList implements Mithril {
     }
 
     private function deleteList(list:List) {
-        return function(e:js.html.Event):Void {
+        return function(e:Event):Void {
             if(e != null) e.preventDefault();
             if(deleteName.value != list.name) return;
             ListsStore.deleteList(list)
@@ -159,5 +191,31 @@ class ViewList implements Mithril {
                 M.routeSet('/lists/self');
             });
         }
+    }
+
+    private function canSubmitNewItem():Bool {
+        return !(
+               newItemName.value.trim().length < 1
+            || (newItemFile.value != null && newItemFile.value.size > maxImageSize));
+    }
+
+    private function createItem(?e:Event) {
+        Client.console.info('Adding item...');
+        if(e != null) e.preventDefault();
+        if(!canSubmitNewItem()) {
+            Client.console.warn('Can\'t submit item!');
+            return;
+        }
+        ItemsStore.newItem(listID, newItemName.value, newItemFile.value, newItemLink.value, newItemComments.value, newItemReservable.value)
+        .then(function(_) {
+            newItemName.set("");
+            newItemFile.set(null);
+            newItemLink.set("");
+            newItemComments.set("");
+            newItemReservable.set(true);
+        })
+        .catchError(function(error) {
+            Client.console.error('Failed to upload new item', error);
+        });
     }
 }

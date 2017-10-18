@@ -8,12 +8,17 @@ typedef Config = {
     public var log:{
         public var level:String;
         public var requests:Bool;
-    }
+    };
 
     public var root:{
         public var client:String;
         public var api:String;
-    }
+    };
+
+    public var uploads:{
+        public var savePath:String;
+        public var pathPrefix:String;
+    };
 
     public var oauth2:{
         public var google:{
@@ -33,6 +38,7 @@ typedef Config = {
             public var user:String;
             public var list:String;
             public var item:String;
+            public var uploads:String;
         }
     };
 

@@ -24,7 +24,10 @@ class APIReducer implements IReducer<APIActions, APICallsState> {
         editList: Idle(null),
         deleteList: Idle(null),
 
-        getItems: Idle(null)
+        getItems: Idle(null),
+        createItem: Idle(null),
+        editItem: Idle(null),
+        deleteItem: Idle(null)
     };
 
     public function reduce(state:APICallsState, action:APIActions):APICallsState {
@@ -70,6 +73,15 @@ class APIReducer implements IReducer<APIActions, APICallsState> {
 
             case GetItems(apiState): Object.assign(cast({}), state, {
                 getItems: apiState
+            });
+            case CreateItem(apiState): Object.assign(cast({}), state, {
+                createItem: apiState
+            });
+            case EditItem(apiState): Object.assign(cast({}), state, {
+                editItem: apiState
+            });
+            case DeleteItem(apiState): Object.assign(cast({}), state, {
+                deleteItem: apiState
             });
         }
     }

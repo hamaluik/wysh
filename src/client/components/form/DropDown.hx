@@ -23,7 +23,7 @@ class DropDown implements Mithril {
         return
             m(".field", [
                 label,
-                m("p.control", [
+                m(".control", [
                     m("span.select", [
                         m("select", {
                             oninput: M.withAttr('value', function(value:String):Void {

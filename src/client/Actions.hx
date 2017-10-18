@@ -31,6 +31,9 @@ enum APIActions {
     DeleteList(state:APIState);
 
     GetItems(state:APIState);
+    CreateItem(state:APIState);
+    EditItem(state:APIState);
+    DeleteItem(state:APIState);
 }
 
 enum ProfilesActions {

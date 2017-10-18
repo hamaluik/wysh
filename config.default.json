@@ -13,6 +13,11 @@
         "api": "http://lvh.me:8080"
     },
 
+    "uploads": {
+        "savePath": "./public/uploads",
+        "pathPrefix": "/uploads"
+    },
+
     "oauth2": {
         "google": {
                 "id": "?",
@@ -30,7 +35,8 @@
         "salts": {
                 "user": "c9e33547-04d6-40a6-81ad-ba974a90b0ed",
                 "list": "6c797bc4-fab1-46e1-aabd-4f1aee6fc398",
-                "item": "6c13e03f-52bb-45bc-9850-93d02a5b4d7c"
+                "item": "6c13e03f-52bb-45bc-9850-93d02a5b4d7c",
+                "uploads": "1b73ba95-fb74-40d9-89e7-a5925e570d99"
         }
     },
 

@@ -40,6 +40,9 @@ typedef APICallsState = {
     var deleteList:APIState;
 
     var getItems:APIState;
+    var createItem:APIState;
+    var editItem:APIState;
+    var deleteItem:APIState;
 }
 
 typedef ProfilesState = {
