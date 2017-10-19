@@ -91,19 +91,31 @@ class ViewList implements Mithril {
                     );
                 else [
                     for(item in items) {
-                        var comments:Vnodes =
-                            if(item.comments != null) m('p', item.comments);
-                            else null;
+                        var itemBody:Array<Vnode<Dynamic>> = [m('strong', item.name)];
+                        if(item.comments != null) {
+                            itemBody.push(m('br'));
+                            itemBody.push(m('span', item.comments));
+                        }
+                        if(item.url != null) {
+                            itemBody.push(m('br'));
+                            itemBody.push(m('a', { href: item.url, target: '_blank' }, item.url));
+                        }
+
+                        var rightSide
+
                         m('article.media', [
-                            m('figure.media-left',
-                                item.image_path == null ? null : m('p.image.is-64x64', m('img', { src: item.image_path }))
+                            item.image_path == null ? null : m('figure.media-left',
+                                m('p.image', m('img', { src: item.image_path }))
                             ),
                             m('.media-content',
                                 m('.content', [
-                                    m('p', m('strong', item.name)),
-                                    comments
+                                    m('p', itemBody),
                                 ])
-                            )
+                            ),
+                            m('.media-right', [
+                                m('button.button.is-text.is-small', {}, m(Icon, { name: 'edit' })),
+                                m('button.button.is-text.is-small', {}, m(Icon, { name: 'trash' })),
+                            ])
                         ]);
                     }
                 ];
@@ -161,7 +173,7 @@ class ViewList implements Mithril {
 
             page = [
                 title,
-                m('section.section', itemBlocks),
+                itemBlocks,
                 addItem,
                 deleteModal
             ];
