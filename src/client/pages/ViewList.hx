@@ -36,6 +36,8 @@ class ViewList implements Mithril {
     private var newItemComments:Ref<String> = "";
     private var newItemReservable:Ref<Bool> = true;
 
+    private var deleteItems:Array<String> = [];
+
     public function onmatch(params:haxe.DynamicAccess<String>, url:String) {
         if(Store.state.auth.token == null) M.routeSet('/');
         listID = params.get('listid');
@@ -101,21 +103,33 @@ class ViewList implements Mithril {
                             itemBody.push(m('a', { href: item.url, target: '_blank' }, item.url));
                         }
 
-                        // TODO: ??var rightSide
+                        var rightSide:Vnodes =
+                            if(selfOwned) {
+                                var deleteButton =
+                                    if(deleteItems.indexOf(item.id) == -1)
+                                        m('button.button.is-text.is-small.is-danger', { onclick: function() {
+                                            deleteItems.push(item.id);
+                                        }}, m(Icon, { name: 'trash' }));
+                                    else
+                                        m('button.button.is-text.is-small.is-success', { onclick: deleteItem(item) }, m(Icon, { name: 'trash' }));
+
+                                m('.media-right', [
+                                    //m('button.button.is-text.is-small', {}, m(Icon, { name: 'edit' })),
+                                    deleteButton,
+                                ]);
+                            }
+                            else null;
 
                         m('article.media', [
                             item.image_path == null ? null : m('figure.media-left',
-                                m('p.image', m('img', { src: item.image_path }))
+                                m('p.image.is-96x96', m('img', { src: item.image_path }))
                             ),
                             m('.media-content',
                                 m('.content', [
                                     m('p', itemBody),
                                 ])
                             ),
-                            m('.media-right', [
-                                m('button.button.is-text.is-small', {}, m(Icon, { name: 'edit' })),
-                                m('button.button.is-text.is-small', {}, m(Icon, { name: 'trash' })),
-                            ])
+                            rightSide
                         ]);
                     }
                 ];
@@ -123,7 +137,7 @@ class ViewList implements Mithril {
             var addItem:Vnodes = null;
             if(selfOwned) {
                 addItem =
-                    m('.box', [
+                    m('.box', { style: "margin-top: 1em;" }, [
                         m('h2.is-size-4', 'Add New Item'),
                         m('form', { onsubmit: createItem }, [
                             m(Input, { label: 'Name', placeholder: 'A New Sweater', store: newItemName, required: 'This field is required!' }),
@@ -144,7 +158,7 @@ class ViewList implements Mithril {
                 Store.state.apiCalls.deleteList.match(Loading)
                     ? '.is-loading'
                     : '';
-            var deleteModal:Vnodes =
+            var deleteListModal:Vnodes =
                 if(showDelete)
                     m('.modal.is-active', [
                         m('.modal-background', { onclick: function() { deleteName.set(""); showDelete = false; } }),
@@ -175,7 +189,7 @@ class ViewList implements Mithril {
                 title,
                 itemBlocks,
                 addItem,
-                deleteModal
+                deleteListModal
             ];
         }
 
@@ -201,6 +215,16 @@ class ViewList implements Mithril {
             ListsStore.deleteList(list)
             .then(function(_) {
                 M.routeSet('/lists/self');
+            });
+        }
+    }
+
+    private function deleteItem(item:Item) {
+        return function(e:Event):Void {
+            if(e != null) e.preventDefault();
+            ItemsStore.deleteItem(item)
+            .then(function(_) {
+                deleteItems.remove(item.id);
             });
         }
     }

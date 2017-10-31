@@ -1,5 +1,6 @@
 package stores;
 
+import api.Message;
 import js.html.FormData;
 import Actions;
 import js.Promise;
@@ -45,6 +46,22 @@ class ItemsStore {
         .catchError(function(error:Error):Promise<Item> {
             Client.console.error('Failed to create item!');
             Store.dispatch(APIActions.CreateItem(Failed(error)));
+            return Promise.reject(error);
+        });
+    }
+
+    public static function deleteItem(item:Item):Promise<Message> {
+        Store.dispatch(APIActions.DeleteItem(Loading));
+        return WebRequest.request(DELETE, '/item/${item.id}', true)
+        .then(function(message:Message):Promise<Message> {
+            Store.dispatch(APIActions.DeleteItem(Idle(Date.now())));
+            Store.dispatch(ItemsActions.Delete(item.id));
+            Store.dispatch(ListItemsActions.DeleteItem(item.id));
+            return Promise.resolve(message);
+        })
+        .catchError(function(error:Error):Promise<Message> {
+            Client.console.error('Failed to delete item', error);
+            Store.dispatch(APIActions.DeleteItem(Failed(error)));
             return Promise.reject(error);
         });
     }
