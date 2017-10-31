@@ -101,7 +101,7 @@ class ViewList implements Mithril {
                             itemBody.push(m('a', { href: item.url, target: '_blank' }, item.url));
                         }
 
-                        var rightSide
+                        // TODO: ??var rightSide
 
                         m('article.media', [
                             item.image_path == null ? null : m('figure.media-left',
