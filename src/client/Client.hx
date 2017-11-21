@@ -1,4 +1,3 @@
-import stores.FriendsStore;
 import stores.ProfilesStore;
 import js.Promise;
 import middleware.OfflineMiddleware;
@@ -13,7 +12,6 @@ import stores.APIReducer;
 import stores.AuthStore;
 import stores.AuthReducer;
 import stores.ProfilesReducer;
-import stores.FriendsReducer;
 import stores.ListsReducer;
 import stores.ItemsReducer;
 import stores.ListsStore;
@@ -40,17 +38,15 @@ class Client implements Mithril {
     public static function initialLoad():Promise<Dynamic> {
         return Promise.all([
             ProfilesStore.fetchProfile(store.state.auth.uid),
-            FriendsStore.fetchFriends(),
-            FriendsStore.fetchIncomingFriendRequests(),
-            FriendsStore.fetchSentFriendRequests(),
+            ProfilesStore.fetchProfiles(),
             ListsStore.fetchLists(store.state.auth.uid)
         ])
         .then(function(results:Array<Dynamic>):Promise<Dynamic> {
-            var friendsResult:Array<api.Profile> = results[1];
-            var fetchFriendLists:Array<Promise<Dynamic>> = [
-                for(friend in friendsResult) ListsStore.fetchLists(friend.id)
+            var othersResult:Array<api.Profile> = results[1];
+            var fetchOtherLists:Array<Promise<Dynamic>> = [
+                for(other in othersResult) ListsStore.fetchLists(other.id)
             ];
-            return Promise.all(fetchFriendLists);
+            return Promise.all(fetchOtherLists);
         });
     }
 
@@ -61,7 +57,6 @@ class Client implements Mithril {
             auth: mapReducer(AuthActions, new AuthReducer()),
             apiCalls: mapReducer(APIActions, new APIReducer()),
             profiles: mapReducer(ProfilesActions, new ProfilesReducer()),
-            friends: mapReducer(FriendsActions, new FriendsReducer()),
             lists: mapReducer(ListsActions, new ListsReducer()),
             items: mapReducer(ItemsActions, new ItemsReducer()),
             profileLists: mapReducer(ProfileListsActions, new ProfileListsReducer()),
@@ -71,7 +66,6 @@ class Client implements Mithril {
             if(action.type == 'OfflineActions.Load') {
                 var newState:RootState = js.Object.assign(cast({}), state, {
                     profiles: action.value.profiles,
-                    friends: action.value.friends,
                     lists: action.value.lists,
                     items: action.value.items,
                     profileLists: action.value.profileLists,
@@ -129,11 +123,10 @@ class Client implements Mithril {
         M.route(js.Browser.document.body, '/', {
             '/': this,
             '/login/:token': new pages.Login(),
-            '/lists/friends': new pages.FriendLists(),
+            '/lists/others': new pages.OtherLists(),
             '/lists/self': new pages.MyLists(),
             '/lists/new': new pages.NewList(),
             '/list/:listid': new pages.ViewList(),
-            '/friends': new pages.Friends()
         });
     }
 

@@ -5,7 +5,7 @@ import mithril.M;
 import selectors.ListSelectors;
 
 enum TListType {
-    Friends;
+    Others;
     Self;
 }
 
@@ -14,12 +14,12 @@ class ListSelector implements Mithril {
         var type:TListType = vnode.attrs.get('type');
 
         var listItems:Vnodes = switch(type) {
-            case Friends: {
+            case Others: {
                 var friendLists:Array<FriendLists> = ListSelectors.getFriendLists(Store.state);
                 var friendsListCount:Int = 0;
                 for(friendList in friendLists) friendsListCount += friendList.lists.length;
                 if(friendsListCount < 1)
-                    m('.panel-block', 'Your friends don\'t have any lists yet!');
+                    m('.panel-block', 'There aren\'t any other lists yet!');
                 else {
                     var blocks:Array<Vnode<Dynamic>> = [];
                     for(friendList in friendLists) {
@@ -30,7 +30,6 @@ class ListSelector implements Mithril {
                                     }, [
                                     m(Icon, { name: switch(list.privacy) {
                                         case Public: 'globe';
-                                        case Friends: 'users';
                                         case Private: 'lock';
                                         case _: 'question';
                                     } }),
@@ -55,7 +54,6 @@ class ListSelector implements Mithril {
                             }, [
                             m(Icon, { name: switch(list.privacy) {
                                 case Public: 'globe';
-                                case Friends: 'users';
                                 case Private: 'lock';
                                 case _: 'question';
                             } }),
@@ -67,7 +65,7 @@ class ListSelector implements Mithril {
         }
 
         var addButton:Vnodes = switch(type) {
-            case Friends: null;
+            case Others: null;
             case Self:
                 m('.panel-block',
                     m('a.button.is-link.is-outlined.is-fullwidth', {
@@ -84,7 +82,7 @@ class ListSelector implements Mithril {
             m('nav.panel', [
                 m('p.panel-heading', 'Wishlists'),
                 m('p.panel-tabs', [
-                    m('a' + (type.match(TListType.Friends) ? '.is-active' : ''), { href: '#!/lists/friends' }, 'Friends'),
+                    m('a' + (type.match(TListType.Others) ? '.is-active' : ''), { href: '#!/lists/others' }, 'Others'),
                     m('a' + (type.match(TListType.Self) ? '.is-active' : ''), { href: '#!/lists/self' }, 'Yours'),
                 ]),
                 listItems,

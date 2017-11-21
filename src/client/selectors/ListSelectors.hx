@@ -5,7 +5,7 @@ import api.List;
 import api.Profile;
 import haxe.ds.StringMap;
 
-typedef FriendLists = {
+typedef OtherLists = {
     profile:Profile,
     lists:Array<List>
 }
@@ -55,18 +55,18 @@ class ListSelectors {
         });
     };
 
-    public static var getFriendLists:RootState->Array<FriendLists> = {
-        Selectors.create3(FriendsSelectors.getFriendProfiles, profileListsSelector, listsSelector, function(friends:Array<Profile>, profileLists:ProfileListsState, lists:ListsState):Array<FriendLists> {
-            var ret:Array<FriendLists> = [];
+    public static var getOtherLists:RootState->Array<OtherLists> = {
+        Selectors.create3(FriendsSelectors.getFriendProfiles, profileListsSelector, listsSelector, function(friends:Array<Profile>, profileLists:ProfileListsState, lists:ListsState):Array<OtherLists> {
+            var ret:Array<OtherLists> = [];
             for(friend in friends) {
                 var listIDs:Array<String> = Reflect.field(profileLists, friend.id);
                 if(listIDs == null) listIDs = [];
 
-                var friendLists:FriendLists = {
+                var otherLists:OtherLists = {
                     profile: friend,
                     lists: [for(id in listIDs) Reflect.field(lists, id)]
                 };
-                ret.push(friendLists);
+                ret.push(otherLists);
             }
             return ret;
         });

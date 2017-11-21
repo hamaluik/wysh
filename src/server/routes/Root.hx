@@ -32,7 +32,7 @@ class Root {
     }
 
     @:restrict(true)
-    @:sub('/api/search') public function search() {
-        return new SearchRoutes();
+    @:sub('/api/users') public function users() {
+        return new UsersRoutes();
     }
 }

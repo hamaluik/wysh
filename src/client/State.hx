@@ -9,7 +9,6 @@ typedef RootState = {
     var apiCalls:APICallsState;
 
     var profiles:ProfilesState;
-    var friends:FriendsState;
     var lists:ListsState;
     var items:ItemsState;
 
@@ -27,13 +26,6 @@ typedef APICallsState = {
 
     var getProfiles:APIState;
 
-    var searchFriends:APIState;
-    var getFriends:APIState;
-    var getIncomingRequests:APIState;
-    var getSentRequests:APIState;
-    var requestFriend:APIState;
-    var acceptFriendRequest:APIState;
-
     var getLists:APIState;
     var createList:APIState;
     var editList:APIState;
@@ -47,13 +39,6 @@ typedef APICallsState = {
 
 typedef ProfilesState = {
 
-}
-
-typedef FriendsState = {
-    var searchResults:Array<String>;
-    var friends:Array<String>;
-    var incomingRequests:Array<String>;
-    var sentRequests:Array<String>;
 }
 
 typedef ListsState = {

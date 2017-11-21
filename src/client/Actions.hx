@@ -18,13 +18,6 @@ enum APIActions {
     GetSelfProfile(state:APIState);
     GetProfiles(state:APIState);
 
-    SearchFriends(state:APIState);
-    GetFriends(state:APIState);
-    GetIncomingRequests(state:APIState);
-    GetSentRequests(state:APIState);
-    RequestFriend(state:APIState);
-    AcceptFriendRequest(state:APIState);
-
     GetLists(state:APIState);
     CreateList(state:APIState);
     EditList(state:APIState);
@@ -38,14 +31,6 @@ enum APIActions {
 
 enum ProfilesActions {
     Set(profiles:Array<Profile>);
-}
-
-enum FriendsActions {
-    SetSearchResults(profiles:Array<Profile>);
-    SetFriends(profiles:Array<Profile>);
-    SetIncomingRequests(profiles:Array<Profile>);
-    RemoveIncomingRequests(profiles:Array<Profile>);
-    SetSentRequests(profiles:Array<Profile>);
 }
 
 enum ListsActions {

@@ -3,7 +3,7 @@ package pages;
 import mithril.M;
 import components.ListSelector;
 
-class FriendLists implements Mithril {
+class OtherLists implements Mithril {
     public function new() {}
 
     public function onmatch(params:haxe.DynamicAccess<String>, url:String) {
@@ -17,9 +17,9 @@ class FriendLists implements Mithril {
             m('section.section',
                 m('.container', [
                     m('.columns', [
-                        m(ListSelector, { type: Friends }),
+                        m(ListSelector, { type: Others }),
                         m('.column', [
-                            m('p', 'Your friends don\'t have any lists!')
+                            m('p', '???')
                         ]),
                     ])
                 ])

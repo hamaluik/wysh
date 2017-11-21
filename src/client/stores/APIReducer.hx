@@ -12,13 +12,6 @@ class APIReducer implements IReducer<APIActions, APICallsState> {
         getSelfProfile: Idle(null),
         getProfiles: Idle(null),
 
-        searchFriends: Idle(null),
-        getFriends: Idle(null),
-        getIncomingRequests: Idle(null),
-        getSentRequests: Idle(null),
-        requestFriend: Idle(null),
-        acceptFriendRequest: Idle(null),
-
         getLists: Idle(null),
         createList: Idle(null),
         editList: Idle(null),
@@ -37,25 +30,6 @@ class APIReducer implements IReducer<APIActions, APICallsState> {
             });
             case GetProfiles(apiState): Object.assign(cast({}), state, {
                 getProfiles: apiState
-            });
-
-            case SearchFriends(apiState): Object.assign(cast({}), state, {
-                searchFriends: apiState
-            });
-            case GetFriends(apiState): Object.assign(cast({}), state, {
-                getFriends: apiState
-            });
-            case GetIncomingRequests(apiState): Object.assign(cast({}), state, {
-                getIncomingRequests: apiState
-            });
-            case GetSentRequests(apiState): Object.assign(cast({}), state, {
-                getSentRequests: apiState
-            });
-            case RequestFriend(apiState): Object.assign(cast({}), state, {
-                requestFriend: apiState
-            });
-            case AcceptFriendRequest(apiState): Object.assign(cast({}), state, {
-                acceptFriendRequest: apiState
             });
 
             case GetLists(apiState): Object.assign(cast({}), state, {

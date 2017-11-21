@@ -54,7 +54,6 @@ class ListRoutes {
         list.modifiedOn = Date.now();
         list.privacy = switch(body.privacy) {
             case Public: Public;
-            case Friends: Friends;
             case _: Private;
         };
         list.insert();
@@ -133,7 +132,7 @@ class ListRoutes {
             list.name = body.name;
             modified = true;
         }
-        if(body.privacy != null && [Public, Friends, Private].indexOf(body.privacy) != -1) {
+        if(body.privacy != null && [Public, Private].indexOf(body.privacy) != -1) {
             list.privacy = body.privacy;
             modified = true;
         }
