@@ -5,8 +5,6 @@ import api.APIResponse;
 
 #if sys
 import models.User;
-import models.Friends;
-import models.FriendRequests;
 #end
 
 @:allow(api.Profile)
@@ -46,22 +44,6 @@ abstract Profile(ProfileObject) from ProfileObject to ProfileObject to APIRespon
             id: Server.userHID.encode(user.id),
             name: user.name,
             picture: user.picture
-        });
-
-    @:from
-    public static inline function fromDBFriend(friend:Friends):Profile
-        return new Profile({
-            id: Server.userHID.encode(friend.friendB.id),
-            name: friend.friendB.name,
-            picture: friend.friendB.picture
-        });
-
-    @:from
-    public static inline function fromDBFriendRequest(request:FriendRequests):Profile
-        return new Profile({
-            id: Server.userHID.encode(request.requester.id),
-            name: request.requester.name,
-            picture: request.requester.picture
         });
 #end
 }

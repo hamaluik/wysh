@@ -32,11 +32,6 @@ class Root {
     }
 
     @:restrict(true)
-    @:sub('/api/friends') public function friends() {
-        return new FriendRoutes();
-    }
-
-    @:restrict(true)
     @:sub('/api/search') public function search() {
         return new SearchRoutes();
     }

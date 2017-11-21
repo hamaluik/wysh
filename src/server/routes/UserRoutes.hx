@@ -6,16 +6,12 @@ class UserRoutes {
     public function new() {}
 
     @:get('/$userHash/profile') public function getProfile(userHash:String, user:JWTSession.User):Response {
-        // TODO: make sure we have permission to view this user
-
         var u:models.User = models.User.manager.get(Server.extractID(userHash, Server.userHID));
         if(u == null) return new response.NotFound();
         return new response.API<api.Profile>(u);
     }
     
     @:get('/$userHash/lists') public function getLists(userHash:String, user:JWTSession.User):Response {
-        // TODO: make sure we have permission to view this user's lists
-
         var u:models.User = models.User.manager.get(Server.extractID(userHash, Server.userHID));
         if(u == null) return new response.NotFound();
 
