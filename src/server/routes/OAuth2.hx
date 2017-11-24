@@ -125,6 +125,7 @@ class OAuth2 {
                         u.modifiedOn = Date.now();
                         u.insert();
                         Log.info('Created new Google user: ${u.name}');
+                        autoFriend(u);
                         u;
                     }
                     else {
@@ -172,6 +173,7 @@ class OAuth2 {
                         u.modifiedOn = Date.now();
                         u.insert();
                         Log.info('Created new Facebook user: ${u.name}');
+                        autoFriend(u);
                         u;
                     }
                     else {
@@ -192,6 +194,19 @@ class OAuth2 {
                 });
 
             case _: Future.sync(new response.NotFound(query.state));
+        }
+    }
+
+    function autoFriend(u:models.User):Void {
+        var allUsers:List<models.User> = models.User.manager.all();
+        for(user in allUsers) {
+            if(u.id == user.id) continue;
+            var friend:models.Friends = new models.Friends();
+            friend.friendA = u;
+            friend.friendB = user;
+            friend.createdOn = Date.now();
+            friend.modifiedOn = Date.now();
+            friend.insert();
         }
     }
 }
