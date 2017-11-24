@@ -201,12 +201,18 @@ class OAuth2 {
         var allUsers:List<models.User> = models.User.manager.all();
         for(user in allUsers) {
             if(u.id == user.id) continue;
-            var friend:models.Friends = new models.Friends();
-            friend.friendA = u;
-            friend.friendB = user;
-            friend.createdOn = Date.now();
-            friend.modifiedOn = Date.now();
-            friend.insert();
+            var friend1:models.Friends = new models.Friends();
+            friend1.friendA = u;
+            friend1.friendB = user;
+            friend1.createdOn = Date.now();
+            friend1.modifiedOn = Date.now();
+            friend1.insert();
+            var friend2:models.Friends = new models.Friends();
+            friend2.friendA = user;
+            friend2.friendB = u;
+            friend2.createdOn = Date.now();
+            friend2.modifiedOn = Date.now();
+            friend2.insert();
         }
     }
 }
