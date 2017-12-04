@@ -19,7 +19,7 @@ class MyLists implements Mithril {
                     m('.columns', [
                         m(ListSelector, { type: Self }),
                         m('.column', [
-                            m('p', 'You don\'t have any lists!')
+                            m('p', 'You don\'t have any lists! Or do you? I don\'t know, I\'m just a silly program.')
                         ]),
                     ])
                 ])
