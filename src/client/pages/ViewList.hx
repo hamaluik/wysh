@@ -102,10 +102,13 @@ class ViewList implements Mithril {
                         var itemBody:Array<Vnode<Dynamic>> = [];
                         if(item.comments != null) {
                             itemBody.push(m('span${strikethrough}', item.comments));
+                            // TODO: formatting so it doesn't go off the screen
+                            // TODO: security
+                            //itemBody.push(m('span${strikethrough}', M.trust(Markdown.renderHtml(item.comments))));
                         }
                         if(item.url != null && item.url.trim().length > 0) {
                             if(item.comments != null) itemBody.push(m('br'));
-                            itemBody.push(m('a${strikethrough}', { href: item.url, target: '_blank' }, item.url));
+                            itemBody.push(m('a.dont-break-out${strikethrough}', { href: item.url, target: '_blank' }, item.url));
                         }
                         if(item.reservable != null) {
                             // TODO: get rid of this stank ass code

@@ -1,0 +1,3 @@
+# @install: lix --silent download "haxelib:markdown#1.0.0" into markdown/1.0.0/haxelib
+-D markdown=1.0.0
+-cp ${HAXESHIM_LIBCACHE}/markdown/1.0.0/haxelib/

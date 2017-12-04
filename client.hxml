@@ -3,6 +3,7 @@
 
 -lib mithril
 -lib jwt
+-lib markdown
 -D redux_global
 
 -D apiroot=http://lvh.me:8080/api
