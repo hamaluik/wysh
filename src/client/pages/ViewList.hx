@@ -107,8 +107,9 @@ class ViewList implements Mithril {
                             //itemBody.push(m('span${strikethrough}', M.trust(Markdown.renderHtml(item.comments))));
                         }
                         if(item.url != null && item.url.trim().length > 0) {
+                            // TODO: get rid of this stank ass code
                             if(item.comments != null) itemBody.push(m('br'));
-                            itemBody.push(m('a.dont-break-out${strikethrough}', { href: item.url, target: '_blank' }, item.url));
+                            itemBody.push(m('a${strikethrough}', { href: item.url, target: '_blank' }, item.url));
                         }
                         if(item.reservable != null) {
                             // TODO: get rid of this stank ass code
@@ -157,7 +158,7 @@ class ViewList implements Mithril {
                                     )
                                 ),
                                 m('.column', [
-                                    m('.content', m('p', itemBody))
+                                    m('.content', m('p.dont-break-out', itemBody))
                                 ]),
                             ])
                         ]);
