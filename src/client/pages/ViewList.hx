@@ -62,10 +62,10 @@ class ViewList implements Mithril {
                 if(list == null) m('h1.title', m(Icon, { name: 'spinner-third', spin: true }));
                 else {
                     if(selfOwned)
-                        m('.level', [
-                            m('.level-left', m('h1.title', list.name)),
-                            m('.level-right', [
-                                /*m('button.button.is-text.is-large', {}, m(Icon, { name: 'edit' })),*/
+                        m('.columns.is-mobile', [
+                            m('.column', m('h1.title', list.name)),
+                            m('.column.is-narrow', [
+                                //m('button.button.is-text.is-large', {}, m(Icon, { name: 'edit' })),
                                 m('button.button.is-text.is-large', { onclick: function() { showDelete = true; deleteName.set(""); } }, m(Icon, { name: 'trash' }))
                             ])
                         ]);
@@ -93,43 +93,54 @@ class ViewList implements Mithril {
                     );
                 else [
                     for(item in items) {
-                        var itemBody:Array<Vnode<Dynamic>> = [m('strong', item.name)];
+                        var strikethrough:String =
+                            if(!selfOwned && item.reservable && item.reservedOn != null) '.is-strikethrough';
+                            else '';
+
+                        var itemBody:Array<Vnode<Dynamic>> = [];
                         if(item.comments != null) {
-                            itemBody.push(m('br'));
                             itemBody.push(m('span', item.comments));
                         }
-                        if(item.url != null) {
-                            itemBody.push(m('br'));
+                        if(item.url != null && item.url.trim().length > 0) {
+                            if(item.comments != null) itemBody.push(m('br'));
                             itemBody.push(m('a', { href: item.url, target: '_blank' }, item.url));
+                        }
+                        if(selfOwned && item.reservable != null) {
+                            if(item.url != null && item.url.trim().length > 0) itemBody.push(m('br'));
+                            itemBody.push(m('em.is-size-7', 'This item may be reserved!'));
                         }
 
                         var rightSide:Vnodes =
                             if(selfOwned) {
-                                var deleteButton =
-                                    if(deleteItems.indexOf(item.id) == -1)
-                                        m('button.button.is-text.is-small.is-danger', { onclick: function() {
-                                            deleteItems.push(item.id);
-                                        }}, m(Icon, { name: 'trash' }));
-                                    else
-                                        m('button.button.is-text.is-small.is-success', { onclick: deleteItem(item) }, m(Icon, { name: 'trash' }));
-
-                                m('.media-right', [
-                                    //m('button.button.is-text.is-small', {}, m(Icon, { name: 'edit' })),
-                                    deleteButton,
-                                ]);
+                                if(deleteItems.indexOf(item.id) == -1)
+                                    m('button.button.is-text.is-small.is-danger', { onclick: function() {
+                                        deleteItems.push(item.id);
+                                    }}, m(Icon, { name: 'trash' }));
+                                else
+                                    m('button.button.is-text.is-small.is-success', { onclick: deleteItem(item) }, m(Icon, { name: 'trash' }));
                             }
+                            else if(item.reservable != null && item.reservable && item.reservedOn == null)
+                                m('a.button.is-small.is-primary.is-outlined', {onclick: function() {
+                                    js.Browser.alert('TODO:');
+                                }}, 'Reserve');
                             else null;
 
-                        m('article.media', [
-                            item.image_path == null ? null : m('figure.media-left',
-                                m('p.image.is-96x96', m('img', { src: item.image_path }))
-                            ),
-                            m('.media-content',
-                                m('.content', [
-                                    m('p', itemBody),
-                                ])
-                            ),
-                            rightSide
+                        m('div', [
+                            m('hr'),
+                            m('.columns.is-mobile', [
+                                m('.column', m('h4.has-text-weight-bold${strikethrough}', item.name)),
+                                rightSide == null ? null : m('.column.is-narrow', rightSide)
+                            ]),
+                            m('.columns', [
+                                item.image_path == null ? null : m('.column.is-narrow',
+                                    m('figure',
+                                        m('p.image.is-96x96', m('img', { src: item.image_path }))
+                                    )
+                                ),
+                                m('.column', [
+                                    m('.content', m('p${strikethrough}', itemBody))
+                                ]),
+                            ])
                         ]);
                     }
                 ];
