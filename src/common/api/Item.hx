@@ -49,9 +49,11 @@ abstract Item(ItemObject) from ItemObject to ItemObject to APIResponse {
         });
     }
 
-    public inline function hideReservedStatus():ItemObject {
-        this.reserver = null;
-        this.reservedOn = null;
+    public inline function hideReservedStatus(viewerID:Int):ItemObject {
+        if(Server.itemHID.encode(viewerID) == this.id) {
+            this.reserver = null;
+            this.reservedOn = null;
+        }
         return this;
     }
 #end

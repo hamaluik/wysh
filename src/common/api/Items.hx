@@ -22,8 +22,8 @@ abstract Items(ItemsObject) from ItemsObject to ItemsObject to APIResponse {
         return new Items([for(item in items) item]);
 
     
-    public inline function hideReservedStatus():ItemsObject {
-        for(item in this.items) item.hideReservedStatus();
+    public inline function hideReservedStatus(viewerID:Int):ItemsObject {
+        for(item in this.items) item.hideReservedStatus(viewerID);
         return this;
     }
 #end

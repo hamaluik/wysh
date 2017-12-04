@@ -38,7 +38,7 @@ class ListRoutes {
         var items:List<models.Item> = models.Item.manager.search($lid == list.id);
         if(items == null) items = new List<models.Item>();
 
-        return new response.API(api.Items.fromDBItems(items).hideReservedStatus());
+        return new response.API(api.Items.fromDBItems(items).hideReservedStatus(user.id));
     }
 
     @:post('/') public function newList(body:{name:String, ?privacy:TPrivacy}, user:JWTSession.User):Response {

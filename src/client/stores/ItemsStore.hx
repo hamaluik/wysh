@@ -65,4 +65,21 @@ class ItemsStore {
             return Promise.reject(error);
         });
     }
+
+    public static function reserveItem(item:Item, reserve:Bool):Promise<Item> {
+        Store.dispatch(APIActions.EditItem(Loading));
+        return WebRequest.request(PATCH, '/item/${item.id}', true, {
+            reserve: reserve
+        })
+        .then(function(i:Item):Promise<Item> {
+            Store.dispatch(APIActions.EditItem(Idle(Date.now())));
+            Store.dispatch(ItemsActions.Set([i]));
+            return Promise.resolve(i);
+        })
+        .catchError(function(error:Error):Promise<Item> {
+            Client.console.error('Failed to [un?]reserve item', error);
+            Store.dispatch(APIActions.EditItem(Failed(error)));
+            return Promise.reject(error);
+        });
+    }
 }

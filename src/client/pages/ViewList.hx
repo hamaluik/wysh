@@ -16,6 +16,7 @@ import stores.ListsStore;
 import stores.ItemsStore;
 import selectors.ListSelectors;
 import selectors.ItemSelectors;
+import selectors.ProfileSelectors;
 import js.html.File;
 import State;
 
@@ -37,6 +38,7 @@ class ViewList implements Mithril {
     private var newItemReservable:Ref<Bool> = true;
 
     private var deleteItems:Array<String> = [];
+    private var reservingItems:Array<String> = [];
 
     public function onmatch(params:haxe.DynamicAccess<String>, url:String) {
         if(Store.state.auth.token == null) M.routeSet('/');
@@ -109,8 +111,18 @@ class ViewList implements Mithril {
                             // TODO: get rid of this stank ass code
                             if(item.url != null && item.url.trim().length > 0 && (selfOwned || item.reservedOn != null)) itemBody.push(m('br'));
                             if(selfOwned) itemBody.push(m('em.is-size-7', 'This item may be reserved!'));
-                            else if(item.reservedOn != null)
-                                itemBody.push(m('em.is-size-7', 'This item was reserved by ${item.reserver} on ${item.reservedOn.toString()}.'));
+                            else if(item.reservedOn != null) {
+                                var reserver:String = Reflect.field(Store.state.profiles, item.reserver).name;
+                                var d:Date = Date.fromString(cast(item.reservedOn));
+                                var reservedOn = DateTools.format(d, '%B %e, %Y') + ' at ' + DateTools.format(d, '%l:%M %p');
+                                itemBody.push(m('em.is-size-7', 'This item was reserved on ${reservedOn} by ${reserver}.'));
+                                if(item.reserver == Store.state.auth.uid) {
+                                    itemBody.push(m('em.is-size-7', [
+                                        ' ',
+                                        m('a', { onclick: reserveItem(item, false) }, 'Remove reserve')
+                                    ]));
+                                }
+                            }
                         }
 
                         var rightSide:Vnodes =
@@ -126,7 +138,7 @@ class ViewList implements Mithril {
                                     ]);
                             }
                             else if(item.reservable != null && item.reservable && item.reservedOn == null)
-                                m('a.button.is-small.is-primary.is-outlined', { onclick: reserveItem(item) }, 'Reserve');
+                                m('a.button.is-small.is-primary.is-outlined' + (reservingItems.indexOf(item.id) != -1 ? '.is-loading' : ''), { onclick: reserveItem(item, true) }, 'Reserve');
                             else null;
 
                         m('div', [
@@ -244,9 +256,18 @@ class ViewList implements Mithril {
         }
     }
 
-    private function reserveItem(item:Item) {
+    private function reserveItem(item:Item, reserve:Bool) {
         return function(e:Event):Void {
             if(e != null) e.preventDefault();
+            if(reservingItems.indexOf(item.id) != -1) return;
+            reservingItems.push(item.id);
+            ItemsStore.reserveItem(item, reserve)
+            .then(function(item:Item):Void {
+                reservingItems.remove(item.id);
+            })
+            .catchError(function(error):Void {
+                reservingItems.remove(item.id);
+            });
         };
     }
 

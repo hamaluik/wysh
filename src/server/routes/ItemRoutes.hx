@@ -66,9 +66,19 @@ class ItemRoutes {
             item.update();
             Log.info('${u.name} (${u.id}) reserved item ${item.id} on ${item.list.user.name}\'s (${item.list.user.id}) list ${item.list.name} (${item.list.id})');
         }
+        else if(body.reserve != null && !body.reserve) {
+            if(!item.reservable) return new response.MalformedRequest('That item can\'t be un-reserved!');
+            if(item.reserver == null) return new response.MalformedRequest('That item isn\'t reserved!');
+
+            // un-reserve it!
+            item.reserver = null;
+            item.reservedOn = null;
+            item.update();
+            Log.info('${u.name} (${u.id}) un-reserved item ${item.id} on ${item.list.user.name}\'s (${item.list.user.id}) list ${item.list.name} (${item.list.id})');
+        }
         else return new response.MalformedRequest();
 
-        return new response.API(api.Item.fromDB(item).hideReservedStatus());
+        return new response.API(api.Item.fromDB(item).hideReservedStatus(user.id));
     }
 
     @:delete('/$itemHash') public function deleteItem(itemHash:String, user:JWTSession.User):Response {
