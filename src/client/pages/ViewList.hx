@@ -99,15 +99,18 @@ class ViewList implements Mithril {
 
                         var itemBody:Array<Vnode<Dynamic>> = [];
                         if(item.comments != null) {
-                            itemBody.push(m('span', item.comments));
+                            itemBody.push(m('span${strikethrough}', item.comments));
                         }
                         if(item.url != null && item.url.trim().length > 0) {
                             if(item.comments != null) itemBody.push(m('br'));
-                            itemBody.push(m('a', { href: item.url, target: '_blank' }, item.url));
+                            itemBody.push(m('a${strikethrough}', { href: item.url, target: '_blank' }, item.url));
                         }
-                        if(selfOwned && item.reservable != null) {
-                            if(item.url != null && item.url.trim().length > 0) itemBody.push(m('br'));
-                            itemBody.push(m('em.is-size-7', 'This item may be reserved!'));
+                        if(item.reservable != null) {
+                            // TODO: get rid of this stank ass code
+                            if(item.url != null && item.url.trim().length > 0 && (selfOwned || item.reservedOn != null)) itemBody.push(m('br'));
+                            if(selfOwned) itemBody.push(m('em.is-size-7', 'This item may be reserved!'));
+                            else if(item.reservedOn != null)
+                                itemBody.push(m('em.is-size-7', 'This item was reserved by ${item.reserver} on ${item.reservedOn.toString()}.'));
                         }
 
                         var rightSide:Vnodes =
@@ -117,12 +120,13 @@ class ViewList implements Mithril {
                                         deleteItems.push(item.id);
                                     }}, m(Icon, { name: 'trash' }));
                                 else
-                                    m('button.button.is-text.is-small.is-success', { onclick: deleteItem(item) }, m(Icon, { name: 'trash' }));
+                                    m('button.button.is-text.is-small.is-success', { onclick: deleteItem(item) }, [
+                                        m(Icon, { name: 'trash' }),
+                                        m('span', 'Confirm?')
+                                    ]);
                             }
                             else if(item.reservable != null && item.reservable && item.reservedOn == null)
-                                m('a.button.is-small.is-primary.is-outlined', {onclick: function() {
-                                    js.Browser.alert('TODO:');
-                                }}, 'Reserve');
+                                m('a.button.is-small.is-primary.is-outlined', { onclick: reserveItem(item) }, 'Reserve');
                             else null;
 
                         m('div', [
@@ -138,7 +142,7 @@ class ViewList implements Mithril {
                                     )
                                 ),
                                 m('.column', [
-                                    m('.content', m('p${strikethrough}', itemBody))
+                                    m('.content', m('p', itemBody))
                                 ]),
                             ])
                         ]);
@@ -238,6 +242,12 @@ class ViewList implements Mithril {
                 deleteItems.remove(item.id);
             });
         }
+    }
+
+    private function reserveItem(item:Item) {
+        return function(e:Event):Void {
+            if(e != null) e.preventDefault();
+        };
     }
 
     private function canSubmitNewItem():Bool {
