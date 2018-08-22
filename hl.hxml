@@ -1,0 +1,17 @@
+-cp src/common
+-cp src/server
+
+-lib tink_runloop
+-lib tink_tcp
+-lib tink_http_middleware
+-lib tink_web
+-lib tink_multipart
+#-lib asys
+-lib record-macros
+-lib hashids
+-lib yaml
+-lib jwt
+
+-main Server
+-hl bin/wysh.hl
+
